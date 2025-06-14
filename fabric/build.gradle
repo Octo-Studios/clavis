@@ -23,9 +23,7 @@ configurations {
 }
 
 repositories {
-    flatDir {
-        dirs("libs")
-    }
+
 }
 
 dependencies {
@@ -36,26 +34,6 @@ dependencies {
     modImplementation "dev.architectury:architectury-fabric:$rootProject.architectury_api_version"
 
     //modImplementation "it.hurts.octostudios.octolib:octolib-fabric:$rootProject.octolib_version"
-
-    if (file("libs").isDirectory()) {
-        file("libs").eachFile { file ->
-            def splitPos = file.name.lastIndexOf("-")
-
-            if (file.name != "desktop.ini") {
-                println file.name
-
-                def modartifact = file.name.substring(0, splitPos)
-                def modversion = file.name.substring(splitPos + 1, file.name.length() - 4)
-                def modreference = "lib:$modartifact:$modversion"
-
-                dependencies {
-                    implementation (project.dependencies.create(modreference) {
-                        transitive = false
-                    })
-                }
-            }
-        }
-    } else file("libs").mkdir()
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
