@@ -14,12 +14,10 @@ public class TestLockpickingScreen extends Screen {
 
     @Override
     protected void init() {
-        super.init();
+        this.addOrRepositionGear();
     }
 
-    @Override
-    protected void rebuildWidgets() {
-        super.rebuildWidgets();
+    private void addOrRepositionGear() {
         if (this.gear == null) {
             this.gear = new GearMechanismWidget(0, 0);
         }

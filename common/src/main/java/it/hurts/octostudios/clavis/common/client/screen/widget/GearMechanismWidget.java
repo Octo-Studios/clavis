@@ -1,7 +1,9 @@
 package it.hurts.octostudios.clavis.common.client.screen.widget;
 
+import com.google.common.collect.Lists;
 import com.mojang.math.Axis;
 import it.hurts.octostudios.clavis.common.Clavis;
+import it.hurts.octostudios.clavis.common.ClavisClient;
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
 import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
@@ -23,12 +25,14 @@ import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class GearMechanismWidget extends AbstractWidget implements ContainerEventHandler, HasRenderMatrix {
     public static ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(Clavis.MODID, "textures/minigame/background.png");
+    public static ResourceLocation COGWHEEL = ResourceLocation.fromNamespaceAndPath(Clavis.MODID, "textures/minigame/gear.png");
+    public static ResourceLocation ARROW = ResourceLocation.fromNamespaceAndPath(Clavis.MODID, "textures/minigame/arrow.png");
 
     Matrix4f matrix;
     List<GuiEventListener> children = new ArrayList<>();
@@ -37,19 +41,23 @@ public class GearMechanismWidget extends AbstractWidget implements ContainerEven
     @Setter
     float rot;
 
+    float arrowRot;
+
     public GearMechanismWidget(int x, int y) {
         super(x, y, 192, 192, Component.empty());
         Random random = new Random();
         Vector2f position = new Vector2f(0, this.height/2f-22);
-        for (float i = 0; i < 360; i+=22.5f) {
-            if (random.nextBoolean()) {
-                continue;
-            }
-            float newI = i + random.nextFloat(-5, 5);
+        int toGenerate = 4;
+
+        List<Integer> list = IntStream.range(0, 10).boxed().collect(Collectors.toCollection(ArrayList::new));
+        Collections.shuffle(list);
+        list.stream().limit(toGenerate).forEach(integer -> {
+            float newI = integer * 36 + random.nextFloat(-5, 5);
 
             Vector2f rotated = VectorUtils.rotate(position, newI);
             this.children.add(LockPinWidget.create(Math.round(this.width / 2f + rotated.x), Math.round(this.height / 2f + rotated.y), newI, this));
-        }
+
+        });
     }
 
     @Override
@@ -61,17 +69,25 @@ public class GearMechanismWidget extends AbstractWidget implements ContainerEven
         guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(rot));
         guiGraphics.pose().translate(-this.width/2f - this.getX(), -this.height/2f - this.getY(), 0);
         this.setMatrix(new Matrix4f(guiGraphics.pose().last().pose()));
-        //guiGraphics.renderOutline(this.getX(), this.getY(), this.width, this.height, 0xffffffff);
         children.reversed().forEach(child -> {
             if (child instanceof Renderable renderable) {
                 renderable.render(guiGraphics, mouseX, mouseY, partialTick);
             }
         });
-
-        guiGraphics.blit(ResourceLocation.fromNamespaceAndPath(Clavis.MODID, "textures/minigame/gear.png"), this.getX(), this.getY(), 192, 192, 0, 0, 192, 192,
-                192, 192);
-
+        guiGraphics.blit(COGWHEEL, this.getX(), this.getY(), 192, 192, 0, 0, 192, 192, 192, 192);
         guiGraphics.pose().popPose();
+
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(this.getX() + this.width/2f, this.getY() + this.height/2f, 0);
+        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(arrowRot));
+        guiGraphics.blit(ARROW, -8, -6, 16, 42, 0, 0, 16, 42, 16, 42);
+        guiGraphics.pose().popPose();
+
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(this.getX() + this.width/2f, this.getY() + this.height/2f, 0);
+        guiGraphics.blit(ResourceLocation.fromNamespaceAndPath(Clavis.MODID, "textures/minigame/center.png"), -8, -8, 16, 16, 0, 0, 16, 16, 16, 16);
+        guiGraphics.pose().popPose();
+        arrowRot = (float) ((arrowRot - ClavisClient.getDeltaTime() * 200) % 360);
     }
 
     @Override
