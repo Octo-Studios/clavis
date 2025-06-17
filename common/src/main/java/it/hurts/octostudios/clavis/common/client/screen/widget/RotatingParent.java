@@ -21,17 +21,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class RotatingParent extends AbstractWidget implements HasRenderMatrix, ContainerEventHandler, Child<LayoutElement> {
-    LayoutElement parent;
+public class RotatingParent<T extends Child<RotatingParent>, C extends LayoutElement> extends AbstractWidget implements HasRenderMatrix, ContainerEventHandler, Child<C> {
+    C parent;
     Matrix4f matrix;
-    List<GuiEventListener> children = new ArrayList<>();
+    List<T> children = new ArrayList<>();
     GuiEventListener focused;
     boolean dragging;
     @Getter
     @Setter
     float rot;
 
-    public RotatingParent(int x, int y, float degrees, Child<RotatingParent>... children) {
+    @SafeVarargs
+    public RotatingParent(int x, int y, float degrees, T... children) {
         super(x, y, 0, 0, Component.empty());
         this.setRot(degrees);
         this.children.addAll(Arrays.stream(children).peek(child -> child.setParent(this)).toList());
@@ -98,12 +99,12 @@ public class RotatingParent extends AbstractWidget implements HasRenderMatrix, C
     }
 
     @Override
-    public @Nullable LayoutElement getParent() {
+    public @Nullable C getParent() {
         return this.parent;
     }
 
     @Override
-    public void setParent(@Nullable LayoutElement layoutElement) {
-        this.parent = layoutElement;
+    public void setParent(@Nullable C c) {
+        this.parent = c;
     }
 }

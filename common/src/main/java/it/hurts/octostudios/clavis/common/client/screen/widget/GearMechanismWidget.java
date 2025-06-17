@@ -1,6 +1,5 @@
 package it.hurts.octostudios.clavis.common.client.screen.widget;
 
-import com.google.common.collect.Lists;
 import com.mojang.math.Axis;
 import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.ClavisClient;
@@ -10,15 +9,17 @@ import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
 import it.hurts.octostudios.octolib.client.screen.widget.HasRenderMatrix;
 import it.hurts.octostudios.octolib.util.VectorUtils;
 import lombok.Setter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
+import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -35,10 +36,9 @@ public class GearMechanismWidget extends AbstractWidget implements ContainerEven
     public static ResourceLocation ARROW = ResourceLocation.fromNamespaceAndPath(Clavis.MODID, "textures/minigame/arrow.png");
 
     Matrix4f matrix;
-    List<GuiEventListener> children = new ArrayList<>();
+    List<RotatingParent<LockPinWidget, GearMechanismWidget>> children = new ArrayList<>();
     GuiEventListener focused;
     boolean dragging;
-    @Setter
     float rot;
 
     float arrowRot;
@@ -47,7 +47,7 @@ public class GearMechanismWidget extends AbstractWidget implements ContainerEven
         super(x, y, 192, 192, Component.empty());
         Random random = new Random();
         Vector2f position = new Vector2f(0, this.height/2f-22);
-        int toGenerate = 4;
+        int toGenerate = 7;
 
         List<Integer> list = IntStream.range(0, 10).boxed().collect(Collectors.toCollection(ArrayList::new));
         Collections.shuffle(list);
@@ -58,6 +58,10 @@ public class GearMechanismWidget extends AbstractWidget implements ContainerEven
             this.children.add(LockPinWidget.create(Math.round(this.width / 2f + rotated.x), Math.round(this.height / 2f + rotated.y), newI, this));
 
         });
+    }
+
+    public void setRot(float rot) {
+        this.rot = (float) normalizeAngle(rot);
     }
 
     @Override
@@ -87,7 +91,7 @@ public class GearMechanismWidget extends AbstractWidget implements ContainerEven
         guiGraphics.pose().translate(this.getX() + this.width/2f, this.getY() + this.height/2f, 0);
         guiGraphics.blit(ResourceLocation.fromNamespaceAndPath(Clavis.MODID, "textures/minigame/center.png"), -8, -8, 16, 16, 0, 0, 16, 16, 16, 16);
         guiGraphics.pose().popPose();
-        arrowRot = (float) ((arrowRot - ClavisClient.getDeltaTime() * 200) % 360);
+        arrowRot = (float) normalizeAngle((arrowRot - ClavisClient.getDeltaTime() * 200));
     }
 
     @Override
@@ -132,7 +136,7 @@ public class GearMechanismWidget extends AbstractWidget implements ContainerEven
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (ContainerEventHandler.super.mouseClicked(mouseX, mouseY, button)) {
+        if (button != 0) {
             return false;
         }
 
@@ -140,21 +144,45 @@ public class GearMechanismWidget extends AbstractWidget implements ContainerEven
         Vector2d center = new Vector2d(this.getX() + this.width/2f, this.getY() + this.height/2f);
         double distance = vector2d.distance(center);
 
-        if (distance > this.width/2f - 8 || distance < this.width/2f - 22) {
+        if (distance > this.width/2f - 8) {
             return false;
         }
 
-        if (super.mouseClicked(mouseX,mouseY, button)) {
+        if (distance > this.width/2f - 22) {
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.GRINDSTONE_USE, 1.25f));
             Tween tween = Tween.create();
             tween.tweenMethod(this::setRot, this.rot, this.rot + 100f, 0.75f).setEaseType(EaseType.EASE_OUT).setTransitionType(TransitionType.QUART);
             return true;
         }
 
-        return false;
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WOOD_HIT, 1f));
+        return this.unlockPin(arrowRot);
     }
 
-    @Override
-    public void onClick(double mouseX, double mouseY) {
+    public boolean unlockPin(float arrowAngle) {
+        double angle = normalizeAngle(arrowAngle - this.rot);
+        Optional<RotatingParent<LockPinWidget, GearMechanismWidget>> optional = this.children.stream()
+                .filter(rotatingParent -> roughlyEquals(normalizeAngle(rotatingParent.rot), angle, 8))
+                .findFirst();
 
+        if (optional.isEmpty()) {
+            return false;
+        }
+
+        optional.get().children.getFirst().activate();
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.5f));
+        return true;
+    }
+
+    private static boolean roughlyEquals(double first, double second, double accuracy) {
+        return first >= second - accuracy && first < second + accuracy;
+    }
+
+    private static double normalizeAngle(double angle) {
+        angle = angle % 360;
+        if (angle < 0) {
+            angle += 360;
+        }
+        return angle;
     }
 }
