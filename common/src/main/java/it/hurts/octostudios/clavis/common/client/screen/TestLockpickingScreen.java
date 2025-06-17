@@ -1,6 +1,7 @@
 package it.hurts.octostudios.clavis.common.client.screen;
 
 import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidget;
+import it.hurts.octostudios.clavis.common.tier.OverworldTier;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -19,7 +20,7 @@ public class TestLockpickingScreen extends Screen {
 
     private void addOrRepositionGear() {
         if (this.gear == null) {
-            this.gear = new GearMechanismWidget(0, 0);
+            this.gear = new GearMechanismWidget(OverworldTier.MEDIUM);
         }
         this.gear.setPosition(Math.round(this.width/2f-this.gear.getWidth()/2f-72), Math.round(this.height/2f-96));
         this.addRenderableWidget(this.gear);

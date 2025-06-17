@@ -30,7 +30,7 @@ public class LockPinWidget extends AbstractWidget implements Child<RotatingParen
     }
 
     public static RotatingParent<LockPinWidget, GearMechanismWidget> create(int x, int y, float degrees, GearMechanismWidget parent) {
-        RotatingParent<LockPinWidget, GearMechanismWidget> rotatingParent = new RotatingParent<>(x, y, degrees, new LockPinWidget(-6, -36));
+        RotatingParent<LockPinWidget, GearMechanismWidget> rotatingParent = new RotatingParent<>(x, y, degrees, new LockPinWidget(-6, -36+74));
         rotatingParent.setParent(parent);
         return rotatingParent;
     }
