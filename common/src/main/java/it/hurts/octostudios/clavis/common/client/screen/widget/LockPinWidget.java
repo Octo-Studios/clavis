@@ -8,6 +8,7 @@ import it.hurts.octostudios.octolib.client.screen.widget.Child;
 import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -23,7 +24,7 @@ public class LockPinWidget extends AbstractWidget implements Child<RotatingParen
     @Setter
     private float yScale = 1f;
 
-    Tween tween;
+    Tween tween = Tween.create();
 
     public LockPinWidget(int x, int y) {
         super(x, y, 12, 36, Component.empty());
@@ -35,15 +36,29 @@ public class LockPinWidget extends AbstractWidget implements Child<RotatingParen
         return rotatingParent;
     }
 
+    public static RotatingParent<LockPinWidget, GearMechanismWidget> createFake(int x, int y, float degrees, GearMechanismWidget parent) {
+        RotatingParent<LockPinWidget, GearMechanismWidget> rotatingParent = new RotatingParent<>(x, y, degrees, new FakePinWidget(-6, -36+74));
+        rotatingParent.setParent(parent);
+        return rotatingParent;
+    }
+
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.getX(), this.getY()+this.height, 0);
         guiGraphics.pose().scale(1f, yScale, 1f);
 
-        guiGraphics.blit(active ? ACTIVE : INACTIVE, 0, -this.height, 12, 36, 0, 0, 12, 36, 12, 36);
+        guiGraphics.blit(active ? getActiveTexture() : getInactiveTexture(), 0, -this.height, 12, 36, 0, 0, 12, 36, 12, 36);
 
         guiGraphics.pose().popPose();
+    }
+
+    public ResourceLocation getActiveTexture() {
+        return ACTIVE;
+    }
+
+    public ResourceLocation getInactiveTexture() {
+        return INACTIVE;
     }
 
     @Override
@@ -56,22 +71,21 @@ public class LockPinWidget extends AbstractWidget implements Child<RotatingParen
         this.parent = parent;
     }
 
-    public void activate() {
+    public boolean activate() {
         if (this.active) {
-            return;
+            return false;
         }
 
         this.active = true;
         this.animateActivation();
+        return true;
     }
 
     private void animateActivation() {
-        if (tween != null) {
-            tween.kill();
-        }
-
+        tween.kill();
         tween = Tween.create();
         tween.tweenMethod(this::setYScale, 1.384f, 1f, 0.5f).setTransitionType(TransitionType.ELASTIC).setEaseType(EaseType.EASE_OUT);
+        tween.start();
     }
 
     @Override
@@ -86,7 +100,7 @@ public class LockPinWidget extends AbstractWidget implements Child<RotatingParen
     @Override
     public void onClick(double mouseX, double mouseY) {
         super.onClick(mouseX, mouseY);
-        this.activate();
+        //this.activate();
     }
 
     @Override

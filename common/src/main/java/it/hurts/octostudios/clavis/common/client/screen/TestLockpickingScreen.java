@@ -1,16 +1,59 @@
 package it.hurts.octostudios.clavis.common.client.screen;
 
 import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidget;
-import it.hurts.octostudios.clavis.common.tier.OverworldTier;
+import it.hurts.octostudios.clavis.common.minigame.Minigame;
+import it.hurts.octostudios.clavis.common.minigame.rule.OverworldRules;
+import it.hurts.octostudios.clavis.common.minigame.tier.OverworldTier;
+import it.hurts.octostudios.octolib.client.animation.Tween;
+import lombok.Getter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.texture.Tickable;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
 
 public class TestLockpickingScreen extends Screen {
+    @Getter
+    Minigame<GearMechanismWidget> game;
     GearMechanismWidget gear;
+    long tickCount;
 
     public TestLockpickingScreen() {
         super(Component.empty());
+        Tween tween = Tween.create().setLoops(-1);
+        tween.tweenRunnable(() -> Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WOODEN_BUTTON_CLICK_ON, 2F)));
+        tween.tweenInterval(0.5);
+        tween.tweenRunnable(() -> Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WOODEN_BUTTON_CLICK_OFF, 1.6F)));
+        tween.tweenInterval(0.5);
+        tween.tweenRunnable(() -> Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WOODEN_BUTTON_CLICK_OFF, 1.6F)));
+        tween.tweenInterval(0.5);
+        tween.tweenRunnable(() -> Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WOODEN_BUTTON_CLICK_OFF, 1.6F)));
+        tween.tweenInterval(0.5);
+        tween.tweenRunnable(() -> {
+            if (Minecraft.getInstance().screen != this) {
+                tween.kill();
+            }
+        });
+        tween.start();
+    }
+
+    @Override
+    public void tick() {
+        this.children().forEach(child -> {
+            if (child instanceof Tickable tickable) {
+                tickable.tick();
+            }
+        });
+
+        game.processOnTickRules(tickCount);
+
+        if (game.getHealth() <= 0) {
+            Minecraft.getInstance().setScreen(null);
+        }
+
+        tickCount++;
     }
 
     @Override
@@ -20,7 +63,14 @@ public class TestLockpickingScreen extends Screen {
 
     private void addOrRepositionGear() {
         if (this.gear == null) {
-            this.gear = new GearMechanismWidget(OverworldTier.MEDIUM);
+            this.gear = new GearMechanismWidget();
+            this.gear.screen = this;
+            this.game = new Minigame<>(this.gear);
+
+            game.addRules(OverworldRules.ROTATE_GEAR, OverworldRules.FLIP_ARROW, OverworldRules.FAKE_PIN);
+            gear.processDifficulty(game.getDifficulty());
+
+            game.processOnCreateRules();
         }
         this.gear.setPosition(Math.round(this.width/2f-this.gear.getWidth()/2f-72), Math.round(this.height/2f-96));
         this.addRenderableWidget(this.gear);

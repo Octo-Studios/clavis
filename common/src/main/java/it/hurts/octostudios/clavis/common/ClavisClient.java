@@ -6,8 +6,4 @@ public class ClavisClient {
     public static void init() {
 
     }
-
-    public static double getDeltaTime() {
-        return Minecraft.getInstance().getFrameTimeNs() / 1000000000d;
-    }
 }
