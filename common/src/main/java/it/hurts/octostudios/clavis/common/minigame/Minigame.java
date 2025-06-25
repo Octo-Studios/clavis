@@ -1,5 +1,6 @@
 package it.hurts.octostudios.clavis.common.minigame;
 
+import it.hurts.octostudios.clavis.common.client.screen.widget.AbstractMinigameWidget;
 import it.hurts.octostudios.clavis.common.minigame.rule.OverworldRules;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Minigame<T extends AbstractWidget> {
+public class Minigame<T extends AbstractMinigameWidget<?>> {
     T widget;
     List<Rule<T>> rules = new ArrayList<>();
     @Getter float difficulty;
@@ -22,6 +23,21 @@ public class Minigame<T extends AbstractWidget> {
 
     public void hurt() {
         this.health--;
+
+        if (this.health <= 0) {
+            this.lose();
+            return;
+        }
+
+        widget.playHurtAnimation();
+    }
+
+    public void lose() {
+        widget.playLoseAnimation();
+    }
+
+    public void win() {
+        widget.playWinAnimation();
     }
 
     public void processOnTickRules(long tickCount) {

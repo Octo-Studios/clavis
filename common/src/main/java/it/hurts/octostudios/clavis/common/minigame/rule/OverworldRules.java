@@ -25,7 +25,7 @@ public class OverworldRules {
 
     public static final Rule<GearMechanismWidget> FAKE_PIN = new Rule<GearMechanismWidget>()
             .withOnCreate(gear -> {
-                gear.children().add(LockPinWidget.createFake(Math.round(gear.getWidth()/2f), Math.round(gear.getHeight()/2f), gear.random.nextFloat(0, 359), gear));
+                gear.children().add(LockPinWidget.createFake(Math.round(gear.getWidth()/2f), Math.round(gear.getHeight()/2f), gear.getRandom().nextFloat(0, 359), gear));
             })
             .withEveryTick((gear, tickCount) -> {
                 gear.children().stream().filter(child -> child.children().getFirst() instanceof FakePinWidget).forEach(rotating -> {
