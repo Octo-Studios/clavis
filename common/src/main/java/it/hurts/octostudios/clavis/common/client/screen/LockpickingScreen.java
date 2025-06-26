@@ -60,12 +60,16 @@ public class LockpickingScreen extends Screen {
             this.gear = new GearMechanismWidget(this);
             this.game = new Minigame<>(this.gear);
 
-            game.addRules(OverworldRules.ROTATE_GEAR, OverworldRules.FLIP_ARROW, OverworldRules.FAKE_PIN);
+            game.addRules(OverworldRules.ROTATE_GEAR, OverworldRules.MOOD_SWINGS, OverworldRules.FAKE_PIN);
             gear.processDifficulty(game.getDifficulty());
 
             game.processOnCreateRules();
         }
+
         this.gear.setPosition(Math.round(this.width/2f-this.gear.getWidth()/2f-72), Math.round(this.height/2f-96));
+
+
+
         this.addRenderableWidget(this.gear);
     }
 

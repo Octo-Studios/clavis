@@ -1,0 +1,10 @@
+{
+  "rule.clavis.mood_swings": "Mood Swings",
+  "rule.clavis.mood_swings.description": "After each successful click - the arrow changes its direction",
+
+  "rule.clavis.nauseous_carousel": "Nauseous Carousel",
+  "rule.clavis.nauseous_carousel.description": "The playing field rotates every 5 seconds",
+
+  "rule.clavis.fake_pin": "Fake Pin",
+  "rule.clavis.fake_pin_description": "Amongst other pins - a fake one appears. Clicking on it will take away health, deactivate all active pins and move the fake pin to a random position"
+}

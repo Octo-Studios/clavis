@@ -1,10 +1,8 @@
 package it.hurts.octostudios.clavis.common.minigame;
 
 import it.hurts.octostudios.clavis.common.client.screen.widget.AbstractMinigameWidget;
-import it.hurts.octostudios.clavis.common.minigame.rule.OverworldRules;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
 import lombok.Getter;
-import net.minecraft.client.gui.components.AbstractWidget;
 
 import java.util.ArrayList;
 import java.util.Arrays;

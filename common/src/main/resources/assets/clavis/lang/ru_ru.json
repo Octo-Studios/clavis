@@ -1,0 +1,10 @@
+{
+  "rule.clavis.mood_swings": "Эмоциональные качели",
+  "rule.clavis.mood_swings.description": "После каждого клика указатель меняет направление своего движения",
+
+  "rule.clavis.nauseous_carousel": "Тошнотворная карусель",
+  "rule.clavis.nauseous_carousel.description": "Каждые 5 секунд игровое поле медленно прокручивается",
+
+  "rule.clavis.fake_pin": "Фальшивка",
+  "rule.clavis.fake_pin_description": "На карте появляется фальшивая засечка. Клик по ней отнимает здоровье, деактивирует все засечки и перемещает её в случайную позицию"
+}

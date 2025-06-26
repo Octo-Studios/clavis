@@ -4,16 +4,22 @@ import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidg
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-@NoArgsConstructor
 @Getter
 public class Rule<T extends AbstractWidget> {
+    ResourceLocation id;
+
     BiConsumer<T, Boolean> onClick;
     BiConsumer<T, Long> everyTick;
     Consumer<T> onCreate;
+
+    public Rule(ResourceLocation id) {
+        this.id = id;
+    }
 
     public Rule<T> withOnClick(BiConsumer<T, Boolean> onClick) {
         this.onClick = onClick;
