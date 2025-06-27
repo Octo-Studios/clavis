@@ -40,9 +40,9 @@ public class RuleWidget extends AbstractWidget {
         Font font = Minecraft.getInstance().font;
 
         if (this.isHovered()) {
-            guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.getWidth(), this.getY()+this.getHeight(), -1, 0xffd7e3f2);
-            guiGraphics.fill(this.getX()-1, this.getY(), this.getX()+this.getWidth()+1, this.getY()+this.getHeight(), -1, 0xffd7e3f2);
-            guiGraphics.fill(this.getX(), this.getY()-1, this.getX()+this.getWidth(), this.getY()+this.getHeight()+1, -1, 0xffd7e3f2);
+            guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.getWidth(), this.getY()+this.getHeight(), 0, 0xffd7e3f2);
+            guiGraphics.fill(this.getX()-1, this.getY(), this.getX()+this.getWidth()+1, this.getY()+this.getHeight(), 0, 0xffd7e3f2);
+            guiGraphics.fill(this.getX(), this.getY()-1, this.getX()+this.getWidth(), this.getY()+this.getHeight()+1, 0, 0xffd7e3f2);
         }
 
         guiGraphics.pose().pushPose();
