@@ -27,7 +27,7 @@ public class FakePinWidget extends LockPinWidget {
             });
 
             if (this.getParent() != null) {
-                this.getParent().setRot(gear.random.nextFloat(0, 360));
+                this.getParent().setRot(gear.getFreeSpots().get(gear.getRandom().nextInt(0, gear.getFreeSpots().size())) * (360f / gear.getMaxSpots()));
             }
         }
         return false;

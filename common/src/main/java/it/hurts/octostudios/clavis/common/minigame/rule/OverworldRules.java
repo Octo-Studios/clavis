@@ -26,7 +26,12 @@ public class OverworldRules {
 
     public static final Rule<GearMechanismWidget> FAKE_PIN = new Rule<GearMechanismWidget>(ResourceLocation.fromNamespaceAndPath(Clavis.MODID, "fake_pin"))
             .withOnCreate(gear -> {
-                gear.children().add(LockPinWidget.createFake(Math.round(gear.getWidth()/2f), Math.round(gear.getHeight()/2f), gear.getRandom().nextFloat(0, 359), gear));
+                gear.children().add(LockPinWidget.createFake(
+                        Math.round(gear.getWidth()/2f),
+                        Math.round(gear.getHeight()/2f),
+                        gear.getFreeSpots().get(gear.getRandom().nextInt(0, gear.getFreeSpots().size())) * (360f / gear.getMaxSpots()),
+                        gear
+                ));
             })
             .withEveryTick((gear, tickCount) -> {
                 AtomicInteger index = new AtomicInteger(1);
@@ -35,7 +40,7 @@ public class OverworldRules {
                         return;
                     }
 
-                    if ((tickCount + index.getAndIncrement() * 2L) % 60 == 0) {
+                    if ((tickCount + index.getAndIncrement() * 2L) % 30 == 0) {
                         fake.letThemKnow();
                     }
                 });

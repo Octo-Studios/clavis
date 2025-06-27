@@ -42,6 +42,9 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
     float maxArrowSpeed;
     float maxPins;
 
+    @Getter List<Integer> freeSpots;
+    @Getter int maxSpots;
+
     boolean playing = true;
 
     public GearMechanismWidget(LockpickingScreen screen) {
@@ -51,7 +54,7 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
     public void processDifficulty(float difficulty) {
         int pins = Mth.ceil(random.nextInt(6, 11)*difficulty);
         this.maxPins = pins;
-        int maxSpots = (int) Math.round(pins * 1.5);
+        this.maxSpots = (int) Math.round(pins * 1.5);
 
         this.arrowSpeed = random.nextFloat(240, 300)*difficulty;
         this.maxArrowSpeed = Math.abs(arrowSpeed);
@@ -62,6 +65,8 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
             float newI = i * (360f / maxSpots) + random.nextFloat(-5, 5);
             this.children.add(LockPinWidget.create(Math.round(this.width / 2f), Math.round(this.height / 2f), newI, this));
         });
+
+        this.freeSpots = list.subList(pins, list.size());
     }
 
     public void setRot(float rot) {
@@ -115,6 +120,8 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         guiGraphics.pose().translate(this.getX() + this.width / 2f, this.getY() + this.height / 2f, 0);
         guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(arrowRot));
         guiGraphics.blit(ARROW, -8, -6, 16, 42, 0, 0, 16, 42, 16, 42);
+
+
         guiGraphics.pose().popPose();
 
         guiGraphics.pose().pushPose();

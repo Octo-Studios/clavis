@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Minigame<T extends AbstractMinigameWidget<?>> {
     T widget;
-    List<Rule<T>> rules = new ArrayList<>();
+    @Getter List<Rule<T>> rules = new ArrayList<>();
     @Getter float difficulty;
     @Getter int health = 5;
 

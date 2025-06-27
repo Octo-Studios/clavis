@@ -6,5 +6,5 @@
   "rule.clavis.nauseous_carousel.description": "The playing field rotates every 5 seconds",
 
   "rule.clavis.fake_pin": "Fake Pin",
-  "rule.clavis.fake_pin_description": "Amongst other pins - a fake one appears. Clicking on it will take away health, deactivate all active pins and move the fake pin to a random position"
+  "rule.clavis.fake_pin.description": "Amongst other pins - a fake one appears. Clicking on it will take away health, deactivate all active pins and move the fake pin to a random position"
 }
