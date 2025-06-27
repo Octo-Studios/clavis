@@ -8,6 +8,7 @@ import it.hurts.octostudios.octolib.OctoLibClient;
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
 import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
+import it.hurts.octostudios.octolib.util.AnimationUtils;
 import it.hurts.octostudios.octolib.util.OctoColor;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,24 +28,36 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<LockPinWidget, GearMechanismWidget>> {
-    public static ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(Clavis.MODID, "textures/minigame/background.png");
-    public static ResourceLocation COGWHEEL = ResourceLocation.fromNamespaceAndPath(Clavis.MODID, "textures/minigame/gear.png");
-    public static ResourceLocation ARROW = ResourceLocation.fromNamespaceAndPath(Clavis.MODID, "textures/minigame/arrow.png");
+    public static final ResourceLocation BACKGROUND = Clavis.path("textures/minigame/background.png");
+    public static final ResourceLocation COGWHEEL = Clavis.path("textures/minigame/gear.png");
+    public static final ResourceLocation ARROW = Clavis.path("textures/minigame/arrow.png");
+    public static final ResourceLocation CENTER = Clavis.path("textures/minigame/center.png");
+    public static final ResourceLocation CENTER_WARNING = Clavis.path("textures/minigame/center_warning.png");
 
     @Setter
     OctoColor gameColor = OctoColor.WHITE;
 
     float rot;
     float arrowRot;
-    @Setter @Getter
+    @Setter
+    @Getter
     float arrowSpeed;
 
     float maxArrowSpeed;
     float maxPins;
 
-    @Getter List<Integer> freeSpots;
-    @Getter int maxSpots;
+    @Getter
+    List<Integer> freeSpots;
+    @Getter
+    int maxSpots;
 
+    @Getter
+    boolean arrowHot;
+
+    @Setter
+    float arrowTemperature;
+    @Setter
+    float warningVisibiity = 0f;
     boolean playing = true;
 
     public GearMechanismWidget(LockpickingScreen screen) {
@@ -52,11 +65,11 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
     }
 
     public void processDifficulty(float difficulty) {
-        int pins = Mth.ceil(random.nextInt(6, 11)*difficulty);
+        int pins = Mth.ceil(random.nextInt(6, 11) * difficulty);
         this.maxPins = pins;
         this.maxSpots = (int) Math.round(pins * 1.5);
 
-        this.arrowSpeed = random.nextFloat(240, 300)*difficulty;
+        this.arrowSpeed = random.nextFloat(240, 300) * difficulty;
         this.maxArrowSpeed = Math.abs(arrowSpeed);
 
         List<Integer> list = IntStream.range(0, maxSpots).boxed().collect(Collectors.toCollection(ArrayList::new));
@@ -77,7 +90,7 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
     public void playHurtAnimation() {
         this.mainTween.kill();
         this.mainTween = Tween.create();
-        this.mainTween.tweenMethod(this::setGameColor, new OctoColor(1f,0.2f,0.2f,1f), OctoColor.WHITE, 0.5f);
+        this.mainTween.tweenMethod(this::setGameColor, new OctoColor(1.25f, 0.4f, 0.4f, 1f), OctoColor.WHITE, 0.5f);
         this.mainTween.start();
     }
 
@@ -95,10 +108,28 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
 
         this.mainTween.kill();
         this.mainTween = Tween.create();
-        this.mainTween.tweenMethod(this::setGameColor, OctoColor.WHITE, new OctoColor(1f,0.2f,0.2f,1f), 1.5f);
+        this.mainTween.tweenMethod(this::setGameColor, OctoColor.WHITE, new OctoColor(1f, 0.2f, 0.2f, 1f), 1.5f);
         this.mainTween.tweenInterval(0.5f);
         this.mainTween.tweenRunnable(() -> Minecraft.getInstance().setScreen(null));
         this.mainTween.start();
+    }
+
+    public void activateSelfDestruction() {
+        warningVisibiity = 0;
+        arrowTemperature = 0;
+        arrowHot = false;
+
+        selfDestructionTween.kill();
+        selfDestructionTween = Tween.create();
+        selfDestructionTween.tweenMethod(this::setWarningVisibiity, 0f, 1f, 0.2d);
+        selfDestructionTween.tweenInterval(0.5);
+        selfDestructionTween.tweenRunnable(() -> this.arrowHot = true);
+        selfDestructionTween.tweenMethod(this::setArrowTemperature, 0f, 1f, 1d).setEaseType(EaseType.EASE_IN_OUT).setTransitionType(TransitionType.QUAD);
+        selfDestructionTween.tweenInterval(1);
+        selfDestructionTween.tweenRunnable(() -> this.arrowHot = false);
+        selfDestructionTween.tweenMethod(this::setWarningVisibiity, 1f, 0f, 0.2d);
+        selfDestructionTween.parallel().tweenMethod(this::setArrowTemperature, 1f, 0f, 0.6d).setEaseType(EaseType.EASE_OUT).setTransitionType(TransitionType.EXPO);
+        selfDestructionTween.start();
     }
 
     @Override
@@ -119,14 +150,23 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.getX() + this.width / 2f, this.getY() + this.height / 2f, 0);
         guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(arrowRot));
+        RenderSystem.setShaderColor(
+                gameColor.r()+arrowTemperature*4,
+                (float) (gameColor.g()+TransitionType.EXPO.apply(EaseType.EASE_OUT, arrowTemperature)/4f),
+                gameColor.b(),
+                gameColor.a()
+        );
         guiGraphics.blit(ARROW, -8, -6, 16, 42, 0, 0, 16, 42, 16, 42);
-
+        RenderSystem.setShaderColor(gameColor.r(), gameColor.g(), gameColor.b(), gameColor.a());
 
         guiGraphics.pose().popPose();
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.getX() + this.width / 2f, this.getY() + this.height / 2f, 0);
-        guiGraphics.blit(ResourceLocation.fromNamespaceAndPath(Clavis.MODID, "textures/minigame/center.png"), -8, -8, 16, 16, 0, 0, 16, 16, 16, 16);
+        guiGraphics.blit(CENTER, -8, -8, 16, 16, 0, 0, 16, 16, 16, 16);
+        RenderSystem.setShaderColor(warningVisibiity, warningVisibiity, warningVisibiity, warningVisibiity);
+        guiGraphics.blit(CENTER_WARNING, -8, -8, 16, 16, 0, 0, 16, 16, 16, 16);
+        RenderSystem.setShaderColor(gameColor.r(), gameColor.g(), gameColor.b(), gameColor.a());
         guiGraphics.pose().popPose();
         arrowRot = (float) normalizeAngle((arrowRot + OctoLibClient.getDeltaTime() * this.arrowSpeed));
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
@@ -147,6 +187,13 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         }
 
         if (distance <= this.width / 2f - 22) {
+            if (this.isArrowHot()) {
+                this.screen.getGame().hurt();
+                this.deactivateAllPins();
+                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.FIRE_EXTINGUISH, 1.25f));
+                return false;
+            }
+
             boolean result = this.unlockPin(arrowRot);
             if (result) {
                 Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WOOD_HIT, 1f));
@@ -218,7 +265,23 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         gearTween.start();
     }
 
+    public void deactivateAllPins() {
+        this.children().forEach(child -> {
+            if (!(child.children.getFirst() instanceof FakePinWidget)) {
+                child.children.getFirst().deactivate();
+            }
+        });
+    }
+
     Tween gearTween = Tween.create();
     Tween arrowTween = Tween.create();
     Tween mainTween = Tween.create();
+    Tween selfDestructionTween = Tween.create();
+
+    public void killAllTweens() {
+        gearTween.kill();
+        arrowTween.kill();
+        mainTween.kill();
+        selfDestructionTween.kill();
+    }
 }

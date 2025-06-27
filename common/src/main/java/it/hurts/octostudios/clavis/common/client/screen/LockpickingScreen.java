@@ -18,13 +18,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 
 public class LockpickingScreen extends Screen {
-    public static final ResourceLocation EMPTY_HEART = Clavis.rl("textures/lockpicking/empty_heart.png");
-    public static final ResourceLocation HEART = Clavis.rl("textures/lockpicking/heart.png");
-    public static final ResourceLocation EASY = Clavis.rl("textures/icon/easy.png");
-    public static final ResourceLocation MEDIUM = Clavis.rl("textures/icon/medium.png");
-    public static final ResourceLocation HARD = Clavis.rl("textures/icon/hard.png");
-    public static final ResourceLocation QUALITY = Clavis.rl("textures/icon/quality.png");
-    public static final ResourceLocation TIME = Clavis.rl("textures/icon/time.png");
+    public static final ResourceLocation EMPTY_HEART = Clavis.path("textures/lockpicking/empty_heart.png");
+    public static final ResourceLocation HEART = Clavis.path("textures/lockpicking/heart.png");
+    public static final ResourceLocation EASY = Clavis.path("textures/icon/easy.png");
+    public static final ResourceLocation MEDIUM = Clavis.path("textures/icon/medium.png");
+    public static final ResourceLocation HARD = Clavis.path("textures/icon/hard.png");
+    public static final ResourceLocation QUALITY = Clavis.path("textures/icon/quality.png");
+    public static final ResourceLocation TIME = Clavis.path("textures/icon/time.png");
 
     @Getter
     Minigame<GearMechanismWidget> game;
@@ -72,7 +72,7 @@ public class LockpickingScreen extends Screen {
             this.gear = new GearMechanismWidget(this);
             this.game = new Minigame<>(this.gear);
 
-            game.addRules(OverworldRules.ROTATE_GEAR, OverworldRules.MOOD_SWINGS, OverworldRules.FAKE_PIN);
+            game.addRules(OverworldRules.ROTATE_GEAR, OverworldRules.MOOD_SWINGS, OverworldRules.FAKE_PIN, OverworldRules.SELF_DESTRUCTION);
             gear.processDifficulty(game.getDifficulty());
 
             game.processOnCreateRules();
@@ -83,7 +83,7 @@ public class LockpickingScreen extends Screen {
         int y = Math.round(this.height/2f-gear.getHeight()/2f);
         for (Rule<?> rule : this.game.getRules()) {
             RuleWidget widget = new RuleWidget(Math.round(this.width/2f)+20, y-8, rule);
-            y += widget.getHeight()+8;
+            y += widget.getHeight()+4;
 
             this.addRenderableWidget(widget);
         }
@@ -121,6 +121,7 @@ public class LockpickingScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 1) {
+            this.gear.killAllTweens();
             this.gear = null;
             rebuildWidgets();
         }

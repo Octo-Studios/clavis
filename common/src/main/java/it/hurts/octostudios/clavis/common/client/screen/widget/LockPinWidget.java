@@ -81,10 +81,26 @@ public class LockPinWidget extends AbstractWidget implements Child<RotatingParen
         return true;
     }
 
+    public void deactivate() {
+        if (!this.active) {
+            return;
+        }
+
+        this.active = false;
+        this.animateDectivation();
+    }
+
     private void animateActivation() {
         tween.kill();
         tween = Tween.create();
         tween.tweenMethod(this::setYScale, 1.384f, 1f, 0.5f).setTransitionType(TransitionType.ELASTIC).setEaseType(EaseType.EASE_OUT);
+        tween.start();
+    }
+
+    private void animateDectivation() {
+        tween.kill();
+        tween = Tween.create();
+        tween.tweenMethod(this::setYScale, 0.722f, 1f, 0.5f).setTransitionType(TransitionType.ELASTIC).setEaseType(EaseType.EASE_OUT);
         tween.start();
     }
 

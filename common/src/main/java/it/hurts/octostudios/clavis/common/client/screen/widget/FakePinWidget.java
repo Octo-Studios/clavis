@@ -20,11 +20,7 @@ public class FakePinWidget extends LockPinWidget {
     @Override
     public boolean activate() {
         if (this.parent.getParent() instanceof GearMechanismWidget gear) {
-            gear.children().forEach(child -> {
-                if (!(child.children.getFirst() instanceof FakePinWidget)) {
-                    child.children.getFirst().active = false;
-                }
-            });
+            gear.deactivateAllPins();
 
             if (this.getParent() != null) {
                 this.getParent().setRot(gear.getFreeSpots().get(gear.getRandom().nextInt(0, gear.getFreeSpots().size())) * (360f / gear.getMaxSpots()));

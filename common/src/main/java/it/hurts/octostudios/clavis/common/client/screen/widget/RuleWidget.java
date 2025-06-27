@@ -17,10 +17,10 @@ import net.minecraft.util.FormattedCharSequence;
 import java.util.List;
 
 public class RuleWidget extends AbstractWidget {
-    public static final ResourceLocation BOTTOM = Clavis.rl("textures/lockpicking/bottom_box.png");
-    public static final ResourceLocation FILL = Clavis.rl("textures/lockpicking/woodplate.png");
-    public static final ResourceLocation SIDE = Clavis.rl("textures/lockpicking/sidewalls.png");
-    public static final ResourceLocation TOP = Clavis.rl("textures/lockpicking/top_banner.png");
+    public static final ResourceLocation BOTTOM = Clavis.path("textures/lockpicking/bottom_box.png");
+    public static final ResourceLocation FILL = Clavis.path("textures/lockpicking/woodplate.png");
+    public static final ResourceLocation SIDE = Clavis.path("textures/lockpicking/sidewalls.png");
+    public static final ResourceLocation TOP = Clavis.path("textures/lockpicking/top_banner.png");
 
     ResourceLocation icon;
     List<FormattedCharSequence> description;
@@ -53,7 +53,7 @@ public class RuleWidget extends AbstractWidget {
         guiGraphics.blit(icon, 3, 3, 10, 10, 0, 0, 10, 10, 10, 10);
 
         RenderSystem.setShaderTexture(0, FILL);
-        RenderUtils.renderTilingTexture(guiGraphics.pose(), 2, 16, 0, 0, 156, 8, 156, this.height-20, 0, false, true);
+        RenderUtils.renderTilingTexture(guiGraphics.pose(), 2, 16, 0, 0, 156, 7, 156, this.height-20, 0, false, true);
         RenderSystem.setShaderTexture(0, SIDE);
         RenderUtils.renderTilingTexture(guiGraphics.pose(), 0, 16, 0, 0, 160, 1, 160, this.height-32, 0, false, true);
         guiGraphics.blit(BOTTOM, 0, this.height-16, 160, 16, 0, 0, 160, 16, 160, 16);

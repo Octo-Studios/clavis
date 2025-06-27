@@ -9,7 +9,7 @@ public class Clavis {
 
     }
 
-    public static ResourceLocation rl(String path) {
+    public static ResourceLocation path(String path) {
         return ResourceLocation.fromNamespaceAndPath(Clavis.MODID, path);
     }
 }
