@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
 import it.hurts.octostudios.octolib.util.RenderUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -25,7 +26,7 @@ public class RuleWidget extends AbstractWidget {
     List<FormattedCharSequence> description;
 
     public RuleWidget(int x, int y, Rule<?> rule) {
-        super(x, y, 160, 32, Component.translatable(rule.getId().toLanguageKey("rule")));
+        super(x, y, 160, 32, Component.translatable(rule.getId().toLanguageKey("rule")).withStyle(ChatFormatting.BOLD));
         Component description = Component.translatable(rule.getId().toLanguageKey("rule", "description"));
         this.description = Minecraft.getInstance().font.split(description, Math.round(152/0.75f));
 
@@ -52,9 +53,7 @@ public class RuleWidget extends AbstractWidget {
         guiGraphics.blit(icon, 3, 3, 10, 10, 0, 0, 10, 10, 10, 10);
 
         RenderSystem.setShaderTexture(0, FILL);
-        RenderSystem.setShaderColor(0.75f, 0.75f, 0.75f, 1f);
         RenderUtils.renderTilingTexture(guiGraphics.pose(), 2, 16, 0, 0, 156, 8, 156, this.height-20, 0, false, true);
-        RenderSystem.setShaderColor(1f,1f,1f, 1f);
         RenderSystem.setShaderTexture(0, SIDE);
         RenderUtils.renderTilingTexture(guiGraphics.pose(), 0, 16, 0, 0, 160, 1, 160, this.height-32, 0, false, true);
         guiGraphics.blit(BOTTOM, 0, this.height-16, 160, 16, 0, 0, 160, 16, 160, 16);
@@ -70,7 +69,7 @@ public class RuleWidget extends AbstractWidget {
         guiGraphics.pose().scale(0.75f, 0.75f, 1f);
         int y = 0;
         for (FormattedCharSequence line : this.description) {
-            guiGraphics.drawString(font, line, 0, y, 0xd7e3f2, false);
+            guiGraphics.drawString(font, line, 0, y, 0xeed1ad, false);
             y+=10;
         }
         guiGraphics.pose().popPose();
