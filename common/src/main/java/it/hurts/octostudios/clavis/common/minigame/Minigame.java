@@ -14,9 +14,13 @@ public class Minigame<T extends AbstractMinigameWidget<?>> {
     @Getter float difficulty;
     @Getter int health = 5;
 
+    @Getter long tickCount;
+    @Getter float lootQuality;
+
     public Minigame(T widget) {
         this.widget = widget;
         this.difficulty = 1f;
+        this.lootQuality = 1.5f;
     }
 
     public void hurt() {
@@ -38,12 +42,14 @@ public class Minigame<T extends AbstractMinigameWidget<?>> {
         widget.playWinAnimation();
     }
 
-    public void processOnTickRules(long tickCount) {
+    public void processOnTickRules() {
         rules.forEach(rule -> {
             if (rule.getEveryTick() != null) {
                 rule.getEveryTick().accept(widget, tickCount);
             }
         });
+
+        tickCount++;
     }
 
     public void processOnCreateRules() {

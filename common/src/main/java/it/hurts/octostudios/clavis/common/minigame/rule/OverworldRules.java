@@ -19,7 +19,7 @@ public class OverworldRules {
     public static final Rule<GearMechanismWidget> ROTATE_GEAR = new Rule<GearMechanismWidget>(Clavis.path("nauseous_carousel"))
             .withEveryTick((gear, tickCount) -> {
                 if ((tickCount+80) % 180 == 0) {
-                    gear.rotateGear(120f * -Mth.sign(gear.getArrowSpeed()));
+                    gear.rotateGear(90f * -GearMechanismWidget.sign(gear.getArrowSpeed()));
                 }
             });
 
@@ -33,7 +33,7 @@ public class OverworldRules {
                 ));
             })
             .withEveryTick((gear, tickCount) -> {
-                AtomicInteger index = new AtomicInteger(1);
+                AtomicInteger index = new AtomicInteger(0);
                 gear.children().forEach(rotating -> {
                     if (!(rotating.children().getFirst() instanceof FakePinWidget fake)) {
                         return;
@@ -46,9 +46,20 @@ public class OverworldRules {
             });
 
     public static final Rule<GearMechanismWidget> SELF_DESTRUCTION = new Rule<GearMechanismWidget>(Clavis.path("self_destruction"))
+            .withOnCreate(gear -> {
+                gear.selfDestructRule = true;
+            })
             .withEveryTick((gear, tickCount) -> {
                 if (tickCount % 139 == 0 && gear.getRandom().nextFloat() > 0.3) {
                     gear.activateSelfDestruction();
                 }
+            });
+
+    public static final Rule<GearMechanismWidget> FULL_THROTTLE = new Rule<GearMechanismWidget>(Clavis.path("full_throttle"))
+            .withEveryTick((gear, tickCount) -> {
+                gear.arrowSpeedModifier = (float) Math.max(gear.arrowSpeedModifier - gear.getMaxArrowSpeed()*0.15/20f, 0);
+            })
+            .withOnClick((gear, activated) -> {
+                gear.arrowSpeedModifier += gear.getMaxArrowSpeed()*0.2f;
             });
 }

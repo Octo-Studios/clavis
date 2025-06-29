@@ -1,5 +1,6 @@
 package it.hurts.octostudios.clavis.common;
 
+import dev.architectury.event.events.client.ClientReloadShadersEvent;
 import net.minecraft.resources.ResourceLocation;
 
 public class Clavis {

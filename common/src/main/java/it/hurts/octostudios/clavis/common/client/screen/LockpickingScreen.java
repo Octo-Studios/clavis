@@ -2,6 +2,7 @@ package it.hurts.octostudios.clavis.common.client.screen;
 
 import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidget;
+import it.hurts.octostudios.clavis.common.client.screen.widget.MinigameInfoWidget;
 import it.hurts.octostudios.clavis.common.client.screen.widget.RuleWidget;
 import it.hurts.octostudios.clavis.common.minigame.Minigame;
 import it.hurts.octostudios.clavis.common.minigame.rule.OverworldRules;
@@ -29,7 +30,6 @@ public class LockpickingScreen extends Screen {
     @Getter
     Minigame<GearMechanismWidget> game;
     GearMechanismWidget gear;
-    long tickCount;
 
     public LockpickingScreen() {
         super(Component.empty());
@@ -47,7 +47,6 @@ public class LockpickingScreen extends Screen {
                 tween.kill();
             }
         });
-        tween.start();
     }
 
     @Override
@@ -58,8 +57,7 @@ public class LockpickingScreen extends Screen {
             }
         });
 
-        game.processOnTickRules(tickCount);
-        tickCount++;
+        game.processOnTickRules();
     }
 
     @Override
@@ -72,7 +70,7 @@ public class LockpickingScreen extends Screen {
             this.gear = new GearMechanismWidget(this);
             this.game = new Minigame<>(this.gear);
 
-            game.addRules(OverworldRules.ROTATE_GEAR, OverworldRules.MOOD_SWINGS, OverworldRules.FAKE_PIN, OverworldRules.SELF_DESTRUCTION);
+            game.addRules(OverworldRules.MOOD_SWINGS, OverworldRules.FAKE_PIN, OverworldRules.ROTATE_GEAR, OverworldRules.SELF_DESTRUCTION);
             gear.processDifficulty(game.getDifficulty());
 
             game.processOnCreateRules();
@@ -80,14 +78,17 @@ public class LockpickingScreen extends Screen {
 
         this.gear.setPosition(Math.round(this.width/2f-this.gear.getWidth()+8), Math.round(this.height/2f-this.gear.getHeight()/2f-8));
 
-        int y = Math.round(this.height/2f-gear.getHeight()/2f);
+        int x = Math.round(this.width/2f)+20;
+        int y = Math.round(this.height/2f-gear.getHeight()/2f)-8;
         for (Rule<?> rule : this.game.getRules()) {
-            RuleWidget widget = new RuleWidget(Math.round(this.width/2f)+20, y-8, rule);
-            y += widget.getHeight()+4;
-
+            RuleWidget widget = new RuleWidget(x, y, rule);
             this.addRenderableWidget(widget);
+            y += widget.getHeight()+2;
         }
 
+        MinigameInfoWidget infoWidget = new MinigameInfoWidget(this.game);
+        infoWidget.setPosition(x, y);
+        this.addRenderableWidget(infoWidget);
         this.addRenderableWidget(this.gear);
     }
 
@@ -102,13 +103,6 @@ public class LockpickingScreen extends Screen {
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.gear.getX()+this.gear.getWidth()/2f, this.gear.getY()+this.gear.getHeight(), 0);
-
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(200, 0, 0);
-        guiGraphics.blit(TIME, 0, 0, 16, 16, 0, 0, 16, 16, 16, 16);
-        guiGraphics.drawString(Minecraft.getInstance().font, "☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺☺", 20, 4, 0xffffff, true);
-        guiGraphics.pose().popPose();
-
         guiGraphics.pose().translate(-80, 0, 0);
         for (int i = 1; i <= 5; i++) {
             guiGraphics.blit(i <= this.getGame().getHealth() ? HEART : EMPTY_HEART, 0, 0, 32, 32, 0, 0, 32, 32, 32, 32);
