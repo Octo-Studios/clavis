@@ -9,6 +9,7 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.texture.Tickable;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public abstract class AbstractMinigameWidget<T extends GuiEventListener> extends AbstractWidget implements ContainerEventHandler, HasRenderMatrix {
+public abstract class AbstractMinigameWidget<T extends GuiEventListener> extends AbstractWidget implements ContainerEventHandler, HasRenderMatrix, Tickable {
     @Getter Random random = new Random();
     @Getter LockpickingScreen screen;
 

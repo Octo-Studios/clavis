@@ -36,8 +36,8 @@ public class LockPinWidget extends AbstractWidget implements Child<RotatingParen
         return rotatingParent;
     }
 
-    public static RotatingParent<LockPinWidget, GearMechanismWidget> createFake(int x, int y, float degrees, GearMechanismWidget parent) {
-        RotatingParent<LockPinWidget, GearMechanismWidget> rotatingParent = new RotatingParent<>(x, y, degrees, new FakePinWidget(-6, -36+74));
+    public static RotatingParent<LockPinWidget, GearMechanismWidget> createFake(int x, int y, GearMechanismWidget parent) {
+        RotatingParent<LockPinWidget, GearMechanismWidget> rotatingParent = new RotatingParent<>(x, y, 0, new FakePinWidget(-6, -36+74));
         rotatingParent.setParent(parent);
         return rotatingParent;
     }

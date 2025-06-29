@@ -8,6 +8,9 @@ import it.hurts.octostudios.octolib.OctoLibClient;
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
 import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
+import it.hurts.octostudios.octolib.client.particle.ExtendedUIParticle;
+import it.hurts.octostudios.octolib.client.particle.GalacticUIParticle;
+import it.hurts.octostudios.octolib.client.particle.UIParticle;
 import it.hurts.octostudios.octolib.util.AnimationUtils;
 import it.hurts.octostudios.octolib.util.OctoColor;
 import lombok.Getter;
@@ -22,6 +25,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
+import org.joml.Vector2f;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -52,12 +56,9 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
     public float arrowSpeedModifier;
 
     @Getter
-    List<Integer> freeSpots;
+    List<Integer> freeSpots = new ArrayList<>();
     @Getter
     int maxSpots;
-
-    @Getter
-    boolean arrowHot;
 
     @Setter
     float arrowTemperature;
@@ -67,12 +68,17 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
 
     public boolean selfDestructRule;
 
+
+    public boolean isArrowHot() {
+        return arrowTemperature > 0.5;
+    }
+
     public GearMechanismWidget(LockpickingScreen screen) {
         super(0, 0, 192, 192, screen);
     }
 
     public void processDifficulty(float difficulty) {
-        float scaled = (1/3f + difficulty*(2/3f));
+        float scaled = (1 / 3f + difficulty * (2 / 3f));
 
         int pins = Mth.ceil(random.nextFloat(6, 10) * scaled);
         this.maxPins = pins;
@@ -88,11 +94,11 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         List<Integer> list = IntStream.range(0, maxSpots).boxed().collect(Collectors.toCollection(ArrayList::new));
         Collections.shuffle(list);
         list.stream().limit(pins).forEach(i -> {
-            float newI = i * (360f / maxSpots) + random.nextFloat(-5, 5) * (10f/maxSpots);
+            float newI = i * (360f / maxSpots) + random.nextFloat(-5, 5) * (10f / maxSpots);
             this.children.add(LockPinWidget.create(Math.round(this.width / 2f), Math.round(this.height / 2f), newI, this));
         });
 
-        this.freeSpots = list.subList(pins, list.size());
+        this.freeSpots = new ArrayList<>(list.subList(pins, list.size()));
     }
 
     public void setRot(float rot) {
@@ -114,6 +120,8 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
 
     @Override
     public void playLoseAnimation() {
+        this.playing = false;
+
         this.arrowTween.kill();
         this.arrowTween = Tween.create();
         this.arrowTween.tweenMethod(this::setArrowSpeed, this.arrowSpeed, 0f, 0.75f);
@@ -130,16 +138,13 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
     public void activateSelfDestruction() {
         warningVisibiity = 0;
         arrowTemperature = 0;
-        arrowHot = false;
 
         selfDestructionTween.kill();
         selfDestructionTween = Tween.create();
         selfDestructionTween.tweenMethod(this::setWarningVisibiity, 0f, 1f, 0.2d);
-        selfDestructionTween.tweenInterval(0.5);
-        selfDestructionTween.tweenRunnable(() -> this.arrowHot = true);
+        selfDestructionTween.tweenInterval(0.3);
         selfDestructionTween.tweenMethod(this::setArrowTemperature, 0f, 1f, 1d).setEaseType(EaseType.EASE_IN_OUT).setTransitionType(TransitionType.QUAD);
         selfDestructionTween.tweenInterval(1);
-        selfDestructionTween.tweenRunnable(() -> this.arrowHot = false);
         selfDestructionTween.tweenMethod(this::setWarningVisibiity, 1f, 0f, 0.2d);
         selfDestructionTween.parallel().tweenMethod(this::setArrowTemperature, 1f, 0f, 0.6d).setEaseType(EaseType.EASE_OUT).setTransitionType(TransitionType.EXPO);
         selfDestructionTween.start();
@@ -186,7 +191,7 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
             RenderSystem.disableBlend();
         }
         guiGraphics.pose().popPose();
-        arrowRot = (float) normalizeAngle((arrowRot + OctoLibClient.getDeltaTime() * (this.arrowSpeed + (this.arrowSpeedModifier * (this.arrowSpeed/this.maxArrowSpeed)))));
+        arrowRot = (float) normalizeAngle((arrowRot + OctoLibClient.getDeltaTime() * (this.arrowSpeed + (this.arrowSpeedModifier * (this.arrowSpeed / this.maxArrowSpeed)))));
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
     }
 
@@ -205,14 +210,14 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         }
 
         if (distance <= this.width / 2f - 22) {
+            boolean result;
             if (this.isArrowHot()) {
-                this.screen.getGame().hurt();
-                this.deactivateAllPins();
                 Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.FIRE_EXTINGUISH, 1.25f));
-                return false;
+                result = false;
+            } else {
+                result = this.unlockPin(arrowRot);
             }
 
-            boolean result = this.unlockPin(arrowRot);
             if (!result) {
                 this.screen.getGame().hurt();
                 Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WOOD_HIT, 1f));
@@ -245,8 +250,10 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         return result;
     }
 
-    private static boolean roughlyEquals(double first, double second, double accuracy) {
-        return first >= second - accuracy && first < second + accuracy;
+    private static boolean roughlyEquals(double first, double second, double margin) {
+        double diff = Math.abs(first-second);
+        diff = Math.min(diff, 360-diff);
+        return diff <= margin;
     }
 
     private static double normalizeAngle(double angle) {
@@ -304,5 +311,22 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
 
     public static int sign(double value) {
         return value >= 0 ? 1 : -1;
+    }
+
+    @Override
+    public void tick() {
+        if (!this.isArrowHot()) {
+            return;
+        }
+
+        float x = this.getX() + this.width/2f;
+        float y = this.getY() + this.height/2f;
+        ExtendedUIParticle particle = new ExtendedUIParticle(new UIParticle.Texture2D(Clavis.path("textures/particle/pixel.png"), 1, 1), 1, 20, x, y, UIParticle.Layer.SCREEN, 10);
+        particle.setScreen(this.screen);
+        particle.setColors(OctoColor.RED, OctoColor.RED, new OctoColor(1f, 1f, 0f, 1f), OctoColor.WHITE, OctoColor.ZERO);
+        particle.direction = new Vector2f(random.nextFloat() - 0.5f, random.nextFloat() - 0.5f).normalize();
+        particle.gravityDirection = new Vector2f(0, -1);
+        particle.gravity = 0.2f;
+        particle.instantiate();
     }
 }

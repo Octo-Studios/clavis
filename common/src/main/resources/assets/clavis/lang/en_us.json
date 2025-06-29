@@ -3,8 +3,14 @@
   "rule.clavis.mood_swings.description": "After each successful click - the arrow changes its direction",
 
   "rule.clavis.nauseous_carousel": "Nauseous Carousel",
-  "rule.clavis.nauseous_carousel.description": "The playing field rotates every 5 seconds",
+  "rule.clavis.nauseous_carousel.description": "Every 5 seconds the playing field rotates 90 degrees in a random direction",
 
   "rule.clavis.fake_pin": "Fake Pin",
-  "rule.clavis.fake_pin.description": "Amongst other pins - a fake one appears. Clicking on it will take away health, deactivate all active pins and move the fake pin to a random position"
+  "rule.clavis.fake_pin.description": "Amongst other pins - a fake one appears. Clicking on it will deactivate all active pins. It also moves to a random position with each click",
+
+  "rule.clavis.self_destruction": "Self Destruction Protocol",
+  "rule.clavis.self_destruction.description": "The arrow gets hot occasionally. Clicking while it's hot will take away health",
+
+  "rule.clavis.full_throttle": "Full Throttle!",
+  "rule.clavis.full_throttle.description": "The arrow gets a 20% speed boost with each click. The speed boost decays with time"
 }

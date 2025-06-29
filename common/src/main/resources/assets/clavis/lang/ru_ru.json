@@ -3,8 +3,14 @@
   "rule.clavis.mood_swings.description": "После каждого клика указатель меняет направление своего движения",
 
   "rule.clavis.nauseous_carousel": "Тошнотворная карусель",
-  "rule.clavis.nauseous_carousel.description": "Каждые 5 секунд игровое поле медленно прокручивается",
+  "rule.clavis.nauseous_carousel.description": "Каждые 5 секунд игровое поле медленно прокручивается на 90 градусов в случайную сторону",
 
   "rule.clavis.fake_pin": "Фальшивка",
-  "rule.clavis.fake_pin.description": "На карте появляется фальшивая засечка. Клик по ней отнимает здоровье, деактивирует все засечки и перемещает её в случайную позицию"
+  "rule.clavis.fake_pin.description": "На карте появляется фальшивая засечка. Клик по ней деактивирует все засечки. Она также перемещается в случайную позицию после каждого клика",
+
+  "rule.clavis.self_destruction": "Протокол самоуничтожения",
+  "rule.clavis.self_destruction.description": "Указатель периодически накаляется, отчего любой клик отнимает здоровье",
+
+  "rule.clavis.full_throttle": "Газ в пол!",
+  "rule.clavis.full_throttle.description": "После каждого клика, указатель ускоряется на 20%. Ускорение спадает со временем"
 }

@@ -12,6 +12,7 @@ public class FakePinWidget extends LockPinWidget {
     Tween fakeTween = Tween.create();
     @Setter
     OctoColor pinColor = OctoColor.WHITE;
+    public int value = Integer.MIN_VALUE;
 
     public FakePinWidget(int x, int y) {
         super(x, y);
@@ -21,12 +22,22 @@ public class FakePinWidget extends LockPinWidget {
     public boolean activate() {
         if (this.parent.getParent() instanceof GearMechanismWidget gear) {
             gear.deactivateAllPins();
-
-            if (this.getParent() != null) {
-                this.getParent().setRot(gear.getFreeSpots().get(gear.getRandom().nextInt(0, gear.getFreeSpots().size())) * (360f / gear.getMaxSpots()));
-            }
         }
-        return false;
+        return true;
+    }
+
+    public void moveToRandomPosition(GearMechanismWidget gear) {
+        int newValue = gear.getFreeSpots().get(gear.getRandom().nextInt(0, gear.getFreeSpots().size()));
+        if (this.getParent() != null) {
+            this.getParent().setRot(newValue * (360f / gear.getMaxSpots()));
+        }
+
+        if (value >= 0) {
+            gear.getFreeSpots().add(value);
+        }
+
+        this.value = newValue;
+        gear.getFreeSpots().remove(Integer.valueOf(newValue));
     }
 
     @Override

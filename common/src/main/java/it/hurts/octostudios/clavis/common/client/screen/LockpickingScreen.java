@@ -72,7 +72,6 @@ public class LockpickingScreen extends Screen {
 
             game.addRules(OverworldRules.MOOD_SWINGS, OverworldRules.FAKE_PIN, OverworldRules.ROTATE_GEAR, OverworldRules.SELF_DESTRUCTION);
             gear.processDifficulty(game.getDifficulty());
-
             game.processOnCreateRules();
         }
 
@@ -120,5 +119,10 @@ public class LockpickingScreen extends Screen {
             rebuildWidgets();
         }
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
     }
 }
