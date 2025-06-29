@@ -13,6 +13,7 @@ import it.hurts.octostudios.octolib.client.particle.GalacticUIParticle;
 import it.hurts.octostudios.octolib.client.particle.UIParticle;
 import it.hurts.octostudios.octolib.util.AnimationUtils;
 import it.hurts.octostudios.octolib.util.OctoColor;
+import it.hurts.octostudios.octolib.util.VectorUtils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
@@ -26,6 +27,7 @@ import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
+import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -155,6 +157,7 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         guiGraphics.drawString(Minecraft.getInstance().font, String.valueOf(arrowSpeedModifier), 5, 5, 0xffffffff, true);
 
         RenderSystem.setShaderColor(gameColor.r(), gameColor.g(), gameColor.b(), gameColor.a());
+        RenderSystem.enableBlend();
         guiGraphics.pose().pushPose();
         int offset = (int) ((192 - 146) / 2f);
         guiGraphics.blit(BACKGROUND, this.getX() + offset, this.getY() + offset, 146, 146, 0, 0, 146, 146, 146, 146);
@@ -193,6 +196,7 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         guiGraphics.pose().popPose();
         arrowRot = (float) normalizeAngle((arrowRot + OctoLibClient.getDeltaTime() * (this.arrowSpeed + (this.arrowSpeedModifier * (this.arrowSpeed / this.maxArrowSpeed)))));
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.disableBlend();
     }
 
     @Override
@@ -316,17 +320,31 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
     @Override
     public void tick() {
         if (!this.isArrowHot()) {
-            return;
+            //return;
         }
 
-        float x = this.getX() + this.width/2f;
-        float y = this.getY() + this.height/2f;
-        ExtendedUIParticle particle = new ExtendedUIParticle(new UIParticle.Texture2D(Clavis.path("textures/particle/pixel.png"), 1, 1), 1, 20, x, y, UIParticle.Layer.SCREEN, 10);
-        particle.setScreen(this.screen);
-        particle.setColors(OctoColor.RED, OctoColor.RED, new OctoColor(1f, 1f, 0f, 1f), OctoColor.WHITE, OctoColor.ZERO);
-        particle.direction = new Vector2f(random.nextFloat() - 0.5f, random.nextFloat() - 0.5f).normalize();
-        particle.gravityDirection = new Vector2f(0, -1);
-        particle.gravity = 0.2f;
-        particle.instantiate();
+        float x = this.getX() + this.width/2f + random.nextFloat(-3, 3);
+        float y = this.getY() + this.height/2f + random.nextFloat(-3, 3);
+
+        for (int i = 0; i < 3; i++) {
+            Vector2f bananarotate = VectorUtils.rotate(new Vector2f(0, random.nextFloat(28,32)), this.arrowRot);
+            ExtendedUIParticle particle = new ExtendedUIParticle(new UIParticle.Texture2D(Clavis.path("textures/particle/pixel.png"), 1, 1), 0.2f,
+                    random.nextInt(10,30), x + bananarotate.x, y + bananarotate.y, UIParticle.Layer.SCREEN, 10);
+            particle.setScreen(this.screen);
+            particle.setColors(OctoColor.RED, OctoColor.RED, new OctoColor(1f, 1f, 0f, 1f), OctoColor.WHITE, OctoColor.ZERO);
+            particle.direction = new Vector2f(random.nextFloat() - 0.5f, random.nextFloat() - 0.5f).normalize();
+            particle.gravityDirection = new Vector2f(0, -1);
+            particle.gravity = 0.15f;
+            float size = random.nextFloat(0.75f, 1.5f);
+            particle.transform.setSize(new Vector2f(size, size));
+            particle.rollVelocity = random.nextFloat(-10, 10);
+            //particle.instantiate();
+
+            GalacticUIParticle g = new GalacticUIParticle(3, 40,
+                    x, y, UIParticle.Layer.SCREEN, 0.1f);
+            g.setBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+            g.setScreen(this.screen);
+            g.instantiate();
+        }
     }
 }
