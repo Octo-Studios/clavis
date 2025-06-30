@@ -25,6 +25,7 @@ public class Minigame<T extends AbstractMinigameWidget<?>> {
 
     public void hurt() {
         this.health--;
+        this.widget.getScreen().animateHeart();
 
         if (this.health <= 0) {
             this.lose();

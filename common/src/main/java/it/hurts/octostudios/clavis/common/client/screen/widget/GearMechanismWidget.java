@@ -141,10 +141,12 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         warningVisibiity = 0;
         arrowTemperature = 0;
 
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BEACON_ACTIVATE, 1.25f));
         selfDestructionTween.kill();
         selfDestructionTween = Tween.create();
         selfDestructionTween.tweenMethod(this::setWarningVisibiity, 0f, 1f, 0.2d);
         selfDestructionTween.tweenInterval(0.3);
+        selfDestructionTween.tweenRunnable(() -> Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.FIRE_AMBIENT, 0.85f)));
         selfDestructionTween.tweenMethod(this::setArrowTemperature, 0f, 1f, 1d).setEaseType(EaseType.EASE_IN_OUT).setTransitionType(TransitionType.QUAD);
         selfDestructionTween.tweenInterval(1);
         selfDestructionTween.tweenMethod(this::setWarningVisibiity, 1f, 0f, 0.2d);
@@ -320,31 +322,25 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
     @Override
     public void tick() {
         if (!this.isArrowHot()) {
-            //return;
+            return;
         }
 
         float x = this.getX() + this.width/2f + random.nextFloat(-3, 3);
         float y = this.getY() + this.height/2f + random.nextFloat(-3, 3);
 
         for (int i = 0; i < 3; i++) {
-            Vector2f bananarotate = VectorUtils.rotate(new Vector2f(0, random.nextFloat(28,32)), this.arrowRot);
-            ExtendedUIParticle particle = new ExtendedUIParticle(new UIParticle.Texture2D(Clavis.path("textures/particle/pixel.png"), 1, 1), 0.2f,
+            Vector2f bananarotate = VectorUtils.rotate(new Vector2f(0, random.nextFloat(30,35)), this.arrowRot);
+            ExtendedUIParticle particle = new ExtendedUIParticle(new UIParticle.Texture2D(Clavis.path("textures/particle/pixel.png"), 1, 1), 0.4f,
                     random.nextInt(10,30), x + bananarotate.x, y + bananarotate.y, UIParticle.Layer.SCREEN, 10);
             particle.setScreen(this.screen);
-            particle.setColors(OctoColor.RED, OctoColor.RED, new OctoColor(1f, 1f, 0f, 1f), OctoColor.WHITE, OctoColor.ZERO);
+            particle.setColors(OctoColor.RED, OctoColor.RED, new OctoColor(1f, 1f, 0f, 1f), OctoColor.WHITE, new OctoColor(0.05f, 0.05f, 0.05f, 1f));
             particle.direction = new Vector2f(random.nextFloat() - 0.5f, random.nextFloat() - 0.5f).normalize();
             particle.gravityDirection = new Vector2f(0, -1);
             particle.gravity = 0.15f;
             float size = random.nextFloat(0.75f, 1.5f);
             particle.transform.setSize(new Vector2f(size, size));
             particle.rollVelocity = random.nextFloat(-10, 10);
-            //particle.instantiate();
-
-            GalacticUIParticle g = new GalacticUIParticle(3, 40,
-                    x, y, UIParticle.Layer.SCREEN, 0.1f);
-            g.setBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-            g.setScreen(this.screen);
-            g.instantiate();
+            particle.instantiate();
         }
     }
 }

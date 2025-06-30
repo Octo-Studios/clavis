@@ -1,6 +1,8 @@
 package it.hurts.octostudios.clavis.common.client.screen;
 
 import it.hurts.octostudios.clavis.common.Clavis;
+import it.hurts.octostudios.clavis.common.client.particle.HalfHeartUIParticle;
+import it.hurts.octostudios.clavis.common.client.particle.HeartPartUIParticle;
 import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidget;
 import it.hurts.octostudios.clavis.common.client.screen.widget.MinigameInfoWidget;
 import it.hurts.octostudios.clavis.common.client.screen.widget.RuleWidget;
@@ -8,6 +10,8 @@ import it.hurts.octostudios.clavis.common.minigame.Minigame;
 import it.hurts.octostudios.clavis.common.minigame.rule.OverworldRules;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
 import it.hurts.octostudios.octolib.client.animation.Tween;
+import it.hurts.octostudios.octolib.client.particle.ParticleSystem;
+import it.hurts.octostudios.octolib.client.particle.UIParticle;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -94,6 +98,26 @@ public class LockpickingScreen extends Screen {
     @Override
     public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.renderTransparentBackground(guiGraphics);
+    }
+
+    public void animateHeart() {
+        float x = this.gear.getX()+this.gear.getWidth()/2f - 64;
+        float y = this.gear.getY()+this.gear.getHeight() + 16;
+
+        int health = this.game.getHealth();
+        x += health * 32;
+
+        HalfHeartUIParticle left = new HalfHeartUIParticle(false, x, y, UIParticle.Layer.SCREEN, 1);
+        HalfHeartUIParticle right = new HalfHeartUIParticle(true, x, y, UIParticle.Layer.SCREEN, 1);
+        left.setScreen(this);
+        right.setScreen(this);
+        left.instantiate();
+        right.instantiate();
+        for (int i = 0; i < 3; i++) {
+            HeartPartUIParticle particle = new HeartPartUIParticle(x, y, UIParticle.Layer.SCREEN, 0.5f);
+            particle.setScreen(this);
+            particle.instantiate();
+        }
     }
 
     @Override
