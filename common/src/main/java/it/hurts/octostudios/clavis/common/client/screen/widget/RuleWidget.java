@@ -31,7 +31,7 @@ public class RuleWidget extends AbstractWidget {
         this.description = Minecraft.getInstance().font.split(description, Math.round(152/0.75f));
 
         int lines = this.description.size();
-        this.setHeight((int) Math.max(32, 22+lines*10*0.75f));
+        this.setHeight((int) Math.max(32, 22+lines*8));
 
         this.icon = ResourceLocation.fromNamespaceAndPath(rule.getId().getNamespace(), "textures/icon/rule/"+rule.getId().getPath()+".png");
     }
@@ -53,7 +53,7 @@ public class RuleWidget extends AbstractWidget {
         guiGraphics.blit(icon, 3, 3, 10, 10, 0, 0, 10, 10, 10, 10);
 
         RenderSystem.setShaderTexture(0, FILL);
-        RenderUtils.renderTilingTexture(guiGraphics.pose(), 2, 16, 0, 0, 156, 7, 156, this.height-20, 0, false, true);
+        RenderUtils.renderTilingTexture(guiGraphics.pose(), 2, 16, 0, 0, 156, 8, 156, this.height-20, 0, false, true);
         RenderSystem.setShaderTexture(0, SIDE);
         RenderUtils.renderTilingTexture(guiGraphics.pose(), 0, 16, 0, 0, 160, 1, 160, this.height-32, 0, false, true);
         guiGraphics.blit(BOTTOM, 0, this.height-16, 160, 16, 0, 0, 160, 16, 160, 16);
@@ -65,12 +65,15 @@ public class RuleWidget extends AbstractWidget {
         guiGraphics.pose().popPose();
 
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(6, 18, 0);
-        guiGraphics.pose().scale(0.75f, 0.75f, 1f);
+        guiGraphics.pose().translate(6, 17.5, 0);
         int y = 0;
         for (FormattedCharSequence line : this.description) {
-            guiGraphics.drawString(font, line, 0, y, 0xeed1ad, false);
-            y+=10;
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().translate(0, y, 0);
+            guiGraphics.pose().scale(0.75f, 0.75f, 1f);
+            guiGraphics.drawString(font, line, 0, 0, 0xeed1ad, false);
+            guiGraphics.pose().popPose();
+            y+=8;
         }
         guiGraphics.pose().popPose();
         guiGraphics.pose().popPose();
