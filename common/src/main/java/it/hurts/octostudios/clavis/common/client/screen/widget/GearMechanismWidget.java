@@ -117,7 +117,7 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
 
     @Override
     public void playWinAnimation() {
-
+        this.screen.win();
     }
 
     @Override
@@ -231,10 +231,20 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
 
             this.screen.getGame().processOnClickRules(result);
 
+            if (this.areAllPinsActive()) {
+                this.screen.getGame().win();
+            }
+
             return result;
         }
 
         return true;
+    }
+
+    public boolean areAllPinsActive() {
+        return this.children.stream()
+                .filter(rotating -> !(rotating.children.getFirst() instanceof FakePinWidget))
+                .allMatch(rotating -> rotating.children.getFirst().active);
     }
 
     public boolean unlockPin(float arrowAngle) {

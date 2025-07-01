@@ -1,5 +1,6 @@
 package it.hurts.octostudios.clavis.common.client.screen;
 
+import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.client.particle.HalfHeartUIParticle;
 import it.hurts.octostudios.clavis.common.client.particle.HeartPartUIParticle;
@@ -9,6 +10,7 @@ import it.hurts.octostudios.clavis.common.client.screen.widget.RuleWidget;
 import it.hurts.octostudios.clavis.common.minigame.Minigame;
 import it.hurts.octostudios.clavis.common.minigame.rule.OverworldRules;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
+import it.hurts.octostudios.clavis.common.network.packet.FinishLockpickingPacket;
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.particle.ParticleSystem;
 import it.hurts.octostudios.octolib.client.particle.UIParticle;
@@ -18,6 +20,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.Tickable;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -34,9 +37,12 @@ public class LockpickingScreen extends Screen {
     @Getter
     Minigame<GearMechanismWidget> game;
     GearMechanismWidget gear;
+    BlockPos blockPos;
 
-    public LockpickingScreen() {
+    public LockpickingScreen(BlockPos blockPos) {
         super(Component.empty());
+        this.blockPos = blockPos;
+
         Tween tween = Tween.create().setLoops(-1);
         tween.tweenRunnable(() -> Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WOODEN_BUTTON_CLICK_ON, 2F)));
         tween.tweenInterval(0.5);
@@ -62,6 +68,10 @@ public class LockpickingScreen extends Screen {
         });
 
         game.processOnTickRules();
+    }
+
+    public void win() {
+        NetworkManager.sendToServer(new FinishLockpickingPacket(blockPos));
     }
 
     @Override
