@@ -7,6 +7,8 @@ import it.hurts.octostudios.clavis.common.client.particle.HeartPartUIParticle;
 import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidget;
 import it.hurts.octostudios.clavis.common.client.screen.widget.MinigameInfoWidget;
 import it.hurts.octostudios.clavis.common.client.screen.widget.RuleWidget;
+import it.hurts.octostudios.clavis.common.data.Box;
+import it.hurts.octostudios.clavis.common.data.Lock;
 import it.hurts.octostudios.clavis.common.minigame.Minigame;
 import it.hurts.octostudios.clavis.common.minigame.rule.OverworldRules;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
@@ -84,8 +86,8 @@ public class LockpickingScreen extends Screen {
             this.gear = new GearMechanismWidget(this);
             this.game = new Minigame<>(this.gear);
 
-            game.addRules(OverworldRules.MOOD_SWINGS, OverworldRules.FAKE_PIN, OverworldRules.ROTATE_GEAR, OverworldRules.SELF_DESTRUCTION);
-            gear.processDifficulty(game.getDifficulty());
+            game.load(new Lock(new Box(blockPos), 0.29f, 128));
+            gear.processDifficulty(game);
             game.processOnCreateRules();
         }
 

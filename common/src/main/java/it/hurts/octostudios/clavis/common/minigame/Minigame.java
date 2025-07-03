@@ -1,21 +1,28 @@
 package it.hurts.octostudios.clavis.common.minigame;
 
 import it.hurts.octostudios.clavis.common.client.screen.widget.AbstractMinigameWidget;
+import it.hurts.octostudios.clavis.common.data.Lock;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Minigame<T extends AbstractMinigameWidget<?>> {
     T widget;
-    @Getter List<Rule<T>> rules = new ArrayList<>();
-    @Getter float difficulty;
-    @Getter int health = 5;
+    @Getter
+    List<Rule<T>> rules = new ArrayList<>();
+    @Getter
+    float difficulty;
+    @Getter
+    int health = 5;
 
-    @Getter long tickCount;
-    @Getter float lootQuality;
+    @Getter
+    long tickCount;
+    @Getter
+    float lootQuality;
+
+    @Getter
+    long seed;
 
     public Minigame(T widget) {
         this.widget = widget;
@@ -69,8 +76,27 @@ public class Minigame<T extends AbstractMinigameWidget<?>> {
         });
     }
 
+    @SuppressWarnings("unchecked")
+    public void load(Lock lock) {
+        this.difficulty = lock.getDifficulty();
+        this.seed = lock.getSeed();
+        if (!lock.getRules().isEmpty()) {
+            this.rules.addAll((Collection<? extends Rule<T>>)
+                    lock.getRules()
+                            .stream()
+                            .map(id -> Rule.getRegisteredRule(id, widget.getClass()))
+                            .filter(Objects::nonNull)
+                            .toList()
+            );
+        }
+    }
+
     @SafeVarargs
     public final void addRules(Rule<T>... rules) {
         this.rules.addAll(Arrays.asList(rules));
+    }
+
+    public final void addRules(List<Rule<T>> rules) {
+        this.rules.addAll(rules);
     }
 }

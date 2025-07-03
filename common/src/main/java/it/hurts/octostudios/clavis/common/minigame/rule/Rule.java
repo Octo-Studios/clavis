@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap;
 import it.hurts.octostudios.clavis.common.client.screen.widget.AbstractMinigameWidget;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
+import org.apache.logging.log4j.util.Cast;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -46,7 +47,11 @@ public class Rule<T extends AbstractMinigameWidget<?>> {
         return this;
     }
 
-    public static <W extends AbstractMinigameWidget<?>> Collection<Rule<?>> getRegisteredRules(Class<W> clazz) {
-        return BY_CLASS.asMap().get(clazz);
+    public static <W extends AbstractMinigameWidget<?>> Collection<Rule<W>> getRegisteredRules(Class<W> clazz) {
+        return Cast.cast(BY_CLASS.asMap().get(clazz));
+    }
+
+    public static <W extends AbstractMinigameWidget<?>> Rule<W> getRegisteredRule(ResourceLocation id, Class<W> clazz) {
+        return Cast.cast(REGISTRY.get(id));
     }
 }

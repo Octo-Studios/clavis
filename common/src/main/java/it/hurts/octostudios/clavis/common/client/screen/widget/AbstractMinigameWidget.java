@@ -1,6 +1,7 @@
 package it.hurts.octostudios.clavis.common.client.screen.widget;
 
 import it.hurts.octostudios.clavis.common.client.screen.LockpickingScreen;
+import it.hurts.octostudios.clavis.common.minigame.Minigame;
 import it.hurts.octostudios.octolib.client.screen.widget.HasRenderMatrix;
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
@@ -36,6 +37,8 @@ public abstract class AbstractMinigameWidget<T extends GuiEventListener> extends
     public abstract void playHurtAnimation();
     public abstract void playWinAnimation();
     public abstract void playLoseAnimation();
+
+    public abstract void processDifficulty(Minigame<? extends AbstractMinigameWidget<?>> game);
 
     @Override
     protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {

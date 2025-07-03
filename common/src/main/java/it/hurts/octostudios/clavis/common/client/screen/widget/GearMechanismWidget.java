@@ -1,9 +1,12 @@
 package it.hurts.octostudios.clavis.common.client.screen.widget;
 
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;
 import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.client.screen.LockpickingScreen;
+import it.hurts.octostudios.clavis.common.minigame.Minigame;
+import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
 import it.hurts.octostudios.octolib.OctoLibClient;
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
@@ -72,7 +75,17 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         super(0, 0, 192, 192, screen);
     }
 
-    public void processDifficulty(float difficulty) {
+    @Override
+    public void processDifficulty(Minigame<? extends AbstractMinigameWidget<?>> game) {
+        this.random = new Random(game.getSeed());
+        float difficulty = game.getDifficulty();
+
+        if (game.getRules().isEmpty()) {
+            List<Rule<GearMechanismWidget>> rules = Lists.newArrayList(Rule.getRegisteredRules(GearMechanismWidget.class));
+            Collections.shuffle(rules);
+            ((Minigame<GearMechanismWidget>) game).addRules(rules.stream().limit(3).toList());
+        }
+
         float scaled = (1 / 3f + difficulty * (2 / 3f));
 
         int pins = Mth.ceil(random.nextFloat(6, 10) * scaled);
