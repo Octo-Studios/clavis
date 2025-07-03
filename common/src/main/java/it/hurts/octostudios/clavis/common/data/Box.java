@@ -38,4 +38,14 @@ public class Box {
     public Box(Vec3i start, Vec3i end) {
         this(start.getX(), start.getY(), start.getZ(), end.getX(), end.getY(), end.getZ());
     }
+
+    public boolean isInside(Vec3i block) {
+        int x = block.getX();
+        int y = block.getY();
+        int z = block.getZ();
+
+        return  minX <= x && x <= maxX &&
+                minY <= y && y <= maxY &&
+                minZ <= z && z <= maxZ;
+    }
 }

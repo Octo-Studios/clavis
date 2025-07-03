@@ -1,16 +1,20 @@
 package it.hurts.octostudios.clavis.common.minigame.rule;
 
-import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidget;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import it.hurts.octostudios.clavis.common.client.screen.widget.AbstractMinigameWidget;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 @Getter
-public class Rule<T extends AbstractWidget> {
+public class Rule<T extends AbstractMinigameWidget<?>> {
+    private static final Map<ResourceLocation, Rule<?>> REGISTRY = new HashMap<>();
+    private static final Multimap<Class<? extends AbstractMinigameWidget<?>>, Rule<?>> BY_CLASS = HashMultimap.create();
+
     ResourceLocation id;
 
     BiConsumer<T, Boolean> onClick;
@@ -21,18 +25,28 @@ public class Rule<T extends AbstractWidget> {
         this.id = id;
     }
 
-    public Rule<T> withOnClick(BiConsumer<T, Boolean> onClick) {
+    protected Rule<T> withOnClick(BiConsumer<T, Boolean> onClick) {
         this.onClick = onClick;
         return this;
     }
 
-    public Rule<T> withEveryTick(BiConsumer<T, Long> everyTick) {
+    protected Rule<T> withEveryTick(BiConsumer<T, Long> everyTick) {
         this.everyTick = everyTick;
         return this;
     }
 
-    public Rule<T> withOnCreate(Consumer<T> onCreate) {
+    protected Rule<T> withOnCreate(Consumer<T> onCreate) {
         this.onCreate = onCreate;
         return this;
+    }
+
+    protected Rule<T> register(Class<T> clazz) {
+        REGISTRY.put(this.id, this);
+        BY_CLASS.put(clazz, this);
+        return this;
+    }
+
+    public static <W extends AbstractMinigameWidget<?>> Collection<Rule<?>> getRegisteredRules(Class<W> clazz) {
+        return BY_CLASS.asMap().get(clazz);
     }
 }

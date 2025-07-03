@@ -43,7 +43,7 @@ public class FinishLockpickingPacket extends Packet {
         if (blockEntity instanceof RandomizableContainerBlockEntity containerBlock) {
             packetContext.getPlayer().openMenu(containerBlock);
         }
-        ClavisSavedData.get((ServerLevel) packetContext.getPlayer().level()).addLock(new Lock(new Box(new Vec3i(0,0,0), new Vec3i(5,5,5)), 0.77f));
+        ClavisSavedData.get((ServerLevel) packetContext.getPlayer().level()).addLock(new Lock(new Box(new Vec3i(0,0,0), new Vec3i(5,5,5)), 0.77f, 0L));
     }
 
     @Override

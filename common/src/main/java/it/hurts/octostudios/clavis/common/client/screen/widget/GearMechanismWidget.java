@@ -9,25 +9,19 @@ import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
 import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
 import it.hurts.octostudios.octolib.client.particle.ExtendedUIParticle;
-import it.hurts.octostudios.octolib.client.particle.GalacticUIParticle;
 import it.hurts.octostudios.octolib.client.particle.UIParticle;
-import it.hurts.octostudios.octolib.util.AnimationUtils;
 import it.hurts.octostudios.octolib.util.OctoColor;
 import it.hurts.octostudios.octolib.util.VectorUtils;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
-import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -65,11 +59,10 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
     @Setter
     float arrowTemperature;
     @Setter
-    float warningVisibiity = 0f;
+    float warningVisibility = 0f;
     boolean playing = true;
 
     public boolean selfDestructRule;
-
 
     public boolean isArrowHot() {
         return arrowTemperature > 0.5;
@@ -138,18 +131,18 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
     }
 
     public void activateSelfDestruction() {
-        warningVisibiity = 0;
+        warningVisibility = 0;
         arrowTemperature = 0;
 
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BEACON_ACTIVATE, 1.25f));
         selfDestructionTween.kill();
         selfDestructionTween = Tween.create();
-        selfDestructionTween.tweenMethod(this::setWarningVisibiity, 0f, 1f, 0.2d);
+        selfDestructionTween.tweenMethod(this::setWarningVisibility, 0f, 1f, 0.2d);
         selfDestructionTween.tweenInterval(0.3);
         selfDestructionTween.tweenRunnable(() -> Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.FIRE_AMBIENT, 0.85f)));
         selfDestructionTween.tweenMethod(this::setArrowTemperature, 0f, 1f, 1d).setEaseType(EaseType.EASE_IN_OUT).setTransitionType(TransitionType.QUAD);
         selfDestructionTween.tweenInterval(1);
-        selfDestructionTween.tweenMethod(this::setWarningVisibiity, 1f, 0f, 0.2d);
+        selfDestructionTween.tweenMethod(this::setWarningVisibility, 1f, 0f, 0.2d);
         selfDestructionTween.parallel().tweenMethod(this::setArrowTemperature, 1f, 0f, 0.6d).setEaseType(EaseType.EASE_OUT).setTransitionType(TransitionType.EXPO);
         selfDestructionTween.start();
     }
@@ -188,8 +181,8 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.getX() + this.width / 2f, this.getY() + this.height / 2f, 0);
         guiGraphics.blit(selfDestructRule ? CENTER_WARNING_OFF : CENTER, -8, -8, 16, 16, 0, 0, 16, 16, 16, 16);
-        if (warningVisibiity > 0) {
-            RenderSystem.setShaderColor(gameColor.r(), gameColor.g(), gameColor.b(), warningVisibiity);
+        if (warningVisibility > 0) {
+            RenderSystem.setShaderColor(gameColor.r(), gameColor.g(), gameColor.b(), warningVisibility);
             RenderSystem.enableBlend();
             guiGraphics.blit(CENTER_WARNING_ON, -8, -8, 16, 16, 0, 0, 16, 16, 16, 16);
             RenderSystem.setShaderColor(gameColor.r(), gameColor.g(), gameColor.b(), gameColor.a());
