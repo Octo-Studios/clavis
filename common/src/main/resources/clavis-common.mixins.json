@@ -4,7 +4,8 @@
   "package": "it.hurts.octostudios.clavis.common.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ChestMixin"
+    "ChestMixin",
+    "ServerGamePacketListenerImplMixin"
   ],
   "client": [],
   "injectors": {

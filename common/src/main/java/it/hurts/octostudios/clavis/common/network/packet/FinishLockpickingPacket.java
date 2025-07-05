@@ -38,7 +38,6 @@ public class FinishLockpickingPacket extends Packet {
 
     @Override
     protected void handleServer(NetworkManager.PacketContext packetContext) {
-        packetContext.getPlayer().sendSystemMessage(Component.literal("Env: "+packetContext.getEnvironment().name()));
         BlockEntity blockEntity = packetContext.getPlayer().level().getBlockEntity(blockPos);
         if (blockEntity instanceof RandomizableContainerBlockEntity containerBlock) {
             packetContext.getPlayer().openMenu(containerBlock);

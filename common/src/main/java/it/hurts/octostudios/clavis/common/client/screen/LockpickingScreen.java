@@ -40,10 +40,12 @@ public class LockpickingScreen extends Screen {
     Minigame<GearMechanismWidget> game;
     GearMechanismWidget gear;
     BlockPos blockPos;
+    Lock lock;
 
-    public LockpickingScreen(BlockPos blockPos) {
+    public LockpickingScreen(BlockPos blockPos, Lock lock) {
         super(Component.empty());
         this.blockPos = blockPos;
+        this.lock = lock;
 
         Tween tween = Tween.create().setLoops(-1);
         tween.tweenRunnable(() -> Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WOODEN_BUTTON_CLICK_ON, 2F)));
@@ -86,7 +88,7 @@ public class LockpickingScreen extends Screen {
             this.gear = new GearMechanismWidget(this);
             this.game = new Minigame<>(this.gear);
 
-            game.load(new Lock(new Box(blockPos), 0.29f, 128));
+            game.load(lock);
             gear.processDifficulty(game);
             game.processOnCreateRules();
         }

@@ -3,6 +3,7 @@ package it.hurts.octostudios.clavis.common.minigame.rule;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import it.hurts.octostudios.clavis.common.client.screen.widget.AbstractMinigameWidget;
+import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidget;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.util.Cast;
@@ -53,5 +54,13 @@ public class Rule<T extends AbstractMinigameWidget<?>> {
 
     public static <W extends AbstractMinigameWidget<?>> Rule<W> getRegisteredRule(ResourceLocation id, Class<W> clazz) {
         return Cast.cast(REGISTRY.get(id));
+    }
+
+    public static void registerAll() {
+        OverworldRules.FAKE_PIN.register(GearMechanismWidget.class);
+        OverworldRules.MOOD_SWINGS.register(GearMechanismWidget.class);
+        OverworldRules.ROTATE_GEAR.register(GearMechanismWidget.class);
+        OverworldRules.FULL_THROTTLE.register(GearMechanismWidget.class);
+        OverworldRules.SELF_DESTRUCTION.register(GearMechanismWidget.class);
     }
 }

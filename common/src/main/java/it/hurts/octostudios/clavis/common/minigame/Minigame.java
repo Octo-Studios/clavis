@@ -81,12 +81,11 @@ public class Minigame<T extends AbstractMinigameWidget<?>> {
         this.difficulty = lock.getDifficulty();
         this.seed = lock.getSeed();
         if (!lock.getRules().isEmpty()) {
-            this.rules.addAll((Collection<? extends Rule<T>>)
-                    lock.getRules()
-                            .stream()
-                            .map(id -> Rule.getRegisteredRule(id, widget.getClass()))
-                            .filter(Objects::nonNull)
-                            .toList()
+            this.rules.addAll(lock.getRules()
+                    .stream()
+                    .map(id -> (Rule<T>) Rule.getRegisteredRule(id, widget.getClass()))
+                    .filter(Objects::nonNull)
+                    .toList()
             );
         }
     }

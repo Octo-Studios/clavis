@@ -80,11 +80,6 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         this.random = new Random(game.getSeed());
         float difficulty = game.getDifficulty();
 
-        if (game.getRules().isEmpty()) {
-            List<Rule<GearMechanismWidget>> rules = Lists.newArrayList(Rule.getRegisteredRules(GearMechanismWidget.class));
-            Collections.shuffle(rules);
-            ((Minigame<GearMechanismWidget>) game).addRules(rules.stream().limit(3).toList());
-        }
 
         float scaled = (1 / 3f + difficulty * (2 / 3f));
 
@@ -100,13 +95,19 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         this.maxArrowSpeed = Math.abs(arrowSpeed);
 
         List<Integer> list = IntStream.range(0, maxSpots).boxed().collect(Collectors.toCollection(ArrayList::new));
-        Collections.shuffle(list);
+        Collections.shuffle(list, random);
         list.stream().limit(pins).forEach(i -> {
             float newI = i * (360f / maxSpots) + random.nextFloat(-5, 5) * (10f / maxSpots);
             this.children.add(LockPinWidget.create(Math.round(this.width / 2f), Math.round(this.height / 2f), newI, this));
         });
 
         this.freeSpots = new ArrayList<>(list.subList(pins, list.size()));
+
+        if (game.getRules().isEmpty()) {
+            List<Rule<GearMechanismWidget>> rules = Lists.newArrayList(Rule.getRegisteredRules(GearMechanismWidget.class));
+            Collections.shuffle(rules, this.random);
+            ((Minigame<GearMechanismWidget>) game).addRules(rules.stream().limit(3).toList());
+        }
     }
 
     public void setRot(float rot) {
@@ -217,34 +218,30 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         Vector2d center = new Vector2d(this.getX() + this.width / 2f, this.getY() + this.height / 2f);
         double distance = vector2d.distance(center);
 
-        if (distance > this.width / 2f - 8) {
+        if (distance > this.width / 2f) {
             return false;
         }
 
-        if (distance <= this.width / 2f - 22) {
-            boolean result;
-            if (this.isArrowHot()) {
-                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.FIRE_EXTINGUISH, 1.25f));
-                result = false;
-            } else {
-                result = this.unlockPin(arrowRot);
-            }
-
-            if (!result) {
-                this.screen.getGame().hurt();
-                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WOOD_HIT, 1f));
-            }
-
-            this.screen.getGame().processOnClickRules(result);
-
-            if (this.areAllPinsActive()) {
-                this.screen.getGame().win();
-            }
-
-            return result;
+        boolean result;
+        if (this.isArrowHot()) {
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.FIRE_EXTINGUISH, 1.25f));
+            result = false;
+        } else {
+            result = this.unlockPin(arrowRot);
         }
 
-        return true;
+        if (!result) {
+            this.screen.getGame().hurt();
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WOOD_HIT, 1f));
+        }
+
+        this.screen.getGame().processOnClickRules(result);
+
+        if (this.areAllPinsActive()) {
+            this.screen.getGame().win();
+        }
+
+        return result;
     }
 
     public boolean areAllPinsActive() {
