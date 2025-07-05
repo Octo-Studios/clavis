@@ -6,9 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Getter
 public class Lock {
@@ -18,6 +16,8 @@ public class Lock {
             Codec.LONG.fieldOf("seed").forGetter(lock -> lock.seed),
             ResourceLocation.CODEC.listOf().optionalFieldOf("rules").forGetter(lock -> Optional.of(lock.rules))
     ).apply(instance, Lock::new));
+
+    public static final Codec<Set<Lock>> SET_CODEC = Lock.CODEC.listOf().xmap(HashSet::new, ArrayList::new);
 
     // mandatory
     Box box;

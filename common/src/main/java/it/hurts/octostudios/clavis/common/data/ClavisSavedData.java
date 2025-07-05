@@ -15,7 +15,9 @@ import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ClavisSavedData extends SavedData {
     private static final String DATA_NAME = "clavis_locks";
@@ -26,7 +28,7 @@ public class ClavisSavedData extends SavedData {
     );
 
     private final CompoundTag dataTag = new CompoundTag();
-    private final List<Lock> locks = new ArrayList<>();
+    private final Set<Lock> locks = new HashSet<>();
     private final Multimap<ChunkPos, Lock> lockLookupMap = HashMultimap.create();
 
     public static ClavisSavedData get(ServerLevel level) {
@@ -39,7 +41,7 @@ public class ClavisSavedData extends SavedData {
     public @NotNull CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
         tag.merge(dataTag);
 
-        DataResult<Tag> result = Lock.CODEC.listOf().encodeStart(NbtOps.INSTANCE, locks);
+        DataResult<Tag> result = Lock.SET_CODEC.encodeStart(NbtOps.INSTANCE, locks);
         result.resultOrPartial(OctoLib.LOGGER::warn).ifPresent(encodedTag -> {
             tag.put("Locks", encodedTag);
         });
@@ -52,7 +54,7 @@ public class ClavisSavedData extends SavedData {
         data.dataTag.merge(tag);
 
         if (tag.contains("Locks", Tag.TAG_LIST)) {
-            DataResult<List<Lock>> result = Lock.CODEC.listOf().parse(NbtOps.INSTANCE, tag.get("Locks"));
+            DataResult<Set<Lock>> result = Lock.SET_CODEC.parse(NbtOps.INSTANCE, tag.get("Locks"));
             result.resultOrPartial(OctoLib.LOGGER::warn).ifPresent(list -> {
                 data.locks.addAll(list);
                 list.forEach(data::indexLock);
