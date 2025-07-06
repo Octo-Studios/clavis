@@ -2,6 +2,7 @@ package it.hurts.octostudios.clavis.common.network.packet;
 
 import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.clavis.common.Clavis;
+import it.hurts.octostudios.clavis.common.client.render.LockWorldRenderer;
 import it.hurts.octostudios.clavis.common.client.screen.LockpickingScreen;
 import it.hurts.octostudios.clavis.common.data.Lock;
 import it.hurts.octostudios.octolib.module.network.Packet;
@@ -40,6 +41,7 @@ public class OpenLockpickingPacket extends Packet {
     @Override
     @Environment(EnvType.CLIENT)
     protected void handleClient(NetworkManager.PacketContext packetContext) {
+        LockWorldRenderer.FOR_RENDERING.add(lock);
         packetContext.queue(() -> Minecraft.getInstance().setScreen(new LockpickingScreen(blockPos, lock)));
     }
 

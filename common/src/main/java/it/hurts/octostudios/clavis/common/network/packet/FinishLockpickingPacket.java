@@ -2,19 +2,17 @@ package it.hurts.octostudios.clavis.common.network.packet;
 
 import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.clavis.common.Clavis;
-import it.hurts.octostudios.clavis.common.data.Box;
 import it.hurts.octostudios.clavis.common.data.ClavisSavedData;
 import it.hurts.octostudios.clavis.common.data.Lock;
 import it.hurts.octostudios.octolib.module.network.Packet;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+
+import java.util.List;
 
 public class FinishLockpickingPacket extends Packet {
     public static final Type<FinishLockpickingPacket> TYPE =
@@ -23,26 +21,27 @@ public class FinishLockpickingPacket extends Packet {
             Packet.createCodec(FinishLockpickingPacket::write, FinishLockpickingPacket::new);
 
     BlockPos blockPos;
+    Lock lock;
 
     public FinishLockpickingPacket(RegistryFriendlyByteBuf buf) {
         this.blockPos = buf.readBlockPos();
+        this.lock = buf.readJsonWithCodec(Lock.CODEC);
     }
 
-    public FinishLockpickingPacket(BlockPos blockPos) {
+    public FinishLockpickingPacket(BlockPos blockPos, Lock lock) {
         this.blockPos = blockPos;
+        this.lock = lock;
     }
 
     public void write(RegistryFriendlyByteBuf buf) {
         buf.writeBlockPos(blockPos);
+        buf.writeJsonWithCodec(Lock.CODEC, lock);
     }
 
     @Override
     protected void handleServer(NetworkManager.PacketContext packetContext) {
-        BlockEntity blockEntity = packetContext.getPlayer().level().getBlockEntity(blockPos);
-        if (blockEntity instanceof RandomizableContainerBlockEntity containerBlock) {
-            packetContext.getPlayer().openMenu(containerBlock);
-        }
-        ClavisSavedData.get((ServerLevel) packetContext.getPlayer().level()).addLock(new Lock(new Box(new Vec3i(0,0,0), new Vec3i(5,5,5)), 0.77f, 0L));
+        ClavisSavedData data = ClavisSavedData.get((ServerLevel) packetContext.getPlayer().level());
+        data.removeLock(lock);
     }
 
     @Override

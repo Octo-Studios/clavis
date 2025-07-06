@@ -75,7 +75,7 @@ public class LockpickingScreen extends Screen {
     }
 
     public void win() {
-        NetworkManager.sendToServer(new FinishLockpickingPacket(blockPos));
+        NetworkManager.sendToServer(new FinishLockpickingPacket(blockPos, lock));
     }
 
     @Override
