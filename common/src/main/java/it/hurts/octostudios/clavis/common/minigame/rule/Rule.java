@@ -1,6 +1,7 @@
 package it.hurts.octostudios.clavis.common.minigame.rule;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import it.hurts.octostudios.clavis.common.client.screen.widget.AbstractMinigameWidget;
 import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidget;
@@ -15,7 +16,7 @@ import java.util.function.Consumer;
 @Getter
 public class Rule<T extends AbstractMinigameWidget<?>> {
     private static final Map<ResourceLocation, Rule<?>> REGISTRY = new HashMap<>();
-    private static final Multimap<Class<? extends AbstractMinigameWidget<?>>, Rule<?>> BY_CLASS = HashMultimap.create();
+    private static final Multimap<Class<? extends AbstractMinigameWidget<?>>, Rule<?>> BY_CLASS = LinkedHashMultimap.create();
 
     ResourceLocation id;
 

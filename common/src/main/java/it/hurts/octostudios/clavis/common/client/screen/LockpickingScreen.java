@@ -76,6 +76,7 @@ public class LockpickingScreen extends Screen {
 
     public void win() {
         NetworkManager.sendToServer(new FinishLockpickingPacket(blockPos, lock));
+        Minecraft.getInstance().setScreen(null);
     }
 
     @Override

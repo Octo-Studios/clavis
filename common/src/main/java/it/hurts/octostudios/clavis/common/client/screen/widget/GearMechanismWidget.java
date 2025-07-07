@@ -23,6 +23,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 
@@ -108,6 +109,15 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
             Collections.shuffle(rules, this.random);
             ((Minigame<GearMechanismWidget>) game).addRules(rules.stream().limit(3).toList());
         }
+
+        System.out.println("seed: " + game.getSeed());
+        System.out.println("difficulty: " + difficulty);
+        System.out.println("maxSpots: " + maxSpots);
+        System.out.println("pins: " + pins);
+        System.out.println("scaled: " + scaled);
+        System.out.println("list.size: " + list.size());
+        System.out.println("rules empty: " + game.getRules().isEmpty());
+
     }
 
     public void setRot(float rot) {

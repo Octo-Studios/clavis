@@ -41,6 +41,10 @@ public class OpenLockpickingPacket extends Packet {
     @Override
     @Environment(EnvType.CLIENT)
     protected void handleClient(NetworkManager.PacketContext packetContext) {
+        if (Minecraft.getInstance().screen instanceof LockpickingScreen) {
+            return;
+        }
+
         LockWorldRenderer.FOR_RENDERING.add(lock);
         packetContext.queue(() -> Minecraft.getInstance().setScreen(new LockpickingScreen(blockPos, lock)));
     }
