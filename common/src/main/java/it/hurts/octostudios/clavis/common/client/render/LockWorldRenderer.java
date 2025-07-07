@@ -1,6 +1,8 @@
 package it.hurts.octostudios.clavis.common.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import it.hurts.octostudios.clavis.common.client.model.LockModel;
 import it.hurts.octostudios.clavis.common.data.Box;
 import it.hurts.octostudios.clavis.common.data.Lock;
 import net.minecraft.client.Camera;
@@ -9,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.particles.ParticleOptions;
@@ -35,12 +38,17 @@ public class LockWorldRenderer {
 
             AABB aabb = new AABB(minPos, maxPos);
             Vec3 center = new Vec3(Mth.lerp(0.5, minPos.x, maxPos.x), maxPos.y, Mth.lerp(0.5, minPos.z, maxPos.z));
-            //level.addParticle(ParticleTypes.END_ROD, center.x+cp.x, center.y+cp.y, center.z+cp.z, 0, 0.1, 0);
             ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
             poseStack.pushPose();
-            poseStack.translate(center.x, center.y, center.z);
-            itemRenderer.renderStatic(Items.DIAMOND.getDefaultInstance(), ItemDisplayContext.FIXED, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, poseStack,
-                    multiBufferSource, level, 0);
+            poseStack.translate(center.x, center.y+0.66f, center.z);
+            //itemRenderer.renderStatic(Items.DIAMOND.getDefaultInstance(), ItemDisplayContext.FIXED, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, poseStack, multiBufferSource, level, 0);
+
+            LockModel model = new LockModel(false);
+            LockModel glow = new LockModel(true);
+
+            model.renderToBuffer(poseStack, multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(LockModel.TEXTURE)), LightTexture.pack(0, 15), OverlayTexture.NO_OVERLAY);
+            glow.renderToBuffer(poseStack, multiBufferSource.getBuffer(RenderType.entityCutout(LockModel.TEXTURE)), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+
             poseStack.popPose();
         }
     }
