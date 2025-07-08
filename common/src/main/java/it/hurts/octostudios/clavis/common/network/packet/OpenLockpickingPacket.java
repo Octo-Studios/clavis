@@ -45,7 +45,6 @@ public class OpenLockpickingPacket extends Packet {
             return;
         }
 
-        LockWorldRenderer.FOR_RENDERING.add(lock);
         packetContext.queue(() -> Minecraft.getInstance().setScreen(new LockpickingScreen(blockPos, lock)));
     }
 

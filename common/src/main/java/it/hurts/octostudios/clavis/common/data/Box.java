@@ -1,12 +1,15 @@
 package it.hurts.octostudios.clavis.common.data;
 
 import com.mojang.serialization.Codec;
+import lombok.EqualsAndHashCode;
 import net.minecraft.Util;
 import net.minecraft.core.Vec3i;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.AABB;
 
 import java.util.stream.IntStream;
 
+@EqualsAndHashCode(callSuper = false)
 public class Box {
     public static final Codec<Box> CODEC = Codec.INT_STREAM
             .comapFlatMap(
@@ -47,5 +50,15 @@ public class Box {
         return  minX <= x && x <= maxX &&
                 minY <= y && y <= maxY &&
                 minZ <= z && z <= maxZ;
+    }
+
+    public boolean intersectsChunk(ChunkPos pos) {
+        int minX = pos.getMinBlockX();
+        int maxX = pos.getMaxBlockX();
+        int minZ = pos.getMinBlockZ();
+        int maxZ = pos.getMaxBlockZ();
+
+        return this.minX <= maxX && this.maxX >= minX &&
+                this.minZ <= maxZ && this.maxZ >= minZ;
     }
 }

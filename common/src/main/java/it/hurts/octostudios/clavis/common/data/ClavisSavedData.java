@@ -3,13 +3,17 @@ package it.hurts.octostudios.clavis.common.data;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.mojang.serialization.DataResult;
+import dev.architectury.networking.NetworkManager;
+import it.hurts.octostudios.clavis.common.network.packet.RemoveLockPacket;
 import it.hurts.octostudios.octolib.OctoLib;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.NotNull;
@@ -77,13 +81,13 @@ public class ClavisSavedData extends SavedData {
         }
     }
 
-    public void addLock(Lock lock) {
+    public void addLock(Lock lock, ServerLevel level) {
         this.locks.add(lock);
         this.indexLock(lock);
         this.setDirty();
     }
 
-    public void removeLock(Lock lock) {
+    public void removeLock(Lock lock, ServerLevel level) {
         locks.remove(lock);
 
         int minChunkX = lock.box.minX >> 4;
@@ -91,11 +95,19 @@ public class ClavisSavedData extends SavedData {
         int minChunkZ = lock.box.minZ >> 4;
         int maxChunkZ = lock.box.maxZ >> 4;
 
+        Set<ServerPlayer> toSend = new HashSet<>();
+
         for (int cx = minChunkX; cx <= maxChunkX; cx++) {
             for (int cz = minChunkZ; cz <= maxChunkZ; cz++) {
                 lockLookupMap.remove(new ChunkPos(cx, cz), lock);
+
+                int finalCx = cx;
+                int finalCz = cz;
+                toSend.addAll(level.getPlayers(player -> player.getChunkTrackingView().contains(finalCx, finalCz)));
             }
         }
+
+        NetworkManager.sendToPlayers(toSend, new RemoveLockPacket(lock));
 
         this.setDirty();
     }
@@ -105,5 +117,9 @@ public class ClavisSavedData extends SavedData {
         return lockLookupMap.get(chunkPos).stream()
                 .filter(lock -> lock.box.isInside(pos))
                 .toList();
+    }
+
+    public List<Lock> getLocksAt(ChunkPos chunkPos) {
+        return new ArrayList<>(lockLookupMap.get(chunkPos));
     }
 }

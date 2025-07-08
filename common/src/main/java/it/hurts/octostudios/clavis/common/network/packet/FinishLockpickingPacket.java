@@ -41,7 +41,7 @@ public class FinishLockpickingPacket extends Packet {
     @Override
     protected void handleServer(NetworkManager.PacketContext packetContext) {
         ClavisSavedData data = ClavisSavedData.get((ServerLevel) packetContext.getPlayer().level());
-        data.removeLock(lock);
+        data.removeLock(lock, (ServerLevel) packetContext.getPlayer().level());
     }
 
     @Override

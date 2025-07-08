@@ -3,11 +3,13 @@ package it.hurts.octostudios.clavis.common.data;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.*;
 
+@EqualsAndHashCode(callSuper = false)
 @Getter
 public class Lock {
     public static final Codec<Lock> CODEC = RecordCodecBuilder.create(instance -> instance.group(
