@@ -4,9 +4,12 @@
   "package": "it.hurts.octostudios.clavis.common.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "LootTableAccessor",
     "ServerGamePacketListenerImplMixin"
   ],
-  "client": [],
+  "client": [
+    "MinecraftMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

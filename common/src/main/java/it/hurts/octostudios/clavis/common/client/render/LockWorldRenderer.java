@@ -52,4 +52,8 @@ public class LockWorldRenderer {
             poseStack.popPose();
         }
     }
+
+    public static void clear() {
+        FOR_RENDERING.clear();
+    }
 }
