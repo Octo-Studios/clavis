@@ -44,30 +44,24 @@ public class ChunkListeners {
         levelChunk.getBlockEntities().forEach((blockPos, blockEntity) -> {
             if (blockEntity instanceof RandomizableContainerBlockEntity randomizable && randomizable.getLootTable() != null) {
                 LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(randomizable.getLootTable());
+                long seed = randomizable.getLootTableSeed();
 
                 Optional<ResourceLocation> randomSequence = ((LootTableAccessor) lootTable).getRandomSequence();
 
                 LootParams.Builder builder = (new LootParams.Builder(level)).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos));
-                LootContext actualLootContext = new LootContext.Builder(builder.create(LootContextParamSets.CHEST)).withOptionalRandomSeed(randomizable.getLootTableSeed()).create(randomSequence);
+                LootContext actualLootContext = new LootContext.Builder(builder.create(LootContextParamSets.CHEST)).withOptionalRandomSeed(seed).create(randomSequence);
 
                 ObjectArrayList<ItemStack> actualItems = ((LootTableAccessor) lootTable).invokeGetRandomItems(actualLootContext);
 
                 AtomicInteger actualValue = new AtomicInteger();
                 actualItems.forEach((stack) -> {
-                    AtomicInteger value = new AtomicInteger();
-                    ItemValues.TAGS.forEach((itemTagKey, function) -> {
-                        if (stack.getTags().anyMatch(tag -> tag.equals(itemTagKey))) {
-                            value.set(Math.max(value.get(), function.apply(stack)));
-                        }
-                    });
-
-                    actualValue.addAndGet(value.get());
+                    actualValue.addAndGet(ItemValues.getValue(stack));
                 });
 
                 float difficulty = actualValue.get() / 400f;
                 OctoLib.LOGGER.info("actualValue: {}", actualValue.get());
 
-                data.addLock(new Lock(new Box(blockPos), difficulty, level.random.nextInt(Integer.MAX_VALUE)), level);
+                data.addLock(new Lock(new Box(blockPos), difficulty, seed), level);
             }
         });
     }

@@ -4,6 +4,8 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.mojang.serialization.DataResult;
 import dev.architectury.networking.NetworkManager;
+import it.hurts.octostudios.clavis.common.client.render.LockWorldRenderer;
+import it.hurts.octostudios.clavis.common.network.packet.AddLockPacket;
 import it.hurts.octostudios.clavis.common.network.packet.RemoveLockPacket;
 import it.hurts.octostudios.octolib.OctoLib;
 import net.minecraft.core.BlockPos;
@@ -15,6 +17,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.NotNull;
 
@@ -83,7 +86,26 @@ public class ClavisSavedData extends SavedData {
 
     public void addLock(Lock lock, ServerLevel level) {
         this.locks.add(lock);
-        this.indexLock(lock);
+
+        int minChunkX = lock.box.minX >> 4;
+        int maxChunkX = lock.box.maxX >> 4;
+        int minChunkZ = lock.box.minZ >> 4;
+        int maxChunkZ = lock.box.maxZ >> 4;
+
+        Set<ServerPlayer> toSend = new HashSet<>();
+
+        for (int cx = minChunkX; cx <= maxChunkX; cx++) {
+            for (int cz = minChunkZ; cz <= maxChunkZ; cz++) {
+                lockLookupMap.put(new ChunkPos(cx, cz), lock);
+
+                int finalCx = cx;
+                int finalCz = cz;
+                toSend.addAll(level.getPlayers(player -> player.getChunkTrackingView().contains(finalCx, finalCz)));
+            }
+        }
+
+        NetworkManager.sendToPlayers(toSend, new AddLockPacket(lock));
+
         this.setDirty();
     }
 
@@ -121,5 +143,14 @@ public class ClavisSavedData extends SavedData {
 
     public List<Lock> getLocksAt(ChunkPos chunkPos) {
         return new ArrayList<>(lockLookupMap.get(chunkPos));
+    }
+
+    public static boolean isLocked(BlockPos pos, Level level) {
+        if (level instanceof ServerLevel serverLevel) {
+            ClavisSavedData data = ClavisSavedData.get(serverLevel);
+            return !data.getLocksAt(pos).isEmpty();
+        } else {
+            return LockWorldRenderer.FOR_RENDERING.stream().anyMatch(lock -> lock.getBox().isInside(pos));
+        }
     }
 }

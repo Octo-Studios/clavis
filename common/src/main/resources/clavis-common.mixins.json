@@ -4,8 +4,13 @@
   "package": "it.hurts.octostudios.clavis.common.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "BlockMixin",
+    "ChestMixin",
+    "ContainerMixin",
     "LootTableAccessor",
-    "ServerGamePacketListenerImplMixin"
+    "LootTableMixin",
+    "PistonBaseBlockMixin",
+    "RandomizableContainerMixin"
   ],
   "client": [
     "MinecraftMixin"

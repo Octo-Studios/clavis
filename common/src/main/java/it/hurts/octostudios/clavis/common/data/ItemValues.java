@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 public class ItemValues {
@@ -31,16 +32,31 @@ public class ItemValues {
     }
 
     public static void register() {
-        addBasicValue(c("gems"), 32);
+        addBasicValue(c("gems"), 24);
         addBasicValue(c("storage_blocks"), 64);
-        addBasicValue(c("ores"), 16);
+        addBasicValue(c("ores"), 4);
         addBasicValue(c("ingots"), 8);
         addBasicValue(c("nuggets"), 2);
         addBasicValue(c("dusts"), 4);
         addBasicValue(c("crops"), 4);
-        addBasicValue(c("foods"), 5);
-        addBasicValue(c("foods/golden"), 64);
+        addBasicValue(c("foods/golden"), 32);
         addBasicValue(c("tools"), 20);
-        addBasicValue(c("armor"), 24);
+        addBasicValue(c("armors"), 8);
+        addBasicValue(c("music_discs"), 24);
+    }
+
+    public static int getValue(ItemStack stack) {
+        AtomicInteger value = new AtomicInteger();
+        ItemValues.TAGS.forEach((itemTagKey, function) -> {
+            if (stack.getTags().anyMatch(tag -> tag.equals(itemTagKey))) {
+                value.set(Math.max(value.get(), function.apply(stack)));
+            }
+        });
+
+        if (value.get() <= 0) {
+            return DEFAULT_FUNCTION.apply(1).apply(stack);
+        }
+
+        return value.get();
     }
 }

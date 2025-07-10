@@ -81,8 +81,9 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         this.random = new Random(game.getSeed());
         float difficulty = game.getDifficulty();
 
+        int ruleNumber = (int) Math.min(Math.ceil(difficulty / 0.33f), 3);
 
-        float scaled = (1 / 3f + difficulty * (2 / 3f));
+        float scaled = (2 / 3f + difficulty * (1 / 3f));
 
         int pins = Mth.ceil(random.nextFloat(6, 10) * scaled);
         this.maxPins = pins;
@@ -107,7 +108,7 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         if (game.getRules().isEmpty()) {
             List<Rule<GearMechanismWidget>> rules = Lists.newArrayList(Rule.getRegisteredRules(GearMechanismWidget.class));
             Collections.shuffle(rules, this.random);
-            ((Minigame<GearMechanismWidget>) game).addRules(rules.stream().limit(3).toList());
+            ((Minigame<GearMechanismWidget>) game).addRules(rules.stream().limit(ruleNumber).toList());
         }
 
         System.out.println("seed: " + game.getSeed());
