@@ -15,12 +15,12 @@ public class HeartPartUIParticle extends ExtendedUIParticle {
     public HeartPartUIParticle(float heartX, float heartY, Layer layer, float zOffset) {
         super(PART, 7f, 20, heartX, heartY, layer, zOffset);
         Random random = new Random();
-        this.speed = random.nextFloat(2, 7);
-        this.direction = VectorUtils.rotate(new Vector2f(0, -1), random.nextFloat(0, 360));
-        this.gravity = 0.98f;
-        this.transform.setRoll(random.nextFloat(0, 360));
-        this.transform.updateOldValues();
-        this.rollVelocity = random.nextFloat(-30,30);
+        this.setSpeed(random.nextFloat(2, 7));
+        this.setDirection(VectorUtils.rotate(new Vector2f(0, -1), random.nextFloat(0, 360)));
+        this.setGravity(0.98f);
+        this.getTransform().setRoll(random.nextFloat(0, 360));
+        this.getTransform().updateOldValues();
+        this.setRollVelocity(random.nextFloat(-30, 30));
         this.enableBlend(false);
         //this.setBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         //this.setColors(OctoColor.WHITE, new OctoColor(1f, 1f, 1f, 0f));

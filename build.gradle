@@ -77,11 +77,13 @@ subprojects {
                                 transitive = false
                             })
                         }
+                    } else if ("$project.name".equalsIgnoreCase("fabric")) {
+                        dependencies {
+                            modImplementation project.dependencies.create(modreference);
+                        }
                     } else {
                         dependencies {
-                            modImplementation (project.dependencies.create(modreference) {
-                                transitive = false
-                            })
+                            modImplementation project.dependencies.create(modreference);
                         }
                     }
 

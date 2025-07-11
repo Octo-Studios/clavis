@@ -16,11 +16,11 @@ public class HalfHeartUIParticle extends ExtendedUIParticle {
         super(isRight ? RIGHT : LEFT, 4f, 30, isRight ? heartX + 3.5f : heartX - 3.5f, heartY, layer, zOffset);
         this.right = isRight;
         Random random = new Random();
-        this.speed = random.nextFloat(4, 6);
+        this.setSpeed(random.nextFloat(4, 6));
 
-        this.direction = VectorUtils.rotate(new Vector2f(0, -1), isRight ? 10 : -10);
-        this.gravity = 0.98f;
-        this.rollVelocity = isRight ? random.nextFloat(1,3) : random.nextFloat(-3, -1);
+        this.setDirection(VectorUtils.rotate(new Vector2f(0, -1), isRight ? 10 : -10));
+        this.setGravity(0.98f);
+        this.setRollVelocity(isRight ? random.nextFloat(1, 3) : random.nextFloat(-3, -1));
         this.enableBlend(false);
     }
 }

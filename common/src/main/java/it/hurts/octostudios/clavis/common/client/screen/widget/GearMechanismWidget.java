@@ -110,15 +110,6 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
             Collections.shuffle(rules, this.random);
             ((Minigame<GearMechanismWidget>) game).addRules(rules.stream().limit(ruleNumber).toList());
         }
-
-        System.out.println("seed: " + game.getSeed());
-        System.out.println("difficulty: " + difficulty);
-        System.out.println("maxSpots: " + maxSpots);
-        System.out.println("pins: " + pins);
-        System.out.println("scaled: " + scaled);
-        System.out.println("list.size: " + list.size());
-        System.out.println("rules empty: " + game.getRules().isEmpty());
-
     }
 
     public void setRot(float rot) {
@@ -151,7 +142,7 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         this.mainTween = Tween.create();
         this.mainTween.tweenMethod(this::setGameColor, OctoColor.WHITE, new OctoColor(1f, 0.2f, 0.2f, 1f), 1.5f);
         this.mainTween.tweenInterval(0.5f);
-        this.mainTween.tweenRunnable(() -> Minecraft.getInstance().setScreen(null));
+        this.mainTween.tweenRunnable(this.screen::win);
         this.mainTween.start();
     }
 
@@ -174,8 +165,6 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        guiGraphics.drawString(Minecraft.getInstance().font, String.valueOf(arrowSpeedModifier), 5, 5, 0xffffffff, true);
-
         RenderSystem.setShaderColor(gameColor.r(), gameColor.g(), gameColor.b(), gameColor.a());
         RenderSystem.enableBlend();
         guiGraphics.pose().pushPose();
@@ -358,12 +347,12 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
                     random.nextInt(10,30), x + bananarotate.x, y + bananarotate.y, UIParticle.Layer.SCREEN, 10);
             particle.setScreen(this.screen);
             particle.setColors(OctoColor.RED, OctoColor.RED, new OctoColor(1f, 1f, 0f, 1f), OctoColor.WHITE, new OctoColor(0.05f, 0.05f, 0.05f, 1f));
-            particle.direction = new Vector2f(random.nextFloat() - 0.5f, random.nextFloat() - 0.5f).normalize();
-            particle.gravityDirection = new Vector2f(0, -1);
-            particle.gravity = 0.15f;
+            particle.setDirection(new Vector2f(random.nextFloat() - 0.5f, random.nextFloat() - 0.5f).normalize());
+            particle.setGravityDirection(new Vector2f(0, -1));
+            particle.setGravity(0.15f);
             float size = random.nextFloat(0.75f, 1.5f);
-            particle.transform.setSize(new Vector2f(size, size));
-            particle.rollVelocity = random.nextFloat(-10, 10);
+            particle.getTransform().setSize(new Vector2f(size, size));
+            particle.setRollVelocity(random.nextFloat(-10, 10));
             particle.instantiate();
         }
     }

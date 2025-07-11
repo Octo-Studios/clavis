@@ -2,6 +2,7 @@ package it.hurts.octostudios.clavis.common.client.screen;
 
 import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.clavis.common.Clavis;
+import it.hurts.octostudios.clavis.common.ClavisClient;
 import it.hurts.octostudios.clavis.common.client.particle.HalfHeartUIParticle;
 import it.hurts.octostudios.clavis.common.client.particle.HeartPartUIParticle;
 import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidget;
@@ -75,6 +76,7 @@ public class LockpickingScreen extends Screen {
     }
 
     public void win() {
+        ClavisClient.SCREEN_CACHE.remove(lock);
         NetworkManager.sendToServer(new FinishLockpickingPacket(blockPos, lock, this.game.getLootQuality()));
         Minecraft.getInstance().setScreen(null);
     }

@@ -48,7 +48,7 @@ public class LockInteractionBlockers {
     }
 
     public static EventResult onInteract(Player player, InteractionHand interactionHand, BlockPos pos, Direction direction) {
-        if (!(player instanceof ServerPlayer serverPlayer)) {
+        if (player.level().isClientSide) {
             if (ClavisSavedData.isLocked(pos, player.level())) {
                 return EventResult.interruptFalse();
             }
@@ -56,6 +56,7 @@ public class LockInteractionBlockers {
             return EventResult.pass();
         }
 
+        ServerPlayer serverPlayer = (ServerPlayer) player;
         List<Lock> locks = ClavisSavedData.get(serverPlayer.serverLevel()).getLocksAt(pos);
         if (locks.isEmpty()) {
             return EventResult.pass();
