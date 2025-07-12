@@ -3,7 +3,7 @@ package it.hurts.octostudios.clavis.common.network;
 import dev.architectury.event.EventResult;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.utils.value.IntValue;
-import it.hurts.octostudios.clavis.common.data.ClavisSavedData;
+import it.hurts.octostudios.clavis.common.LockManager;
 import it.hurts.octostudios.clavis.common.data.Lock;
 import it.hurts.octostudios.clavis.common.network.packet.OpenLockpickingPacket;
 import net.minecraft.core.BlockPos;
@@ -15,7 +15,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +23,7 @@ import java.util.List;
 
 public class LockInteractionBlockers {
     public static EventResult onBreak(Level level, BlockPos pos, BlockState blockState, ServerPlayer serverPlayer, @Nullable IntValue intValue) {
-        if (ClavisSavedData.isLocked(pos, level)) {
+        if (LockManager.isLocked(level, serverPlayer, pos)) {
             return EventResult.interruptFalse();
         }
 
@@ -32,14 +31,13 @@ public class LockInteractionBlockers {
     }
 
     public static void onBlow(Level level, Explosion explosion, List<Entity> entities) {
-        if (!(level instanceof ServerLevel serverLevel)) {
+        if (level.isClientSide()) {
             return;
         }
 
-        ClavisSavedData data = ClavisSavedData.get(serverLevel);
         List<BlockPos> toNotBlow = new ArrayList<>(); // blow me... 🥀🥀🥀
         explosion.getToBlow().forEach(pos -> {
-            if (!data.getLocksAt(pos).isEmpty()) {
+            if (!LockManager.getLocksAt((ServerLevel) level, null, pos).isEmpty()) {
                 toNotBlow.add(pos);
             }
         });
@@ -48,16 +46,12 @@ public class LockInteractionBlockers {
     }
 
     public static EventResult onInteract(Player player, InteractionHand interactionHand, BlockPos pos, Direction direction) {
-        if (player.level().isClientSide) {
-            if (ClavisSavedData.isLocked(pos, player.level())) {
-                return EventResult.interruptFalse();
-            }
-
-            return EventResult.pass();
+        if (player.level().isClientSide()) {
+            return cancelInteraction(player, interactionHand, pos, direction);
         }
 
         ServerPlayer serverPlayer = (ServerPlayer) player;
-        List<Lock> locks = ClavisSavedData.get(serverPlayer.serverLevel()).getLocksAt(pos);
+        List<Lock> locks = LockManager.getLocksAt(serverPlayer.serverLevel(), serverPlayer, pos);
         if (locks.isEmpty()) {
             return EventResult.pass();
         }
@@ -66,7 +60,11 @@ public class LockInteractionBlockers {
         return EventResult.interruptFalse();
     }
 
-    public static boolean onPiston(LevelAccessor level, BlockPos pos) {
-        return !ClavisSavedData.isLocked(pos, (Level) level);
+    public static EventResult cancelInteraction(Player player, InteractionHand interactionHand, BlockPos pos, Direction direction) {
+        if (LockManager.isLocked(player.level(), player, pos)) {
+            return EventResult.interruptFalse();
+        }
+
+        return EventResult.pass();
     }
 }

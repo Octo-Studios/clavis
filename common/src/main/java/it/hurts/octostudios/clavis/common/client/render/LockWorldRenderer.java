@@ -1,10 +1,11 @@
 package it.hurts.octostudios.clavis.common.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import it.hurts.octostudios.clavis.common.client.model.LockModel;
 import it.hurts.octostudios.clavis.common.data.Box;
 import it.hurts.octostudios.clavis.common.data.Lock;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -14,11 +15,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
@@ -26,6 +23,7 @@ import org.joml.Matrix4f;
 import java.util.HashSet;
 import java.util.Set;
 
+@Environment(EnvType.CLIENT)
 public class LockWorldRenderer {
     public static final Set<Lock> FOR_RENDERING = new HashSet<>();
 

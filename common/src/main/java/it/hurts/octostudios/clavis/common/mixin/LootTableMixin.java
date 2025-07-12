@@ -1,6 +1,6 @@
 package it.hurts.octostudios.clavis.common.mixin;
 
-import it.hurts.octostudios.clavis.common.data.ClavisSavedData;
+import it.hurts.octostudios.clavis.common.LockManager;
 import net.minecraft.world.Container;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class LootTableMixin {
     @Inject(method = "fill", at = @At("HEAD"), cancellable = true)
     private void injected(Container container, LootParams params, long seed, CallbackInfo ci) {
-        if (container instanceof BlockEntity block && ClavisSavedData.isLocked(block.getBlockPos(), block.getLevel())) {
+        if (container instanceof BlockEntity block && LockManager.isLocked(block.getLevel(), null, block.getBlockPos())) {
             ci.cancel();
         }
     }

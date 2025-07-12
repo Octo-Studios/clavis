@@ -1,6 +1,6 @@
 package it.hurts.octostudios.clavis.common.mixin;
 
-import it.hurts.octostudios.clavis.common.data.ClavisSavedData;
+import it.hurts.octostudios.clavis.common.LockManager;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.ChestBlock;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ChestMixin {
     @Inject(method = "candidatePartnerFacing", at = @At("HEAD"), cancellable = true)
     private void injected(BlockPlaceContext context, Direction direction, CallbackInfoReturnable<Direction> cir) {
-        if (ClavisSavedData.isLocked(context.getClickedPos().relative(direction), context.getLevel())) {
+        if (LockManager.isLocked(context.getLevel(), context.getPlayer(), context.getClickedPos().relative(direction))) {
             cir.setReturnValue(null);
         }
     }

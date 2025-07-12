@@ -2,7 +2,6 @@ package it.hurts.octostudios.clavis.common.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import net.minecraft.core.UUIDUtil;

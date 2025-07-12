@@ -3,47 +3,38 @@ package it.hurts.octostudios.clavis.common;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.LongArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.*;
-import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.clavis.common.data.Box;
-import it.hurts.octostudios.clavis.common.data.ClavisSavedData;
 import it.hurts.octostudios.clavis.common.data.ItemValues;
 import it.hurts.octostudios.clavis.common.data.Lock;
-import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
 import it.hurts.octostudios.clavis.common.network.LockInteractionBlockers;
 import it.hurts.octostudios.clavis.common.network.PacketRegistry;
-import it.hurts.octostudios.clavis.common.network.packet.OpenLockpickingPacket;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.coordinates.WorldCoordinates;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Clavis {
     public static final String MODID = "clavis";
 
     public static void init() {
-        Rule.registerAll();
         PacketRegistry.register();
         ItemValues.register();
+
+        LootrCompat.init();
+
+        LifecycleEvent.SERVER_LEVEL_LOAD.register(LockManager::load);
+        LifecycleEvent.SERVER_LEVEL_SAVE.register(LockManager::save);
 
         BlockEvent.BREAK.register(LockInteractionBlockers::onBreak);
         ExplosionEvent.DETONATE.register(LockInteractionBlockers::onBlow);
         InteractionEvent.RIGHT_CLICK_BLOCK.register(LockInteractionBlockers::onInteract);
-        InteractionEvent.LEFT_CLICK_BLOCK.register((player, hand, pos, face) -> {
-            if (ClavisSavedData.isLocked(pos, player.level())) {
-                return EventResult.interruptFalse();
-            }
-
-            return EventResult.pass();
-        });
+        InteractionEvent.LEFT_CLICK_BLOCK.register(LockInteractionBlockers::cancelInteraction);
         CommandRegistrationEvent.EVENT.register((dispatcher, registry, selection) -> {
             dispatcher.register(Commands.literal("clavis")
                     .then(Commands.literal("lock")
@@ -52,13 +43,14 @@ public class Clavis {
                                             .then(Commands.argument("difficulty", FloatArgumentType.floatArg(0f))
                                                     .then(Commands.argument("seed", LongArgumentType.longArg())
                                                             .executes(context -> {
-                                                                ClavisSavedData data = ClavisSavedData.get(context.getSource().getLevel());
-                                                                data.addLock(new Lock(
+                                                                Lock lock = new Lock(
+                                                                        UUID.randomUUID(),
                                                                         new Box(context.getArgument("blockpos", WorldCoordinates.class).getBlockPos(context.getSource())),
                                                                         context.getArgument("difficulty", Float.class),
-                                                                        context.getArgument("seed", Long.class)
-                                                                ), context.getSource().getLevel());
+                                                                        context.getArgument("seed", Long.class), false
+                                                                );
 
+                                                                LockManager.addLock(context.getSource().getLevel(), lock);
                                                                 return Command.SINGLE_SUCCESS;
                                                             })
                                                     )
@@ -67,16 +59,17 @@ public class Clavis {
                                                     .then(Commands.argument("difficulty", FloatArgumentType.floatArg(0f))
                                                             .then(Commands.argument("seed", LongArgumentType.longArg())
                                                                     .executes(context -> {
-                                                                        ClavisSavedData data = ClavisSavedData.get(context.getSource().getLevel());
-                                                                        data.addLock(new Lock(
+                                                                        Lock lock = new Lock(
+                                                                                UUID.randomUUID(),
                                                                                 new Box(
                                                                                         context.getArgument("blockpos", WorldCoordinates.class).getBlockPos(context.getSource()),
                                                                                         context.getArgument("blockpos2", WorldCoordinates.class).getBlockPos(context.getSource())
                                                                                 ),
                                                                                 context.getArgument("difficulty", Float.class),
-                                                                                context.getArgument("seed", Long.class)
-                                                                        ), context.getSource().getLevel());
+                                                                                context.getArgument("seed", Long.class), false
+                                                                        );
 
+                                                                        LockManager.addLock(context.getSource().getLevel(), lock);
                                                                         return Command.SINGLE_SUCCESS;
                                                                     })
                                                             )
@@ -85,10 +78,24 @@ public class Clavis {
                                     )
 
                             )
+                            .then(Commands.literal("remove")
+                                    .then(Commands.argument("blockpos", BlockPosArgument.blockPos())
+                                            .executes(context -> {
+                                                BlockPos pos = context.getArgument("blockpos", WorldCoordinates.class).getBlockPos(context.getSource());
+                                                List<Lock> locks = LockManager.getLocksAt(context.getSource().getLevel(), null, pos);
+                                                if (locks.isEmpty()) {
+                                                    context.getSource().sendFailure(Component.literal("No locks have been found at this position. Aborting..."));
+                                                    return 1;
+                                                }
+
+                                                LockManager.removeLock(context.getSource().getLevel(), locks.getFirst());
+                                                return Command.SINGLE_SUCCESS;
+                                            })
+                                    )
+                            )
                     )
             );
         });
-
     }
 
     public static ResourceLocation path(String path) {

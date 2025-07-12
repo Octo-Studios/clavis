@@ -1,6 +1,6 @@
 package it.hurts.octostudios.clavis.common.mixin;
 
-import it.hurts.octostudios.clavis.common.data.ClavisSavedData;
+import it.hurts.octostudios.clavis.common.LockManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class PistonBaseBlockMixin {
     @Inject(method = "isPushable", at = @At("RETURN"), cancellable = true)
     private static void injected(BlockState state, Level level, BlockPos pos, Direction movementDirection, boolean allowDestroy, Direction pistonFacing, CallbackInfoReturnable<Boolean> cir) {
-        if (cir.getReturnValue() && ClavisSavedData.isLocked(pos, level)) {
+        if (cir.getReturnValue() && LockManager.isLocked(level, null, pos)) {
             cir.setReturnValue(false);
         }
     }

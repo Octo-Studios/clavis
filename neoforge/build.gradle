@@ -36,6 +36,7 @@ dependencies {
 
     //implementation "it.hurts.octostudios.octolib:octolib-neoforge:$rootProject.octolib_version"
 
+    modImplementation "noobanidus.mods.lootr:lootr-neoforge:1.21-1.10.35.91"
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')
 }

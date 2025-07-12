@@ -13,7 +13,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
@@ -136,9 +135,9 @@ public class ClavisSavedData extends SavedData {
 
     public List<Lock> getLocksAt(BlockPos pos) {
         ChunkPos chunkPos = new ChunkPos(pos);
-        return lockLookupMap.get(chunkPos).stream()
+        return new ArrayList<>(lockLookupMap.get(chunkPos).stream()
                 .filter(lock -> lock.box.isInside(pos))
-                .toList();
+                .toList());
     }
 
     public List<Lock> getLocksAt(ChunkPos chunkPos) {

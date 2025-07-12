@@ -2,7 +2,7 @@ package it.hurts.octostudios.clavis.common.network.packet;
 
 import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.clavis.common.Clavis;
-import it.hurts.octostudios.clavis.common.data.ClavisSavedData;
+import it.hurts.octostudios.clavis.common.LockManager;
 import it.hurts.octostudios.clavis.common.data.Lock;
 import it.hurts.octostudios.octolib.module.network.Packet;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -37,8 +37,10 @@ public class LockRequestPacket extends Packet {
 
     @Override
     protected void handleServer(NetworkManager.PacketContext packetContext) {
-        ClavisSavedData data = ClavisSavedData.get((ServerLevel) packetContext.getPlayer().level());
-        List<Lock> locks = data.getLocksAt(pos);
+        ServerPlayer player = (ServerPlayer) packetContext.getPlayer();
+        ServerLevel level = player.serverLevel();
+
+        List<Lock> locks = LockManager.getLocksAt(level, player, pos);
         if (locks.isEmpty()) {
             return;
         }

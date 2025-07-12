@@ -2,10 +2,11 @@ package it.hurts.octostudios.clavis.common.network.packet;
 
 import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.clavis.common.Clavis;
-import it.hurts.octostudios.clavis.common.data.ClavisSavedData;
+import it.hurts.octostudios.clavis.common.LockManager;
 import it.hurts.octostudios.clavis.common.data.Lock;
 import it.hurts.octostudios.clavis.common.data.LootUtils;
 import it.hurts.octostudios.clavis.common.mixin.LootTableAccessor;
+import it.hurts.octostudios.octolib.OctoLib;
 import it.hurts.octostudios.octolib.module.network.Packet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -25,9 +26,11 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
+import noobanidus.mods.lootr.common.api.LootrAPI;
+import noobanidus.mods.lootr.common.api.data.blockentity.ILootrBlockEntity;
+import noobanidus.mods.lootr.common.api.data.inventory.ILootrInventory;
 
 import java.util.List;
-import java.util.Random;
 import java.util.function.Function;
 
 public class FinishLockpickingPacket extends Packet {
@@ -63,8 +66,7 @@ public class FinishLockpickingPacket extends Packet {
         ServerPlayer player = (ServerPlayer) packetContext.getPlayer();
         ServerLevel level = player.serverLevel();
 
-        ClavisSavedData data = ClavisSavedData.get(level);
-        data.removeLock(lock, level);
+        LockManager.unlock(level, player, lock);
 
         if (level.getBlockEntity(blockPos) instanceof RandomizableContainerBlockEntity randomizable && randomizable.getLootTable() != null) {
             ResourceKey<LootTable> resourceKey = randomizable.getLootTable();
@@ -72,7 +74,6 @@ public class FinishLockpickingPacket extends Packet {
             LootTableAccessor accessor = ((LootTableAccessor) lootTable);
             CriteriaTriggers.GENERATE_LOOT.trigger(player, resourceKey);
 
-            randomizable.setLootTable(null);
             LootParams.Builder builder = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos));
             builder.withLuck(player.getLuck()).withParameter(LootContextParams.THIS_ENTITY, player);
 
@@ -110,16 +111,28 @@ public class FinishLockpickingPacket extends Packet {
             List<Integer> list = accessor.invokeGetAvailableSlots(randomizable, randomSource);
             accessor.invokeShuffleAndSplitItems(mainList, list.size(), randomSource);
 
-            for (ItemStack itemStack : mainList) {
-                if (list.isEmpty()) {
+            if (randomizable instanceof ILootrBlockEntity lootr) {
+                ILootrInventory provider = LootrAPI.getInventory(lootr, player, (provider1, player1, inventory) -> {
+
+                });
+                if (provider == null) {
+                    OctoLib.LOGGER.warn("provider is null");
                     return;
                 }
 
-                if (itemStack.isEmpty()) {
-                    randomizable.setItem(list.removeLast(), ItemStack.EMPTY);
-                } else {
-                    randomizable.setItem(list.removeLast(), itemStack);
+                for (ItemStack itemStack : mainList) {
+                    if (list.isEmpty()) {
+                        return;
+                    }
+
+                    if (itemStack.isEmpty()) {
+                        provider.setItem(list.removeLast(), ItemStack.EMPTY);
+                    } else {
+                        provider.setItem(list.removeLast(), itemStack);
+                    }
                 }
+
+                lootr.performOpen(player);
             }
         }
     }

@@ -1,6 +1,6 @@
 package it.hurts.octostudios.clavis.common.mixin;
 
-import it.hurts.octostudios.clavis.common.data.ClavisSavedData;
+import it.hurts.octostudios.clavis.common.LockManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +18,7 @@ public abstract class ContainerMixin extends BlockEntity implements Container {
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        if (ClavisSavedData.isLocked(getBlockPos(), getLevel())) {
+        if (LockManager.isLocked(getLevel(), null, getBlockPos())) {
             return false;
         }
 
@@ -27,7 +27,7 @@ public abstract class ContainerMixin extends BlockEntity implements Container {
 
     @Override
     public boolean canTakeItem(Container target, int slot, ItemStack stack) {
-        if (ClavisSavedData.isLocked(getBlockPos(), getLevel())) {
+        if (LockManager.isLocked(getLevel(), null, getBlockPos())) {
             return false;
         }
 
