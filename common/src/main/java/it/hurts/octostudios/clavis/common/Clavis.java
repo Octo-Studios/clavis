@@ -47,7 +47,7 @@ public class Clavis {
                                                                         UUID.randomUUID(),
                                                                         new Box(context.getArgument("blockpos", WorldCoordinates.class).getBlockPos(context.getSource())),
                                                                         context.getArgument("difficulty", Float.class),
-                                                                        context.getArgument("seed", Long.class), false
+                                                                        context.getArgument("seed", Long.class), true
                                                                 );
 
                                                                 LockManager.addLock(context.getSource().getLevel(), lock);

@@ -30,6 +30,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
+import java.util.Random;
 import java.util.function.Function;
 
 public class FinishLockpickingPacket extends Packet {
@@ -83,18 +84,27 @@ public class FinishLockpickingPacket extends Packet {
             LootContext defaultContext = makeCtx.apply(0L);
             RandomSource randomSource = defaultContext.getRandom();
             ObjectArrayList<ItemStack> mainList = new ObjectArrayList<>();
+            Container container = randomizable;
+            boolean isLootr = LootrCompat.COMPAT.isLootrBlockEntity(randomizable);
+
+            if (isLootr) {
+                container = LootrCompat.COMPAT.getEmptyInventory(randomizable, player);
+            }
+
+            long lootTableSeed = isLootr ? new Random().nextLong() : randomizable.getLootTableSeed();
+
             if (quality >= 1f) {
                 int fullCopies = (int) quality;
                 float fraction  = quality - fullCopies;
 
                 for (int i = 0; i < fullCopies; i++) {
-                    long seed = randomizable.getLootTableSeed() + i * 31571L;
+                    long seed = lootTableSeed + i * 31571L;
                     LootContext fullCtx = makeCtx.apply(seed);
                     mainList.addAll(accessor.invokeGetRandomItems(fullCtx));
                 }
 
                 if (fraction > 0f) {
-                    long seed = randomizable.getLootTableSeed() + 31571L * fullCopies;
+                    long seed = lootTableSeed + 31571L * fullCopies;
                     LootContext fracCtx = makeCtx.apply(seed);
                     ObjectArrayList<ItemStack> secondary = accessor.invokeGetRandomItems(fracCtx);
 
@@ -110,11 +120,6 @@ public class FinishLockpickingPacket extends Packet {
             List<Integer> list = accessor.invokeGetAvailableSlots(randomizable, randomSource);
             accessor.invokeShuffleAndSplitItems(mainList, list.size(), randomSource);
 
-            Container container = randomizable;
-
-            if (LootrCompat.COMPAT.isLootrBlockEntity(randomizable)) {
-                container = LootrCompat.COMPAT.getEmptyInventory(randomizable, player);
-            }
 
             if (container == null) {
                 OctoLib.LOGGER.warn("container is null");
