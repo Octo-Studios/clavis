@@ -1,31 +1,22 @@
 package it.hurts.octostudios.clavis.common;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.RandomizableContainer;
-import noobanidus.mods.lootr.common.api.data.ILootrInfoProvider;
-import noobanidus.mods.lootr.common.api.data.LootFiller;
+import dev.architectury.platform.Platform;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 public class LootrCompat {
-    private static Class<?> lootrBlockEntityClass = null;
-    private static Method getInventory = null;
+    public static LootrCompatProxy COMPAT;
 
     public static void init() {
         try {
-            lootrBlockEntityClass = Class.forName("noobanidus.mods.lootr.common.api.data.blockentity.ILootrBlockEntity");
-            Class<?> lootrApi = Class.forName("noobanidus.mods.lootr.common.api.LootrAPI");
-            getInventory = lootrApi.getMethod("getInventory", ILootrInfoProvider.class, ServerPlayer.class, LootFiller.class);
-        } catch (ClassNotFoundException | NoSuchMethodException ignored) {
+            if (Platform.getOptionalMod("lootr").isPresent()) {
+                COMPAT = (LootrCompatProxy) Class.forName("it.hurts.octostudios.clavis.common.ActualLootrCompat").getDeclaredConstructor().newInstance();
+            } else {
+                COMPAT = new DummyLootrCompat();
+            }
+        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |
+                 InvocationTargetException ignored) {
 
         }
-    }
-
-    public static boolean isLootrBlockEntity(RandomizableContainer be) {
-        if (lootrBlockEntityClass == null) {
-            return false;
-        }
-
-        return lootrBlockEntityClass.isInstance(be);
     }
 }

@@ -19,7 +19,7 @@ public class ChunkListeners {
             }
 
             float difficulty = LootUtils.calculateDifficulty(level, blockPos, randomizable);
-            LockManager.addLock(level, new Lock(UUID.randomUUID(), new Box(blockPos), difficulty, randomizable.getLootTableSeed(), LootrCompat.isLootrBlockEntity(randomizable)));
+            LockManager.addLock(level, new Lock(UUID.randomUUID(), new Box(blockPos), difficulty, randomizable.getLootTableSeed(), LootrCompat.COMPAT.isLootrBlockEntity(randomizable)));
         });
     }
 }
