@@ -4,8 +4,7 @@ import dev.architectury.event.EventResult;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.utils.value.IntValue;
 import it.hurts.octostudios.clavis.common.LockManager;
-import it.hurts.octostudios.clavis.common.data.Lock;
-import it.hurts.octostudios.clavis.common.network.packet.OpenLockpickingPacket;
+import it.hurts.octostudios.clavis.common.network.packet.CheckIfLockedPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -47,17 +46,11 @@ public class LockInteractionBlockers {
 
     public static EventResult onInteract(Player player, InteractionHand interactionHand, BlockPos pos, Direction direction) {
         if (player.level().isClientSide()) {
+            NetworkManager.sendToServer(new CheckIfLockedPacket(pos));
             return cancelInteraction(player, interactionHand, pos, direction);
         }
 
-        ServerPlayer serverPlayer = (ServerPlayer) player;
-        List<Lock> locks = LockManager.getLocksAt(serverPlayer.serverLevel(), serverPlayer, pos);
-        if (locks.isEmpty()) {
-            return EventResult.pass();
-        }
-
-        NetworkManager.sendToPlayer(serverPlayer, new OpenLockpickingPacket(pos, locks.getFirst()));
-        return EventResult.interruptFalse();
+        return EventResult.pass();
     }
 
     public static EventResult cancelInteraction(Player player, InteractionHand interactionHand, BlockPos pos, Direction direction) {

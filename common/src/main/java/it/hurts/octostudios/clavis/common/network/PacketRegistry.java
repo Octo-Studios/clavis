@@ -11,5 +11,6 @@ public class PacketRegistry {
         OctolibNetwork.registerS2C(ReceiveLocksForRenderingPacket.TYPE, ReceiveLocksForRenderingPacket.STREAM_CODEC, ReceiveLocksForRenderingPacket::handle);
         OctolibNetwork.registerS2C(RemoveLockPacket.TYPE, RemoveLockPacket.STREAM_CODEC, RemoveLockPacket::handle);
         OctolibNetwork.registerS2C(AddLockPacket.TYPE, AddLockPacket.STREAM_CODEC, AddLockPacket::handle);
+        OctolibNetwork.registerC2S(CheckIfLockedPacket.TYPE, CheckIfLockedPacket.STREAM_CODEC, CheckIfLockedPacket::handle);
     }
 }

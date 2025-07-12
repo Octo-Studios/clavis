@@ -15,12 +15,11 @@ public class ServerGamePacketListenerImplMixin {
 
     @Inject(method = "handleUseItemOn", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayerGameMode;useItemOn(Lnet/minecraft/server/level/ServerPlayer;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/phys/BlockHitResult;)Lnet/minecraft/world/InteractionResult;"), cancellable = true)
     private void injected(ServerboundUseItemOnPacket packet, CallbackInfo ci) {
-//        List<Lock> locks = ClavisSavedData.get(player.serverLevel()).getLocksAt(packet.getHitResult().getBlockPos());
+//        List<Lock> locks = LockManager.getLocksAt(player.serverLevel(), player, packet.getHitResult().getBlockPos());
 //        if (locks.isEmpty()) {
 //            return;
 //        }
 //
-//        NetworkManager.sendToPlayer(player, new OpenLockpickingPacket(packet.getHitResult().getBlockPos(), locks.getFirst()));
-//        ci.cancel();
+//        NetworkManager.sendToPlayer(player, new OpenLockpickingPacket(packet., locks.getFirst()));
     }
 }

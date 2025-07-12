@@ -3,6 +3,7 @@ package it.hurts.octostudios.clavis.common.client.render;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Axis;
 import it.hurts.octostudios.clavis.common.client.model.LockModel;
 import it.hurts.octostudios.clavis.common.data.Box;
 import it.hurts.octostudios.clavis.common.data.Lock;
@@ -26,6 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 @Environment(EnvType.CLIENT)
@@ -73,7 +75,12 @@ public class LockWorldRenderer {
             int color = lock.getDifficulty() < 0.33f ? 0xff33ff22 : lock.getDifficulty() < 0.66f ? 0xffffcc00 : 0xffff0011;
             int sky = level.getBrightness(LightLayer.SKY, pos);
             int block = level.getBrightness(LightLayer.BLOCK, pos);
-            float ticks = level.getGameTime() + partialTick.getGameTimeDeltaPartialTick(true);
+            float hash = (float) (new Random(lock.getSeed()).nextFloat()*Math.PI);
+            float ticks = (level.getGameTime() + partialTick.getGameTimeDeltaPartialTick(false))/10f + hash;
+
+
+            poseStack.translate(0, Math.sin(ticks)*0.1f, 0);
+            poseStack.mulPose(Axis.YP.rotation((float) (ticks/2f % (Math.PI*2f))));
 
             model.renderToBuffer(poseStack, multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(LockModel.TEXTURE)), LightTexture.pack(block, sky), OverlayTexture.NO_OVERLAY);
             glow.renderToBuffer(poseStack, multiBufferSource.getBuffer(getOutline()), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, color);
