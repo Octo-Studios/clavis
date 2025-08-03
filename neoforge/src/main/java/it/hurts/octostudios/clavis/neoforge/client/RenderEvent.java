@@ -11,7 +11,7 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 public class RenderEvent {
     @SubscribeEvent
     public static void render(RenderLevelStageEvent e) {
-        if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
+        if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
             LockWorldRenderer.render(e.getCamera(), e.getModelViewMatrix(), e.getPoseStack(), e.getPartialTick(), Minecraft.getInstance().renderBuffers().bufferSource(), Minecraft.getInstance().level);
         }
     }
