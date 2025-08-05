@@ -66,6 +66,15 @@ public class FinishLockpickingPacket extends Packet {
         ServerPlayer player = (ServerPlayer) packetContext.getPlayer();
         ServerLevel level = player.serverLevel();
 
+        unlockWithQuality(level, player, blockPos, lock, quality);
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
+    public static void unlockWithQuality(ServerLevel level, ServerPlayer player, BlockPos blockPos, Lock lock, float quality) {
         LockManager.unlock(level, player, lock);
 
         if (level.getBlockEntity(blockPos) instanceof RandomizableContainerBlockEntity randomizable && randomizable.getLootTable() != null) {
@@ -140,10 +149,5 @@ public class FinishLockpickingPacket extends Packet {
 
             LootrCompat.COMPAT.performOpen(randomizable, player);
         }
-    }
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
     }
 }

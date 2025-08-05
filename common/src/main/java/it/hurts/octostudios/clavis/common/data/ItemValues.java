@@ -1,17 +1,24 @@
 package it.hurts.octostudios.clavis.common.data;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import it.hurts.octostudios.clavis.common.Clavis;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 public class ItemValues {
+    public static final Map<Item, Double> VALUES = new HashMap<>();
     public static final Map<TagKey<Item>, Function<ItemStack, Integer>> TAGS = new HashMap<>();
     public static final Function<Integer, Function<ItemStack, Integer>> DEFAULT_FUNCTION = value -> itemStack -> {
         int finalValue = value;
@@ -20,7 +27,7 @@ public class ItemValues {
             finalValue *= modifier.getModifier().apply(itemStack);
         }
 
-        return finalValue * itemStack.getCount();
+        return (int) (finalValue * itemStack.getCount() * VALUES.getOrDefault(itemStack.getItem(), 1d));
     };
 
     public static void addBasicValue(ResourceLocation rl, int value) {
@@ -32,31 +39,56 @@ public class ItemValues {
     }
 
     public static void register() {
-        addBasicValue(c("gems"), 24);
-        addBasicValue(c("storage_blocks"), 64);
-        addBasicValue(c("ores"), 4);
-        addBasicValue(c("ingots"), 8);
-        addBasicValue(c("nuggets"), 2);
-        addBasicValue(c("dusts"), 4);
+        addBasicValue(c("gems"), 6);
+        addBasicValue(c("storage_blocks"), 16);
+        addBasicValue(c("ores"), 3);
+        addBasicValue(c("ingots"), 4);
+        addBasicValue(c("dusts"), 2);
         addBasicValue(c("crops"), 4);
-        addBasicValue(c("foods/golden"), 32);
-        addBasicValue(c("tools"), 20);
+        addBasicValue(c("foods/golden"), 16);
+        addBasicValue(c("tools"), 8);
         addBasicValue(c("armors"), 8);
         addBasicValue(c("music_discs"), 24);
+
+        InputStream stream = Clavis.class.getResourceAsStream("/internal/clavis/item_values.json");
+        if (stream == null) {
+            return;
+        }
+
+        JsonElement json = JsonParser.parseReader(new InputStreamReader(stream));
+        if (json == null || !json.isJsonObject()) {
+            return;
+        }
+
+        JsonObject obj = json.getAsJsonObject();
+        for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+            try {
+                ResourceLocation key = ResourceLocation.parse(entry.getKey());
+                double value = entry.getValue().getAsDouble();
+                Item item = BuiltInRegistries.ITEM.get(key);
+                if (item == null) {
+                    continue;
+                }
+
+                ItemValues.VALUES.put(item, value);
+            } catch (Exception e) {
+                System.err.println("Invalid entry: " + entry.getKey() + " -> " + entry.getValue());
+            }
+        }
     }
 
     public static int getValue(ItemStack stack) {
-        AtomicInteger value = new AtomicInteger();
-        ItemValues.TAGS.forEach((itemTagKey, function) -> {
-            if (stack.getTags().anyMatch(tag -> tag.equals(itemTagKey))) {
-                value.set(Math.max(value.get(), function.apply(stack)));
-            }
-        });
+//        AtomicInteger value = new AtomicInteger();
+//
+//        ItemValues.TAGS.forEach((itemTagKey, function) -> {
+//            if (stack.getTags().anyMatch(tag -> tag.equals(itemTagKey))) {
+//                value.set(Math.max(value.get(), function.apply(stack)));
+//            }
+//        });
+//
+//        if (value.get() <= 0) {
+        return DEFAULT_FUNCTION.apply(1).apply(stack);
 
-        if (value.get() <= 0) {
-            return DEFAULT_FUNCTION.apply(1).apply(stack);
-        }
-
-        return value.get();
+        //return (int) Math.min(stack.getCount() * VALUES.getOrDefault(stack.getItem(), 1d), 1);
     }
 }

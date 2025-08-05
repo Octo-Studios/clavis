@@ -58,6 +58,6 @@ public class LootUtils {
             actualValue.addAndGet(ItemValues.getValue(stack));
         });
 
-        return actualValue.get() / 400f;
+        return Math.min(actualValue.get() / 128f, 2f);
     }
 }

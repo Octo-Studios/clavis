@@ -14,12 +14,12 @@ import java.util.UUID;
 public class ChunkListeners {
     public static void onGenerate(ServerLevel level, LevelChunk levelChunk) {
         levelChunk.getBlockEntities().forEach((blockPos, blockEntity) -> {
-            if (!(blockEntity instanceof RandomizableContainerBlockEntity randomizable && randomizable.getLootTable() != null)) {
+            if (!(blockEntity instanceof RandomizableContainerBlockEntity randomizable && randomizable.getLootTable() != null && !LootrCompat.COMPAT.isLootrBlockEntity(randomizable))) {
                 return;
             }
 
             float difficulty = LootUtils.calculateDifficulty(level, blockPos, randomizable);
-            LockManager.addLock(level, new Lock(UUID.randomUUID(), new Box(blockPos), difficulty, randomizable.getLootTableSeed(), LootrCompat.COMPAT.isLootrBlockEntity(randomizable)));
+            LockManager.addLock(level, new Lock(UUID.randomUUID(), new Box(blockPos), difficulty, randomizable.getLootTableSeed(), false));
         });
     }
 }
