@@ -30,7 +30,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
-import java.util.Random;
 import java.util.function.Function;
 
 public class FinishLockpickingPacket extends Packet {
@@ -100,7 +99,7 @@ public class FinishLockpickingPacket extends Packet {
                 container = LootrCompat.COMPAT.getEmptyInventory(randomizable, player);
             }
 
-            long lootTableSeed = isLootr ? new Random().nextLong() : randomizable.getLootTableSeed();
+            long lootTableSeed = isLootr ? player.getUUID().getLeastSignificantBits() : randomizable.getLootTableSeed();
 
             if (quality >= 1f) {
                 int fullCopies = (int) quality;

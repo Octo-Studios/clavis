@@ -19,19 +19,29 @@ import java.util.function.Function;
 
 public class ItemValues {
     public static final Map<Item, Double> VALUES = new HashMap<>();
-    public static final Map<TagKey<Item>, Function<ItemStack, Integer>> TAGS = new HashMap<>();
-    public static final Function<Integer, Function<ItemStack, Integer>> DEFAULT_FUNCTION = value -> itemStack -> {
-        int finalValue = value;
+    //public static final Map<ResourceKey<LootTable>, Float> DIFFICULTY_CACHE = new HashMap<>();
+
+    public static final Map<TagKey<Item>, Function<ItemStack, Double>> TAGS = new HashMap<>();
+    public static final Function<Double, Function<ItemStack, Double>> DEFAULT_FUNCTION = value -> itemStack -> {
+        double finalValue = value;
 
         for (ValueModifier modifier : ValueModifier.values()) {
             finalValue *= modifier.getModifier().apply(itemStack);
         }
 
-        return (int) (finalValue * itemStack.getCount() * VALUES.getOrDefault(itemStack.getItem(), 1d));
+        return finalValue * itemStack.getCount();
     };
 
-    public static void addBasicValue(ResourceLocation rl, int value) {
-        TAGS.put(TagKey.create(Registries.ITEM, rl), DEFAULT_FUNCTION.apply(value));
+    public static void addBasicValue(ResourceLocation rl, double value) {
+        TAGS.put(tag(rl), DEFAULT_FUNCTION.apply(value));
+    }
+
+    public static TagKey<Item> tag(ResourceLocation tag) {
+        return TagKey.create(Registries.ITEM, tag);
+    }
+
+    public static TagKey<Item> tag(String path) {
+        return TagKey.create(Registries.ITEM, c(path));
     }
 
     public static ResourceLocation c(String path) {
@@ -77,7 +87,7 @@ public class ItemValues {
         }
     }
 
-    public static int getValue(ItemStack stack) {
+    public static float getValue(ItemStack stack) {
 //        AtomicInteger value = new AtomicInteger();
 //
 //        ItemValues.TAGS.forEach((itemTagKey, function) -> {
@@ -87,8 +97,9 @@ public class ItemValues {
 //        });
 //
 //        if (value.get() <= 0) {
-        return DEFAULT_FUNCTION.apply(1).apply(stack);
+//            return DEFAULT_FUNCTION.apply(1).apply(stack);
+//        }
 
-        //return (int) Math.min(stack.getCount() * VALUES.getOrDefault(stack.getItem(), 1d), 1);
+        return (float) Math.max(DEFAULT_FUNCTION.apply(VALUES.getOrDefault(stack.getItem(), 1d)).apply(stack), 1);
     }
 }

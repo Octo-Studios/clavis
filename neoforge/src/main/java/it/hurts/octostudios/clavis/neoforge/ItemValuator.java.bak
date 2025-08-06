@@ -5,7 +5,9 @@ import com.google.gson.GsonBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -19,6 +21,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @EventBusSubscriber
@@ -28,10 +31,11 @@ public class ItemValuator {
     private final Map<Item, Double> valueMap = new HashMap<>();
     private final List<Recipe<?>> allRecipes;
 
+    private final List<BiFunction<ItemStack, Double, Double>> customAdjusters = new ArrayList<>();
+
     @SubscribeEvent
     public static void onServerStarted(ServerStartedEvent event) {
         ItemValuator valuator = new ItemValuator(event.getServer());
-
         valuator.computeAllValues();
         valuator.fillUnvaluedWithDefault();
         valuator.exportToJson();
@@ -42,12 +46,25 @@ public class ItemValuator {
         this.registryProvider = server.registryAccess();
         this.allRecipes = loadAllRecipes(server);
 
+        customAdjusters.add((stack, value) ->
+                stack.is(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ingots"))) ? 4 : value
+        );
+
+        customAdjusters.add((stack, value) ->
+                stack.is(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "gems"))) ? 8 : value
+        );
+
+//        customAdjusters.add((stack, value) ->
+//                value * (1 + stack.getRarity().ordinal() * 0.1)
+//        );
+
         initBaseValues();
     }
 
     private static List<Recipe<?>> loadAllRecipes(MinecraftServer server) {
         return server.getRecipeManager()
-                .getRecipes().stream()
+                .getRecipes()
+                .stream()
                 .map(RecipeHolder::value)
                 .collect(Collectors.toList());
     }
@@ -61,7 +78,8 @@ public class ItemValuator {
         Registry<Item> reg = registryProvider.registryOrThrow(Registries.ITEM);
         for (Item item : reg) {
             if (!crafted.contains(item)) {
-                valueMap.put(item, 1.0);
+                double base = applyCustomAdjusters(new ItemStack(item), 1.0);
+                valueMap.put(item, base);
             }
         }
     }
@@ -72,17 +90,12 @@ public class ItemValuator {
             changed = false;
             for (Recipe<?> recipe : allRecipes) {
                 ItemStack out = recipe.getResultItem(registryProvider);
-
-                if (out == null) {
-                    continue;
-                }
-
+                if (out == null) continue;
                 Item itm = out.getItem();
                 if (valueMap.containsKey(itm)) continue;
 
                 double sum = 0;
                 boolean ok = true;
-
                 for (Ingredient ing : recipe.getIngredients()) {
                     OptionalDouble any = Arrays.stream(ing.getItems())
                             .map(ItemStack::getItem)
@@ -90,23 +103,18 @@ public class ItemValuator {
                             .filter(Objects::nonNull)
                             .mapToDouble(Double::doubleValue)
                             .min();
-
                     if (any.isEmpty()) {
                         ok = false;
-
                         break;
                     }
-
                     sum += any.getAsDouble();
                 }
-
-                if (!ok)
-                    continue;
+                if (!ok) continue;
 
                 double perUnit = sum / out.getCount();
+                perUnit = applyCustomAdjusters(out, perUnit);
 
                 valueMap.put(itm, perUnit);
-
                 changed = true;
             }
         } while (changed);
@@ -114,9 +122,11 @@ public class ItemValuator {
 
     public void fillUnvaluedWithDefault() {
         Registry<Item> reg = registryProvider.registryOrThrow(Registries.ITEM);
-
         for (Item item : reg) {
-            valueMap.putIfAbsent(item, 1.0);
+            valueMap.putIfAbsent(
+                    item,
+                    applyCustomAdjusters(new ItemStack(item), 1.0)
+            );
         }
     }
 
@@ -128,12 +138,11 @@ public class ItemValuator {
                 .toList();
 
         Map<String, Double> outMap = new LinkedHashMap<>();
-
         for (Item item : sortedItems) {
-            String id = registryProvider.registryOrThrow(Registries.ITEM)
+            String id = registryProvider
+                    .registryOrThrow(Registries.ITEM)
                     .getKey(item)
                     .toString();
-
             outMap.put(id, getValue(item));
         }
 
@@ -141,9 +150,7 @@ public class ItemValuator {
                 .setPrettyPrinting()
                 .serializeSpecialFloatingPointValues()
                 .create();
-
         File file = new File(server.getServerDirectory().toString(), "item_values.json");
-
         try (FileWriter writer = new FileWriter(file)) {
             gson.toJson(outMap, writer);
         } catch (IOException e) {
@@ -152,6 +159,13 @@ public class ItemValuator {
     }
 
     public double getValue(Item item) {
-        return valueMap.getOrDefault(item, 1.0);
+        return valueMap.getOrDefault(item, 0.0);
+    }
+
+    private double applyCustomAdjusters(ItemStack stack, double value) {
+        for (BiFunction<ItemStack, Double, Double> adjuster : customAdjusters) {
+            value = adjuster.apply(stack, value);
+        }
+        return value;
     }
 }

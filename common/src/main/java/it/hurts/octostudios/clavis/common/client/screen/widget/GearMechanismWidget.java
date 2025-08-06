@@ -23,7 +23,6 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 
@@ -85,11 +84,11 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
 
         float scaled = (2 / 3f + difficulty * (1 / 3f));
 
-        int pins = Mth.ceil(random.nextFloat(6, 10) * scaled);
+        int pins = Mth.ceil(random.nextFloat(5, 8) * scaled);
         this.maxPins = pins;
         this.maxSpots = (int) Math.round(pins * 1.5);
 
-        this.arrowSpeed = random.nextFloat(240, 300) * scaled;
+        this.arrowSpeed = random.nextFloat(220, 280) * scaled;
         if (random.nextBoolean()) {
             this.arrowSpeed *= -1;
         }

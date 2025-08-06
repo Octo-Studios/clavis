@@ -72,8 +72,7 @@ public class LockWorldRenderer {
             int sky = level.getBrightness(LightLayer.SKY, pos);
             int block = level.getBrightness(LightLayer.BLOCK, pos);
             float hash = (float) (new Random(lock.getSeed()).nextFloat()*Math.PI);
-            float ticks = (level.getGameTime() + partialTick.getGameTimeDeltaPartialTick(false))/10f + hash;
-
+            float ticks = (level.getGameTime() + partialTick.getGameTimeDeltaPartialTick(true))/10f + hash;
 
             poseStack.translate(0, Math.sin(ticks)*0.1f, 0);
             poseStack.mulPose(Axis.YP.rotation((float) (ticks/2f % (Math.PI*2f))));

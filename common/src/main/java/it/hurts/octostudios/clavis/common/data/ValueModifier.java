@@ -12,25 +12,25 @@ import java.util.function.Function;
 @AllArgsConstructor
 @Getter
 public enum ValueModifier {
-//    TIER(itemStack -> {
-//        if (itemStack.getItem() instanceof TieredItem tieredItem) {
-//            return tieredItem.getTier().getAttackDamageBonus()/2f+1;
-//        }
-//
-//        return 1f;
-//    }),
+    TIER(itemStack -> {
+        if (itemStack.getItem() instanceof TieredItem tieredItem) {
+            return tieredItem.getTier().getAttackDamageBonus()/3d+1;
+        }
+
+        return 1d;
+    }),
 
     ENCHANTED(itemStack -> {
         ItemEnchantments enchantments = EnchantmentHelper.getEnchantmentsForCrafting(itemStack);
         if (enchantments.isEmpty()) {
-            return 1f;
+            return 1d;
         }
 
-        AtomicReference<Float> multiplier = new AtomicReference<>(1f);
+        AtomicReference<Double> multiplier = new AtomicReference<>(1d);
 
         enchantments.keySet().forEach(enchantmentHolder -> {
             int level = itemStack.getEnchantments().getLevel(enchantmentHolder);
-            multiplier.updateAndGet(v -> v + (level * 0.2f));
+            multiplier.updateAndGet(v -> v + (level * 0.25d));
         });
 
         return multiplier.get();
@@ -40,23 +40,37 @@ public enum ValueModifier {
         // reward low-stack-size items with a value boost
         int maxStack = itemStack.getMaxStackSize();
         if (maxStack == 1) {
-            return 1.5f;
+            return 1.75d;
         } else if (maxStack <= 16) {
-            return 1.25f;
+            return 1.35d;
         } else if (maxStack <= 64) {
-            return 1f;
+            return 1d;
         }
-        return 1f;
+        return 1d;
     }),
 
     RARITY(itemStack -> {
         Rarity rarity = itemStack.getRarity();
         return switch (rarity) {
-            case UNCOMMON -> 1.25f;
-            case RARE -> 1.5f;
-            case EPIC -> 2f;
-            default -> 1f;
+            case UNCOMMON -> 1.25d;
+            case RARE -> 1.5d;
+            case EPIC -> 2.5d;
+            default -> 1d;
         };
+    }),
+
+    VALUABLE_TAGS(itemStack -> {
+        double multiplier = 1f;
+
+        if (itemStack.is(ItemValues.tag("foods/golden"))) {
+            multiplier += 3f;
+        }
+
+        if (itemStack.is(ItemValues.tag("music_discs"))) {
+            multiplier += 3f;
+        }
+
+        return multiplier;
     }),
 
 //    POTION_EFFECTS(itemStack -> {
@@ -82,14 +96,14 @@ public enum ValueModifier {
 //        return 1f + (nbtSize * 0.05f); // +2% per NBT tag entry
 //    }),
 
-//    ARMOR(itemStack -> {
-//        if (itemStack.getItem() instanceof ArmorItem armor) {
-//            return 1f + (armor.getDefense() - 1) / 2f;
-//        }
-//
-//        return 1f;
-//    })
+    ARMOR(itemStack -> {
+        if (itemStack.getItem() instanceof ArmorItem armor) {
+            return 1d + (armor.getDefense() - 1) / 4d;
+        }
+
+        return 1d;
+    })
 
     ;
-    private final Function<ItemStack, Float> modifier;
+    private final Function<ItemStack, Double> modifier;
 }

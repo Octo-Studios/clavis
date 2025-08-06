@@ -3,7 +3,9 @@ package it.hurts.octostudios.clavis.common.data;
 import it.hurts.octostudios.clavis.common.mixin.LootTableAccessor;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.RandomizableContainer;
@@ -14,9 +16,11 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class LootUtils {
     public static void shrinkStacks(ObjectArrayList<ItemStack> stacks, double factor, RandomSource random) {
@@ -42,22 +46,37 @@ public class LootUtils {
         }
     }
 
-    public static float calculateDifficulty(ServerLevel level, BlockPos pos, RandomizableContainer container) {
-        LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(container.getLootTable());
-        long seed = container.getLootTableSeed();
+    public static float calculateDifficulty(MinecraftServer server, ServerLevel level, @Nullable BlockPos pos, ResourceKey<LootTable> lootTableKey, long seed, int randomIterations) {
+        float value = 0f;
+        int totalIterations = 0;
+        Random random = new Random(seed);
 
+        LootTable lootTable = server.reloadableRegistries().getLootTable(lootTableKey);
         Optional<ResourceLocation> randomSequence = ((LootTableAccessor) lootTable).getRandomSequence();
+        LootParams.Builder builder = new LootParams.Builder(level);
+        builder.withParameter(LootContextParams.ORIGIN, pos == null ? Vec3.ZERO : Vec3.atCenterOf(pos));
 
-        LootParams.Builder builder = (new LootParams.Builder(level)).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos));
-        LootContext actualLootContext = new LootContext.Builder(builder.create(LootContextParamSets.CHEST)).withOptionalRandomSeed(seed).create(randomSequence);
+        do {
+            long currentSeed = totalIterations > 0 ? random.nextLong() : seed;
+            LootContext actualLootContext = new LootContext.Builder(builder.create(LootContextParamSets.CHEST)).withOptionalRandomSeed(currentSeed).create(randomSequence);
 
-        ObjectArrayList<ItemStack> actualItems = ((LootTableAccessor) lootTable).invokeGetRandomItems(actualLootContext);
+            ObjectArrayList<ItemStack> actualItems = ((LootTableAccessor) lootTable).invokeGetRandomItems(actualLootContext);
 
-        AtomicInteger actualValue = new AtomicInteger();
-        actualItems.forEach((stack) -> {
-            actualValue.addAndGet(ItemValues.getValue(stack));
-        });
+            AtomicReference<Float> actualValue = new AtomicReference<>(0f);
+            actualItems.forEach((stack) -> {
+                actualValue.updateAndGet(f -> ItemValues.getValue(stack) + f);
+            });
 
-        return Math.min(actualValue.get() / 128f, 2f);
+            totalIterations++;
+            value += actualValue.get();
+        } while (totalIterations < randomIterations);
+
+        value /= totalIterations;
+
+        return Math.min(value / 128f, 2f);
+    }
+
+    public static float calculateDifficulty(ServerLevel level, BlockPos pos, RandomizableContainer container, int randomIterations) {
+        return calculateDifficulty(level.getServer(), level, pos, container.getLootTable(), container.getLootTableSeed(), randomIterations);
     }
 }
