@@ -22,6 +22,10 @@ import java.util.List;
 
 public class LockInteractionBlockers {
     public static EventResult onBreak(Level level, BlockPos pos, BlockState blockState, ServerPlayer serverPlayer, @Nullable IntValue intValue) {
+        if (serverPlayer.isCreative() || serverPlayer.isSpectator()) {
+            return EventResult.pass();
+        }
+
         if (LockManager.isLocked(level, serverPlayer, pos)) {
             return EventResult.interruptFalse();
         }
@@ -45,6 +49,10 @@ public class LockInteractionBlockers {
     }
 
     public static EventResult onInteract(Player player, InteractionHand interactionHand, BlockPos pos, Direction direction) {
+        if (player.isCreative() || player.isSpectator()) {
+            return EventResult.pass();
+        }
+
         if (player.level().isClientSide()) {
             NetworkManager.sendToServer(new CheckIfLockedPacket(pos));
         }
@@ -53,6 +61,10 @@ public class LockInteractionBlockers {
     }
 
     public static EventResult cancelInteraction(Player player, InteractionHand interactionHand, BlockPos pos, Direction direction) {
+        if (player.isCreative() || player.isSpectator()) {
+            return EventResult.pass();
+        }
+
         if (LockManager.isLocked(player.level(), player, pos)) {
             return EventResult.interruptFalse();
         }

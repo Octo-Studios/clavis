@@ -13,13 +13,14 @@ public final class ClavisFabricClient implements ClientModInitializer {
 
         ClientChunkEvents.CHUNK_LOAD.register(ClavisClient::onLoadChunk);
         ClientChunkEvents.CHUNK_UNLOAD.register(ClavisClient::onUnloadChunk);
-        WorldRenderEvents.LAST.register(context -> LockWorldRenderer.render(
+        WorldRenderEvents.AFTER_TRANSLUCENT.register(context -> LockWorldRenderer.render(
                 context.camera(),
                 context.projectionMatrix(),
                 context.matrixStack(),
                 context.tickCounter(),
                 context.consumers(),
-                context.world()
+                context.world(),
+                context.frustum()
         ));
     }
 }

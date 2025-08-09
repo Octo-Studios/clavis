@@ -47,11 +47,31 @@ public class ItemValuator {
         this.allRecipes = loadAllRecipes(server);
 
         customAdjusters.add((stack, value) ->
-                stack.is(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ingots"))) ? 4 : value
+                stack.is(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ingots"))) ? 8 : value
         );
 
         customAdjusters.add((stack, value) ->
-                stack.is(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "gems"))) ? 8 : value
+                stack.is(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "gems"))) ? 16 : value
+        );
+
+        customAdjusters.add((stack, value) ->
+                stack.is(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "raw_materials"))) ? 6 : value
+        );
+
+        customAdjusters.add((stack, value) ->
+                stack.is(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ores"))) ? 6 : value
+        );
+
+        customAdjusters.add((stack, value) ->
+                stack.is(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "rods"))) ? 8 : value
+        );
+
+        customAdjusters.add((stack, value) ->
+                stack.is(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ores"))) ? 6 : value
+        );
+
+        customAdjusters.add((stack, value) ->
+                stack.is(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "nether_stars"))) ? 6 : value
         );
 
 //        customAdjusters.add((stack, value) ->

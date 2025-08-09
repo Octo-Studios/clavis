@@ -3,9 +3,7 @@ package it.hurts.octostudios.clavis.common.data;
 import it.hurts.octostudios.clavis.common.mixin.LootTableAccessor;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.RandomizableContainer;
@@ -16,7 +14,6 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.Random;
@@ -46,21 +43,24 @@ public class LootUtils {
         }
     }
 
-    public static float calculateDifficulty(MinecraftServer server, ServerLevel level, @Nullable BlockPos pos, ResourceKey<LootTable> lootTableKey, long seed, int randomIterations) {
+    public static float calculateDifficulty(ServerLevel level, BlockPos pos, RandomizableContainer container, int randomIterations) {
         float value = 0f;
         int totalIterations = 0;
-        Random random = new Random(seed);
+        Random random = new Random(container.getLootTableSeed());
 
-        LootTable lootTable = server.reloadableRegistries().getLootTable(lootTableKey);
+        LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(container.getLootTable());
+        LootTableAccessor accessor = ((LootTableAccessor) lootTable);
         Optional<ResourceLocation> randomSequence = ((LootTableAccessor) lootTable).getRandomSequence();
         LootParams.Builder builder = new LootParams.Builder(level);
         builder.withParameter(LootContextParams.ORIGIN, pos == null ? Vec3.ZERO : Vec3.atCenterOf(pos));
 
         do {
-            long currentSeed = totalIterations > 0 ? random.nextLong() : seed;
+            long currentSeed = totalIterations > 0 ? random.nextLong() : container.getLootTableSeed();
             LootContext actualLootContext = new LootContext.Builder(builder.create(LootContextParamSets.CHEST)).withOptionalRandomSeed(currentSeed).create(randomSequence);
+            RandomSource randomSource = actualLootContext.getRandom();
 
-            ObjectArrayList<ItemStack> actualItems = ((LootTableAccessor) lootTable).invokeGetRandomItems(actualLootContext);
+            ObjectArrayList<ItemStack> actualItems = accessor.invokeGetRandomItems(actualLootContext);
+            //accessor.invokeShuffleAndSplitItems(actualItems, accessor.invokeGetAvailableSlots(container, randomSource).size(), randomSource);
 
             AtomicReference<Float> actualValue = new AtomicReference<>(0f);
             actualItems.forEach((stack) -> {
@@ -74,9 +74,5 @@ public class LootUtils {
         value /= totalIterations;
 
         return Math.min(value / 128f, 2f);
-    }
-
-    public static float calculateDifficulty(ServerLevel level, BlockPos pos, RandomizableContainer container, int randomIterations) {
-        return calculateDifficulty(level.getServer(), level, pos, container.getLootTable(), container.getLootTableSeed(), randomIterations);
     }
 }

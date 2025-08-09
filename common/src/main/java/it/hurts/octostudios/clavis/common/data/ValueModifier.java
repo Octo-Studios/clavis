@@ -39,10 +39,8 @@ public enum ValueModifier {
     STACK_SIZE(itemStack -> {
         // reward low-stack-size items with a value boost
         int maxStack = itemStack.getMaxStackSize();
-        if (maxStack == 1) {
-            return 1.75d;
-        } else if (maxStack <= 16) {
-            return 1.35d;
+        if (maxStack <= 16) {
+            return 1.25d;
         } else if (maxStack <= 64) {
             return 1d;
         }
@@ -54,7 +52,7 @@ public enum ValueModifier {
         return switch (rarity) {
             case UNCOMMON -> 1.25d;
             case RARE -> 1.5d;
-            case EPIC -> 2.5d;
+            case EPIC -> 2d;
             default -> 1d;
         };
     }),
@@ -67,11 +65,11 @@ public enum ValueModifier {
         }
 
         if (itemStack.is(ItemValues.tag("music_discs"))) {
-            multiplier += 3f;
+            multiplier += 2f;
         }
 
         return multiplier;
-    }),
+    })
 
 //    POTION_EFFECTS(itemStack -> {
 //        if (itemStack.getItem() instanceof PotionItem) {
@@ -96,13 +94,13 @@ public enum ValueModifier {
 //        return 1f + (nbtSize * 0.05f); // +2% per NBT tag entry
 //    }),
 
-    ARMOR(itemStack -> {
-        if (itemStack.getItem() instanceof ArmorItem armor) {
-            return 1d + (armor.getDefense() - 1) / 4d;
-        }
-
-        return 1d;
-    })
+//    ARMOR(itemStack -> {
+//        if (itemStack.getItem() instanceof ArmorItem armor) {
+//            return 1d + (armor.getDefense() - 1) / 4d;
+//        }
+//
+//        return 1d;
+//    })
 
     ;
     private final Function<ItemStack, Double> modifier;
