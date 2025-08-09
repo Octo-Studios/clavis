@@ -102,6 +102,7 @@ public class ClavisCommands {
 
                                             for (Lock lock : locks) {
                                                 component.append(Component.literal(lock.getUuid().toString()+":").withStyle(ChatFormatting.GOLD)).append("\n");
+                                                component.append("    ").append(Component.literal("Type: ").withStyle(ChatFormatting.GRAY)).append(lock.getType().toString()).append("\n");
                                                 component.append("    ").append(Component.literal("Difficulty: ").withStyle(ChatFormatting.GRAY)).append(String.format("%.2f", lock.getDifficulty())).append("\n");
                                                 component.append("    ").append(Component.literal("Seed: ").withStyle(ChatFormatting.GRAY)).append(String.valueOf(lock.getSeed())).append("\n");
                                                 component.append("    ").append(Component.literal("Per-player: ").withStyle(ChatFormatting.GRAY)).append(String.valueOf(lock.isPerPlayer())).append("\n");

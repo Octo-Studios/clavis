@@ -2,6 +2,7 @@ package it.hurts.octostudios.clavis.common.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.hurts.octostudios.clavis.common.Clavis;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import net.minecraft.core.UUIDUtil;
@@ -18,7 +19,8 @@ public class Lock {
             Codec.FLOAT.fieldOf("difficulty").forGetter(lock -> lock.difficulty),
             Codec.LONG.fieldOf("seed").forGetter(lock -> lock.seed),
             Codec.BOOL.fieldOf("perPlayer").forGetter(lock -> lock.perPlayer),
-            ResourceLocation.CODEC.listOf().optionalFieldOf("rules").forGetter(lock -> Optional.of(lock.rules))
+            ResourceLocation.CODEC.listOf().optionalFieldOf("rules", new ArrayList<>()).forGetter(lock -> lock.rules),
+            ResourceLocation.CODEC.optionalFieldOf("type", Clavis.path("overworld")).forGetter(lock -> lock.type)
     ).apply(instance, Lock::new));
 
     public static final Codec<Set<Lock>> SET_CODEC = Lock.CODEC.listOf().xmap(HashSet::new, ArrayList::new);
@@ -31,7 +33,8 @@ public class Lock {
     boolean perPlayer;
 
     // override
-    List<ResourceLocation> rules = new ArrayList<>();
+    ResourceLocation type;
+    List<ResourceLocation> rules;
 
     public Lock(UUID uuid, Box box, float difficulty, long seed, boolean perPlayer) {
         this.uuid = uuid;
@@ -39,10 +42,17 @@ public class Lock {
         this.difficulty = difficulty;
         this.seed = seed;
         this.perPlayer = perPlayer;
+        this.type = Clavis.path("overworld");
+        this.rules = new ArrayList<>();
     }
 
-    public Lock(UUID uuid, Box box, float difficulty, long seed, boolean perPlayer, Optional<List<ResourceLocation>> rules) {
-        this(uuid, box, difficulty, seed, perPlayer);
-        this.rules = rules.orElse(new ArrayList<>());
+    public Lock(UUID uuid, Box box, float difficulty, long seed, boolean perPlayer, List<ResourceLocation> rules, ResourceLocation type) {
+        this.uuid = uuid;
+        this.box = box;
+        this.difficulty = difficulty;
+        this.seed = seed;
+        this.perPlayer = perPlayer;
+        this.type = type;
+        this.rules = rules;
     }
 }

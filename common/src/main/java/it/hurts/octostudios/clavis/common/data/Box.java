@@ -4,8 +4,10 @@ import com.mojang.serialization.Codec;
 import lombok.EqualsAndHashCode;
 import net.minecraft.Util;
 import net.minecraft.core.Vec3i;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.stream.IntStream;
 
@@ -60,5 +62,13 @@ public class Box {
 
         return this.minX <= maxX && this.maxX >= minX &&
                 this.minZ <= maxZ && this.maxZ >= minZ;
+    }
+
+    public AABB getAABB() {
+        return new AABB(minX, minY, minZ, maxX+1, maxY+1, maxZ+1);
+    }
+
+    public Vec3 getCenter() {
+        return new Vec3(Mth.lerp(0.5d, minX, maxX+1), Mth.lerp(0.5d, minY, maxY+1), Mth.lerp(0.5d, minZ, maxZ+1));
     }
 }

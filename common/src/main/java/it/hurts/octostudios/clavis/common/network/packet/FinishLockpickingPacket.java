@@ -76,77 +76,78 @@ public class FinishLockpickingPacket extends Packet {
     public static void unlockWithQuality(ServerLevel level, ServerPlayer player, BlockPos blockPos, Lock lock, float quality) {
         LockManager.unlock(level, player, lock);
 
-        if (level.getBlockEntity(blockPos) instanceof RandomizableContainerBlockEntity randomizable && randomizable.getLootTable() != null) {
-            ResourceKey<LootTable> resourceKey = randomizable.getLootTable();
-            LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(resourceKey);
-            LootTableAccessor accessor = ((LootTableAccessor) lootTable);
-            CriteriaTriggers.GENERATE_LOOT.trigger(player, resourceKey);
+        if (!(level.getBlockEntity(blockPos) instanceof RandomizableContainerBlockEntity randomizable && randomizable.getLootTable() != null)) {
+            return;
+        }
 
-            LootParams.Builder builder = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos));
-            builder.withLuck(player.getLuck()).withParameter(LootContextParams.THIS_ENTITY, player);
+        ResourceKey<LootTable> resourceKey = randomizable.getLootTable();
+        LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(resourceKey);
+        LootTableAccessor accessor = ((LootTableAccessor) lootTable);
+        CriteriaTriggers.GENERATE_LOOT.trigger(player, resourceKey);
 
-            Function<Long, LootContext> makeCtx = seedOffset -> new LootContext.Builder(builder.create(LootContextParamSets.CHEST))
-                    .withOptionalRandomSeed(randomizable.getLootTableSeed() + seedOffset)
-                    .create(accessor.getRandomSequence());
+        LootParams.Builder builder = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos));
+        builder.withLuck(player.getLuck()).withParameter(LootContextParams.THIS_ENTITY, player);
 
-            LootContext defaultContext = makeCtx.apply(0L);
-            RandomSource randomSource = defaultContext.getRandom();
-            ObjectArrayList<ItemStack> mainList = new ObjectArrayList<>();
-            Container container = randomizable;
-            boolean isLootr = LootrCompat.COMPAT.isLootrBlockEntity(randomizable);
+        Function<Long, LootContext> makeCtx = seedOffset -> new LootContext.Builder(builder.create(LootContextParamSets.CHEST))
+                .withOptionalRandomSeed(randomizable.getLootTableSeed() + seedOffset)
+                .create(accessor.getRandomSequence());
 
-            if (isLootr) {
-                container = LootrCompat.COMPAT.getEmptyInventory(randomizable, player);
+        LootContext defaultContext = makeCtx.apply(0L);
+        RandomSource randomSource = defaultContext.getRandom();
+        ObjectArrayList<ItemStack> mainList = new ObjectArrayList<>();
+        Container container = randomizable;
+        boolean isLootr = LootrCompat.COMPAT.isLootrBlockEntity(randomizable);
+
+        if (isLootr) {
+            container = LootrCompat.COMPAT.getEmptyInventory(randomizable, player);
+        }
+
+        long lootTableSeed = isLootr ? player.getUUID().getLeastSignificantBits() : randomizable.getLootTableSeed();
+
+        if (quality >= 1f) {
+            int fullCopies = (int) quality;
+            float fraction  = quality - fullCopies;
+
+            for (int i = 0; i < fullCopies; i++) {
+                long seed = lootTableSeed + i * 31571L;
+                LootContext fullCtx = makeCtx.apply(seed);
+                mainList.addAll(accessor.invokeGetRandomItems(fullCtx));
             }
 
-            long lootTableSeed = isLootr ? player.getUUID().getLeastSignificantBits() : randomizable.getLootTableSeed();
+            if (fraction > 0f) {
+                long seed = lootTableSeed + 31571L * fullCopies;
+                LootContext fracCtx = makeCtx.apply(seed);
+                ObjectArrayList<ItemStack> secondary = accessor.invokeGetRandomItems(fracCtx);
 
-            if (quality >= 1f) {
-                int fullCopies = (int) quality;
-                float fraction  = quality - fullCopies;
-
-                for (int i = 0; i < fullCopies; i++) {
-                    long seed = lootTableSeed + i * 31571L;
-                    LootContext fullCtx = makeCtx.apply(seed);
-                    mainList.addAll(accessor.invokeGetRandomItems(fullCtx));
-                }
-
-                if (fraction > 0f) {
-                    long seed = lootTableSeed + 31571L * fullCopies;
-                    LootContext fracCtx = makeCtx.apply(seed);
-                    ObjectArrayList<ItemStack> secondary = accessor.invokeGetRandomItems(fracCtx);
-
-                    LootUtils.shrinkStacks(secondary, fraction, randomSource);
-                    mainList.addAll(secondary);
-                }
-
-            } else if (quality < 1f) {
-                mainList.addAll(accessor.invokeGetRandomItems(defaultContext));
-                LootUtils.shrinkStacks(mainList, quality, randomSource);
+                LootUtils.shrinkStacks(secondary, fraction, randomSource);
+                mainList.addAll(secondary);
             }
+        } else if (quality < 1f) {
+            mainList.addAll(accessor.invokeGetRandomItems(defaultContext));
+            LootUtils.shrinkStacks(mainList, quality, randomSource);
+        }
 
-            List<Integer> list = accessor.invokeGetAvailableSlots(randomizable, randomSource);
-            accessor.invokeShuffleAndSplitItems(mainList, list.size(), randomSource);
+        List<Integer> list = accessor.invokeGetAvailableSlots(randomizable, randomSource);
+        accessor.invokeShuffleAndSplitItems(mainList, list.size(), randomSource);
 
 
-            if (container == null) {
-                OctoLib.LOGGER.warn("container is null");
+        if (container == null) {
+            OctoLib.LOGGER.warn("container is null");
+            return;
+        }
+
+        for (ItemStack itemStack : mainList) {
+            if (list.isEmpty()) {
                 return;
             }
 
-            for (ItemStack itemStack : mainList) {
-                if (list.isEmpty()) {
-                    return;
-                }
-
-                if (itemStack.isEmpty()) {
-                    container.setItem(list.removeLast(), ItemStack.EMPTY);
-                } else {
-                    container.setItem(list.removeLast(), itemStack);
-                }
+            if (itemStack.isEmpty()) {
+                container.setItem(list.removeLast(), ItemStack.EMPTY);
+            } else {
+                container.setItem(list.removeLast(), itemStack);
             }
-
-            LootrCompat.COMPAT.performOpen(randomizable, player);
         }
+
+        LootrCompat.COMPAT.performOpen(randomizable, player);
     }
 }

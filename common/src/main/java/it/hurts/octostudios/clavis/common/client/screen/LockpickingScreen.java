@@ -8,14 +8,11 @@ import it.hurts.octostudios.clavis.common.client.particle.HeartPartUIParticle;
 import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidget;
 import it.hurts.octostudios.clavis.common.client.screen.widget.MinigameInfoWidget;
 import it.hurts.octostudios.clavis.common.client.screen.widget.RuleWidget;
-import it.hurts.octostudios.clavis.common.data.Box;
 import it.hurts.octostudios.clavis.common.data.Lock;
 import it.hurts.octostudios.clavis.common.minigame.Minigame;
-import it.hurts.octostudios.clavis.common.minigame.rule.OverworldRules;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
 import it.hurts.octostudios.clavis.common.network.packet.FinishLockpickingPacket;
 import it.hurts.octostudios.octolib.client.animation.Tween;
-import it.hurts.octostudios.octolib.client.particle.ParticleSystem;
 import it.hurts.octostudios.octolib.client.particle.UIParticle;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -41,6 +38,7 @@ public class LockpickingScreen extends Screen {
     Minigame<GearMechanismWidget> game;
     GearMechanismWidget gear;
     BlockPos blockPos;
+    @Getter
     Lock lock;
 
     public LockpickingScreen(BlockPos blockPos, Lock lock) {
