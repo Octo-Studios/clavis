@@ -8,7 +8,7 @@ import com.mojang.brigadier.arguments.LongArgumentType;
 import it.hurts.octostudios.clavis.common.LockManager;
 import it.hurts.octostudios.clavis.common.data.Box;
 import it.hurts.octostudios.clavis.common.data.Lock;
-import it.hurts.octostudios.clavis.common.network.packet.FinishLockpickingPacket;
+import it.hurts.octostudios.clavis.common.data.LootUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -130,7 +130,7 @@ public class ClavisCommands {
                                                         return 1;
                                                     }
 
-                                                    FinishLockpickingPacket.unlockWithQuality(
+                                                    LootUtils.unlockWithQuality(
                                                             context.getSource().getLevel(),
                                                             player,
                                                             pos,

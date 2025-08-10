@@ -1,13 +1,21 @@
 package it.hurts.octostudios.clavis.common.data;
 
+import it.hurts.octostudios.clavis.common.LockManager;
+import it.hurts.octostudios.clavis.common.LootrCompat;
 import it.hurts.octostudios.clavis.common.mixin.LootTableAccessor;
+import it.hurts.octostudios.octolib.OctoLib;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.Container;
 import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -15,9 +23,10 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 public class LootUtils {
     public static void shrinkStacks(ObjectArrayList<ItemStack> stacks, double factor, RandomSource random) {
@@ -49,30 +58,179 @@ public class LootUtils {
         Random random = new Random(container.getLootTableSeed());
 
         LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(container.getLootTable());
-        LootTableAccessor accessor = ((LootTableAccessor) lootTable);
-        Optional<ResourceLocation> randomSequence = ((LootTableAccessor) lootTable).getRandomSequence();
-        LootParams.Builder builder = new LootParams.Builder(level);
-        builder.withParameter(LootContextParams.ORIGIN, pos == null ? Vec3.ZERO : Vec3.atCenterOf(pos));
+        LootTableAccessor accessor = (LootTableAccessor) lootTable;
+        Optional<ResourceLocation> randomSequence = accessor.getRandomSequence();
+
+        LootParams.Builder builder = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, pos == null ? Vec3.ZERO : Vec3.atCenterOf(pos));
+
+        Function<Long, LootContext> makeCtx = seed -> new LootContext.Builder(builder.create(LootContextParamSets.CHEST)).withOptionalRandomSeed(seed).create(randomSequence);
 
         do {
             long currentSeed = totalIterations > 0 ? random.nextLong() : container.getLootTableSeed();
-            LootContext actualLootContext = new LootContext.Builder(builder.create(LootContextParamSets.CHEST)).withOptionalRandomSeed(currentSeed).create(randomSequence);
+
+            LootContext actualLootContext = makeCtx.apply(currentSeed);
             RandomSource randomSource = actualLootContext.getRandom();
 
-            ObjectArrayList<ItemStack> actualItems = accessor.invokeGetRandomItems(actualLootContext);
-            //accessor.invokeShuffleAndSplitItems(actualItems, accessor.invokeGetAvailableSlots(container, randomSource).size(), randomSource);
+            ObjectArrayList<ItemStack> actualItems = buildMainItemList(accessor, makeCtx, actualLootContext, currentSeed, 1f, randomSource);
+            actualItems.size(Math.min(actualItems.size(), container.getContainerSize()));
 
-            AtomicReference<Float> actualValue = new AtomicReference<>(0f);
-            actualItems.forEach((stack) -> {
-                actualValue.updateAndGet(f -> ItemValues.getValue(stack) + f);
-            });
+            float iterationValue = 0f;
+            for (ItemStack stack : actualItems) {
+                if (stack == null) {
+                    continue;
+                }
+
+                iterationValue += ItemValues.getValue(stack);
+            }
 
             totalIterations++;
-            value += actualValue.get();
+            value += iterationValue;
         } while (totalIterations < randomIterations);
 
         value /= totalIterations;
-
         return Math.min(value / 128f, 2f);
+    }
+
+    private static final long SEED_STEP = 31571L;
+
+    public static void unlockWithQuality(ServerLevel level, ServerPlayer player, BlockPos blockPos, Lock lock, float quality) {
+        LockManager.unlock(level, player, lock);
+
+        // validate block entity and loot table
+        if (!(level.getBlockEntity(blockPos) instanceof RandomizableContainerBlockEntity randomizable && randomizable.getLootTable() != null)) {
+            return;
+        }
+
+        ResourceKey<LootTable> resourceKey = randomizable.getLootTable();
+        LootTable lootTable = getLootTableSafe(level, resourceKey);
+        if (lootTable == null) {
+            // either warn or return — original code assumes loot table exists
+            OctoLib.LOGGER.warn("loot table not found for {}", resourceKey);
+            return;
+        }
+
+        LootTableAccessor accessor = (LootTableAccessor) lootTable;
+        CriteriaTriggers.GENERATE_LOOT.trigger(player, resourceKey);
+
+        LootParams.Builder baseBuilder = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos));
+        baseBuilder.withLuck(player.getLuck()).withParameter(LootContextParams.THIS_ENTITY, player);
+
+        Function<Long, LootContext> makeCtx = createLootContextFactory(randomizable, baseBuilder, accessor);
+        LootContext defaultContext = makeCtx.apply(0L);
+        RandomSource randomSource = defaultContext.getRandom();
+
+        // prepare container (handle Lootr compatibility)
+        boolean isLootr = LootrCompat.COMPAT.isLootrBlockEntity(randomizable);
+        Container container = isLootr ? LootrCompat.COMPAT.getEmptyInventory(randomizable, player) : randomizable;
+        long lootTableSeed = isLootr ? player.getUUID().getLeastSignificantBits() : randomizable.getLootTableSeed();
+
+        // build item list according to quality
+        ObjectArrayList<ItemStack> mainList = buildMainItemList(accessor, makeCtx, defaultContext, lootTableSeed, quality, randomSource);
+
+        // get available slots and split/shuffle items for those slots
+        List<Integer> availableSlots = accessor.invokeGetAvailableSlots(randomizable, randomSource);
+        accessor.invokeShuffleAndSplitItems(mainList, availableSlots.size(), randomSource);
+
+        if (container == null) {
+            OctoLib.LOGGER.warn("container is null");
+            return;
+        }
+
+        // populate container from the prepared mainList + availableSlots (last-in behavior preserved)
+        populateContainerFromList(container, mainList, availableSlots);
+
+        LootrCompat.COMPAT.performOpen(randomizable, player);
+    }
+
+    private static LootTable getLootTableSafe(ServerLevel level, ResourceKey<LootTable> resourceKey) {
+        try {
+            return level.getServer().reloadableRegistries().getLootTable(resourceKey);
+        } catch (Exception e) {
+            OctoLib.LOGGER.warn("error loading loot table {}: {}", resourceKey, e.getMessage());
+            return null;
+        }
+    }
+
+    private static Function<Long, LootContext> createLootContextFactory(RandomizableContainerBlockEntity randomizable, LootParams.Builder baseBuilder, LootTableAccessor accessor) {
+        return seedOffset -> new LootContext.Builder(baseBuilder.create(LootContextParamSets.CHEST)).withOptionalRandomSeed(randomizable.getLootTableSeed() + seedOffset).create(accessor.getRandomSequence());
+    }
+
+    private static ObjectArrayList<ItemStack> buildMainItemList(LootTableAccessor accessor, Function<Long, LootContext> makeCtx, LootContext defaultContext, long lootTableSeed, float quality, RandomSource randomSource) {
+        ObjectArrayList<ItemStack> mainList = new ObjectArrayList<>();
+
+        if (quality >= 1f) {
+            int fullCopies = (int) quality;
+            float fraction = quality - fullCopies;
+
+            for (int i = 0; i < fullCopies; i++) {
+                long seed = lootTableSeed + i * SEED_STEP;
+                LootContext fullCtx = makeCtx.apply(seed);
+                mainList.addAll(accessor.invokeGetRandomItems(fullCtx));
+            }
+
+            if (fraction > 0f) {
+                long seed = lootTableSeed + SEED_STEP * fullCopies;
+                LootContext fracCtx = makeCtx.apply(seed);
+                ObjectArrayList<ItemStack> fractionalItems = accessor.invokeGetRandomItems(fracCtx);
+                LootUtils.shrinkStacks(fractionalItems, fraction, randomSource);
+                mainList.addAll(fractionalItems);
+            }
+        } else { // quality < 1f (including <= 0)
+            mainList.addAll(accessor.invokeGetRandomItems(defaultContext));
+            LootUtils.shrinkStacks(mainList, quality, randomSource);
+        }
+
+        // --- merge stacks of the same item+components into aggregated counts ---
+        ObjectArrayList<ItemStack> aggregated = new ObjectArrayList<>();
+        for (ItemStack stack : mainList) {
+            if (stack.isEmpty()) {
+                continue;
+            }
+
+            boolean merged = false;
+            for (ItemStack a : aggregated) {
+                if (ItemStack.isSameItemSameComponents(a, stack)) {
+                    // combine counts
+                    a.grow(stack.getCount());
+                    merged = true;
+                    break;
+                }
+            }
+
+            if (!merged) {
+                aggregated.add(stack.copy());
+            }
+        }
+
+        // --- split aggregated totals into proper stacks respecting max stack size ---
+        ObjectArrayList<ItemStack> finalList = new ObjectArrayList<>();
+        for (ItemStack agg : aggregated) {
+            int total = agg.getCount();
+            int max = agg.getMaxStackSize();
+            while (total > 0) {
+                int take = Math.min(total, max);
+                ItemStack piece = agg.copy();
+                piece.setCount(take);
+                finalList.add(piece);
+                total -= take;
+            }
+        }
+
+        return finalList;
+    }
+
+    private static void populateContainerFromList(Container container, ObjectArrayList<ItemStack> items, List<Integer> availableSlots) {
+        // preserve original behavior: removeLast() for slot selection
+        for (ItemStack itemStack : items) {
+            if (availableSlots.isEmpty()) {
+                return;
+            }
+            int slotIndex = availableSlots.removeLast();
+            if (itemStack.isEmpty()) {
+                container.setItem(slotIndex, ItemStack.EMPTY);
+            } else {
+                container.setItem(slotIndex, itemStack);
+            }
+        }
     }
 }
