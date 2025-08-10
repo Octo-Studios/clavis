@@ -22,7 +22,7 @@ import java.util.List;
 
 public class LockInteractionBlockers {
     public static EventResult onBreak(Level level, BlockPos pos, BlockState blockState, ServerPlayer serverPlayer, @Nullable IntValue intValue) {
-        if (serverPlayer.isCreative() || serverPlayer.isSpectator()) {
+        if ((serverPlayer.isCreative() && serverPlayer.isCrouching()) || serverPlayer.isSpectator()) {
             return EventResult.pass();
         }
 
@@ -49,7 +49,7 @@ public class LockInteractionBlockers {
     }
 
     public static EventResult onInteract(Player player, InteractionHand interactionHand, BlockPos pos, Direction direction) {
-        if (player.isCreative() || player.isSpectator()) {
+        if ((player.isCreative() && player.isCrouching()) || player.isSpectator()) {
             return EventResult.pass();
         }
 
@@ -61,7 +61,7 @@ public class LockInteractionBlockers {
     }
 
     public static EventResult cancelInteraction(Player player, InteractionHand interactionHand, BlockPos pos, Direction direction) {
-        if (player.isCreative() || player.isSpectator()) {
+        if ((player.isCreative() && player.isCrouching()) || player.isSpectator()) {
             return EventResult.pass();
         }
 

@@ -1,10 +1,14 @@
 package it.hurts.octostudios.clavis.common.data;
 
+import dev.architectury.platform.Platform;
 import it.hurts.octostudios.clavis.common.LockManager;
 import it.hurts.octostudios.clavis.common.LootrCompat;
+import it.hurts.octostudios.clavis.common.mixin.LootPoolAccessor;
+import it.hurts.octostudios.clavis.common.mixin.LootPoolSingletonContainerAccessor;
 import it.hurts.octostudios.clavis.common.mixin.LootTableAccessor;
 import it.hurts.octostudios.octolib.OctoLib;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.SneakyThrows;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
@@ -18,11 +22,18 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.functions.ExplorationMapFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.Vec3;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -57,8 +68,10 @@ public class LootUtils {
         int totalIterations = 0;
         Random random = new Random(container.getLootTableSeed());
 
-        LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(container.getLootTable());
-        LootTableAccessor accessor = (LootTableAccessor) lootTable;
+        LootTable rawLootTable = level.getServer().reloadableRegistries().getLootTable(container.getLootTable());
+        LootTable noMapsTable = stripTreasureMaps(rawLootTable);
+        LootTableAccessor accessor = (LootTableAccessor) noMapsTable;
+
         Optional<ResourceLocation> randomSequence = accessor.getRandomSequence();
 
         LootParams.Builder builder = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, pos == null ? Vec3.ZERO : Vec3.atCenterOf(pos));
@@ -232,5 +245,59 @@ public class LootUtils {
                 container.setItem(slotIndex, itemStack);
             }
         }
+    }
+
+    @SneakyThrows
+    private static LootTable stripTreasureMaps(LootTable lootTable) {
+        List<LootPool> filteredPools = new ArrayList<>();
+        LootTableAccessor lootTableAccessor = (LootTableAccessor) lootTable;
+
+        for (LootPool pool : ((LootTableAccessor) lootTable).getPools()) {
+            List<LootPoolEntryContainer> filteredEntries = new ArrayList<>();
+            LootPoolAccessor accessor = ((LootPoolAccessor) pool);
+            for (LootPoolEntryContainer entry : accessor.getEntries()) {
+                if (!isTreasureMapEntry(entry)) {
+                    filteredEntries.add(entry);
+                }
+            }
+            LootPool lootPool;
+
+            if (Platform.isNeoForge()) {
+                Constructor<LootPool> constructor = LootPool.class.getDeclaredConstructor(List.class, List.class, List.class, NumberProvider.class, NumberProvider.class, Optional.class);
+                constructor.setAccessible(true);
+                lootPool = constructor.newInstance(
+                        filteredEntries,
+                        accessor.getConditions(),
+                        accessor.getFunctions(),
+                        accessor.getRolls(),
+                        accessor.getBonusRolls(),
+                        Optional.empty()
+                );
+            } else {
+                Constructor<LootPool> constructor = LootPool.class.getDeclaredConstructor(List.class, List.class, List.class, NumberProvider.class, NumberProvider.class);
+                constructor.setAccessible(true);
+                lootPool = constructor.newInstance(
+                        filteredEntries,
+                        accessor.getConditions(),
+                        accessor.getFunctions(),
+                        accessor.getRolls(),
+                        accessor.getBonusRolls()
+                );
+            }
+
+            if (!filteredEntries.isEmpty()) {
+                filteredPools.add(lootPool);
+            }
+        }
+
+        return new LootTable(lootTableAccessor.getParamSet(), lootTableAccessor.getRandomSequence(), filteredPools, lootTableAccessor.getFunctions());
+    }
+
+    private static boolean isTreasureMapEntry(LootPoolEntryContainer entry) {
+        if (entry instanceof LootItem lootItem) {
+            LootPoolSingletonContainerAccessor containerAccessor = (LootPoolSingletonContainerAccessor) lootItem;
+            return containerAccessor.getFunctions().stream().anyMatch(f -> f instanceof ExplorationMapFunction);
+        }
+        return false;
     }
 }

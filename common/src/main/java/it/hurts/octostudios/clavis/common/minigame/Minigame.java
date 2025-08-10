@@ -27,7 +27,7 @@ public class Minigame<T extends AbstractMinigameWidget<?>> {
     public Minigame(T widget) {
         this.widget = widget;
         this.difficulty = 1f;
-        this.lootQuality = 1.5f;
+        this.lootQuality = 2f;
     }
 
     public void hurt() {

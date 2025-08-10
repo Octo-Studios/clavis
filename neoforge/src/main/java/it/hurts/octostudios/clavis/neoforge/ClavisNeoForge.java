@@ -27,6 +27,7 @@ public final class ClavisNeoForge {
         if (!(event.getLevel() instanceof ServerLevel level && event.getChunk() instanceof LevelChunk chunk) || !event.isNewChunk()) {
             return;
         }
+
         ChunkListeners.onGenerate(level, chunk);
     }
 }

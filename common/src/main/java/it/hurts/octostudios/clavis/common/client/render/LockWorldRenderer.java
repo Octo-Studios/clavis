@@ -41,12 +41,12 @@ import java.util.Set;
 @Environment(EnvType.CLIENT)
 public class LockWorldRenderer {
     public static final RenderType LOCK_TYPE = RenderType.entityCutoutNoCull(LockModel.TEXTURE);
-    public static final RenderType GLOW_TYPE = RenderType.create("clavis_outlinee",
+    public static final RenderType GLOW_TYPE = RenderType.create("clavis_outline",
             DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS,
             1536, true, false,
             RenderType.CompositeState.builder()
                     .setTransparencyState(RenderStateShard.ADDITIVE_TRANSPARENCY)
-                    .setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
+                    .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
                     .setLightmapState(RenderStateShard.NO_LIGHTMAP)
                     .setOutputState(RenderStateShard.MAIN_TARGET)
                     .setColorLogicState(RenderStateShard.NO_COLOR_LOGIC)
