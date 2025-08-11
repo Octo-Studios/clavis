@@ -12,5 +12,15 @@
   "rule.clavis.self_destruction.description": "The arrow gets hot occasionally. Clicking while it's hot will take away health",
 
   "rule.clavis.full_throttle": "Full Throttle!",
-  "rule.clavis.full_throttle.description": "The arrow gets a 20% speed boost with each click. The speed boost decays with time"
+  "rule.clavis.full_throttle.description": "The arrow gets a 20% speed boost with each click. The speed boost decays with time",
+
+  "ui.clavis.hold_shift": "Hold [Shift] for more info",
+
+  "ui.clavis.difficulty.summary": "Difficulty of the minigame",
+  "ui.clavis.time.summary": "Time spent solving the minigame",
+  "ui.clavis.quality.summary": "Quality of the generated loot",
+
+  "ui.clavis.difficulty.description": "Difficulty of the minigame. Calculated approximately from the loot inside the chest",
+  "ui.clavis.time.description": "Time spent solving the minigame. blah blah blah :P",
+  "ui.clavis.quality.description": "Quality of the generated loot. You lose some with each mistake you make"
 }

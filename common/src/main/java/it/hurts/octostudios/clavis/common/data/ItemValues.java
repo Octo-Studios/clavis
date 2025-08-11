@@ -15,13 +15,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public class ItemValues {
     public static final Map<Item, Double> VALUES = new HashMap<>();
-    //public static final Map<ResourceKey<LootTable>, Float> DIFFICULTY_CACHE = new HashMap<>();
-
-    public static final Map<TagKey<Item>, Function<ItemStack, Double>> TAGS = new HashMap<>();
+    public static final Map<TagKey<Item>, Double> TAGS = new HashMap<>();
     public static final Function<Double, Function<ItemStack, Double>> DEFAULT_FUNCTION = value -> itemStack -> {
         double finalValue = value;
 
@@ -33,7 +32,7 @@ public class ItemValues {
     };
 
     public static void addBasicValue(ResourceLocation rl, double value) {
-        TAGS.put(tag(rl), DEFAULT_FUNCTION.apply(value));
+        TAGS.put(tag(rl), value);
     }
 
     public static TagKey<Item> tag(ResourceLocation tag) {
@@ -49,17 +48,24 @@ public class ItemValues {
     }
 
     public static void register() {
-        addBasicValue(c("gems"), 6);
-        addBasicValue(c("storage_blocks"), 16);
-        addBasicValue(c("ores"), 3);
-        addBasicValue(c("ingots"), 4);
-        addBasicValue(c("dusts"), 2);
-        addBasicValue(c("crops"), 4);
+        addBasicValue(c("gems"), 12);
+        addBasicValue(c("storage_blocks"), 24);
+        addBasicValue(c("ores"), 6);
+        addBasicValue(c("raw_materials"), 6);
+        addBasicValue(c("rods"), 8);
+        addBasicValue(c("ingots"), 8);
+        addBasicValue(c("alloys"), 10);
+        addBasicValue(c("circuits"), 10);
+        addBasicValue(c("dusts"), 1);
         addBasicValue(c("foods/golden"), 16);
-        addBasicValue(c("tools"), 8);
-        addBasicValue(c("armors"), 8);
-        addBasicValue(c("music_discs"), 24);
+        addBasicValue(c("tools"), 2);
+        addBasicValue(c("armors"), 2);
+        addBasicValue(c("music_discs"), 8);
 
+        //loadJson();
+    }
+
+    private static void loadJson() {
         InputStream stream = Clavis.class.getResourceAsStream("/internal/clavis/item_values.json");
         if (stream == null) {
             return;
@@ -87,19 +93,14 @@ public class ItemValues {
         }
     }
 
-    public static float getValue(ItemStack stack) {
-//        AtomicInteger value = new AtomicInteger();
-//
-//        ItemValues.TAGS.forEach((itemTagKey, function) -> {
-//            if (stack.getTags().anyMatch(tag -> tag.equals(itemTagKey))) {
-//                value.set(Math.max(value.get(), function.apply(stack)));
-//            }
-//        });
-//
-//        if (value.get() <= 0) {
-//            return DEFAULT_FUNCTION.apply(1).apply(stack);
-//        }
+    public static double getValue(ItemStack stack) {
+        AtomicReference<Double> value = new AtomicReference<>(0d);
+        stack.getTags().forEach(tagKey -> value.set(value.get() + TAGS.getOrDefault(tagKey, 0d)));
 
-        return (float) Math.max(DEFAULT_FUNCTION.apply(VALUES.getOrDefault(stack.getItem(), 1d)).apply(stack), 1);
+        if (value.get() <= 0d) {
+            return DEFAULT_FUNCTION.apply(0.33d).apply(stack);
+        }
+
+        return DEFAULT_FUNCTION.apply(value.get()).apply(stack);
     }
 }

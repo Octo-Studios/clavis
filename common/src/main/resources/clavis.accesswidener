@@ -1,3 +1,1 @@
 accessWidener v2 named
-accessible method net/minecraft/world/level/storage/loot/LootTable <init> (Lnet/minecraft/world/level/storage/loot/parameters/LootContextParamSet;Ljava/util/Optional;Ljava/util/List;Ljava/util/List;)V
-accessible method net/minecraft/world/level/storage/loot/LootPool <init> (Ljava/util/List;Ljava/util/List;Ljava/util/List;Lnet/minecraft/world/level/storage/loot/providers/number/NumberProvider;Lnet/minecraft/world/level/storage/loot/providers/number/NumberProvider;)V

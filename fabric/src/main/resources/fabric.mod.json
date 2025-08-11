@@ -8,7 +8,7 @@
     "${mod_authors}"
   ],
   "license": "${mod_license}",
-  "environment": "client",
+  "environment": "*",
   "entrypoints": {
     "main": [
       "${mod_group}.fabric.ClavisFabric"

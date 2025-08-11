@@ -12,13 +12,13 @@ import java.util.function.Function;
 @AllArgsConstructor
 @Getter
 public enum ValueModifier {
-    TIER(itemStack -> {
-        if (itemStack.getItem() instanceof TieredItem tieredItem) {
-            return tieredItem.getTier().getAttackDamageBonus()/3d+1;
-        }
-
-        return 1d;
-    }),
+//    TIER(itemStack -> {
+//        if (itemStack.getItem() instanceof TieredItem tieredItem) {
+//            return tieredItem.getTier().getAttackDamageBonus()/3d+1;
+//        }
+//
+//        return 1d;
+//    }),
 
     ENCHANTED(itemStack -> {
         ItemEnchantments enchantments = EnchantmentHelper.getEnchantmentsForCrafting(itemStack);
@@ -57,19 +57,27 @@ public enum ValueModifier {
         };
     }),
 
-    VALUABLE_TAGS(itemStack -> {
-        double multiplier = 1f;
-
-        if (itemStack.is(ItemValues.tag("foods/golden"))) {
-            multiplier += 3f;
+    CURIOS(itemStack -> {
+        if (itemStack.getTags().anyMatch(itemTagKey -> itemTagKey.location().getNamespace().equals("curios") || itemTagKey.location().getNamespace().equals("trinkets"))) {
+            return 8d;
         }
 
-        if (itemStack.is(ItemValues.tag("music_discs"))) {
-            multiplier += 2f;
-        }
-
-        return multiplier;
+        return 1d;
     })
+
+//    VALUABLE_TAGS(itemStack -> {
+//        double multiplier = 1f;
+//
+//        if (itemStack.is(ItemValues.tag("foods/golden"))) {
+//            multiplier += 3f;
+//        }
+//
+//        if (itemStack.is(ItemValues.tag("music_discs"))) {
+//            multiplier += 2f;
+//        }
+//
+//        return multiplier;
+//    })
 
 //    POTION_EFFECTS(itemStack -> {
 //        if (itemStack.getItem() instanceof PotionItem) {
@@ -93,7 +101,7 @@ public enum ValueModifier {
 //        int nbtSize = itemStack.getComponents().size();
 //        return 1f + (nbtSize * 0.05f); // +2% per NBT tag entry
 //    }),
-
+//
 //    ARMOR(itemStack -> {
 //        if (itemStack.getItem() instanceof ArmorItem armor) {
 //            return 1d + (armor.getDefense() - 1) / 4d;

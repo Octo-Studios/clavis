@@ -9,6 +9,7 @@ import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidg
 import it.hurts.octostudios.clavis.common.client.screen.widget.MinigameInfoWidget;
 import it.hurts.octostudios.clavis.common.client.screen.widget.RuleWidget;
 import it.hurts.octostudios.clavis.common.data.Lock;
+import it.hurts.octostudios.clavis.common.data.TooltipInfoData;
 import it.hurts.octostudios.clavis.common.minigame.Minigame;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
 import it.hurts.octostudios.clavis.common.network.packet.FinishLockpickingPacket;
@@ -24,6 +25,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.FormattedCharSequence;
+
+import java.util.List;
 
 public class LockpickingScreen extends Screen {
     public static final ResourceLocation EMPTY_HEART = Clavis.path("textures/lockpicking/empty_heart.png");
@@ -71,6 +75,9 @@ public class LockpickingScreen extends Screen {
         });
 
         game.processOnTickRules();
+        if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.position().distanceToSqr(blockPos.getCenter()) > 256) {
+            Minecraft.getInstance().setScreen(null);
+        }
     }
 
     public void win() {
@@ -148,6 +155,13 @@ public class LockpickingScreen extends Screen {
         }
 
         guiGraphics.pose().popPose();
+    }
+
+    public static void renderTooltip(TooltipInfoData tooltipInfoData, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, boolean isDescription) {
+        List<FormattedCharSequence> toRender = isDescription ? tooltipInfoData.getDescription() : tooltipInfoData.getSummary();
+        int length = isDescription ? tooltipInfoData.getDescriptionLength() : tooltipInfoData.getSummaryLength();
+
+
     }
 
     @Override

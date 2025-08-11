@@ -10,6 +10,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -77,6 +78,11 @@ public class RuleWidget extends AbstractWidget {
         }
         guiGraphics.pose().popPose();
         guiGraphics.pose().popPose();
+    }
+
+    @Override
+    public void playDownSound(SoundManager handler) {
+        //super.playDownSound(handler);
     }
 
     @Override

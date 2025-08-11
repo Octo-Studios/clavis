@@ -343,7 +343,7 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         for (int i = 0; i < 3; i++) {
             Vector2f bananarotate = VectorUtils.rotate(new Vector2f(0, random.nextFloat(30,35)), this.arrowRot);
             ExtendedUIParticle particle = new ExtendedUIParticle(new UIParticle.Texture2D(Clavis.path("textures/particle/pixel.png"), 1, 1), 0.4f,
-                    random.nextInt(10,30), x + bananarotate.x, y + bananarotate.y, UIParticle.Layer.SCREEN, 10);
+                    random.nextInt(10,30), x + bananarotate.x, y + bananarotate.y, UIParticle.Layer.SCREEN, 0);
             particle.setScreen(this.screen);
             particle.setColors(OctoColor.RED, OctoColor.RED, new OctoColor(1f, 1f, 0f, 1f), OctoColor.WHITE, new OctoColor(0.05f, 0.05f, 0.05f, 1f));
             particle.setDirection(new Vector2f(random.nextFloat() - 0.5f, random.nextFloat() - 0.5f).normalize());

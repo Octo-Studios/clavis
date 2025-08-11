@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import it.hurts.octostudios.clavis.common.LockManager;
 import it.hurts.octostudios.clavis.common.data.Box;
@@ -18,7 +19,10 @@ import net.minecraft.commands.arguments.coordinates.WorldCoordinates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.RandomizableContainer;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +30,27 @@ import java.util.UUID;
 public class ClavisCommands {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandBuildContext, net.minecraft.commands.Commands.CommandSelection commandSelection) {
         dispatcher.register(Commands.literal("clavis").requires(source -> source.hasPermission(2))
+                .then(Commands.literal("calculate")
+                        .then(Commands.argument("blockpos", BlockPosArgument.blockPos())
+                                .then(Commands.argument("iterations", IntegerArgumentType.integer(0, 100))
+                                        .executes(context -> {
+                                            ServerLevel level = context.getSource().getLevel();
+                                            BlockPos pos = context.getArgument("blockpos", WorldCoordinates.class).getBlockPos(context.getSource());
+                                            int iterations = context.getArgument("iterations", Integer.class);
+                                            BlockEntity blockEntity = level.getBlockEntity(pos);
+                                            if (!(blockEntity instanceof RandomizableContainer rbe)) {
+                                                context.getSource().sendFailure(Component.literal("Not a randomizable container!"));
+                                                return 1;
+                                            }
+
+                                            float difficulty = (float) LootUtils.calculateDifficulty(context.getSource().getLevel(), pos, rbe, iterations);
+                                            Component component = Component.literal("Difficulty: ").append(Component.literal(String.format("%.1f", difficulty*100)+"%").withColor(LootUtils.getColorForDifficulty(difficulty)));
+                                            context.getSource().sendSystemMessage(component);
+                                            return Command.SINGLE_SUCCESS;
+                                        })
+                                )
+                        )
+                )
                 .then(Commands.literal("lock")
                         .then(Commands.literal("add")
                                 .then(Commands.argument("blockpos", BlockPosArgument.blockPos())
@@ -98,10 +123,10 @@ public class ClavisCommands {
                                                 return 1;
                                             }
 
-                                            MutableComponent component = Component.literal("Locks at "+pos.toShortString()+":").append("\n\n");
+                                            MutableComponent component = Component.literal("Locks at " + pos.toShortString() + ":").append("\n\n");
 
                                             for (Lock lock : locks) {
-                                                component.append(Component.literal(lock.getUuid().toString()+":").withStyle(ChatFormatting.GOLD)).append("\n");
+                                                component.append(Component.literal(lock.getUuid().toString() + ":").withStyle(ChatFormatting.GOLD)).append("\n");
                                                 component.append("    ").append(Component.literal("Type: ").withStyle(ChatFormatting.GRAY)).append(lock.getType().toString()).append("\n");
                                                 component.append("    ").append(Component.literal("Difficulty: ").withStyle(ChatFormatting.GRAY)).append(String.format("%.2f", lock.getDifficulty())).append("\n");
                                                 component.append("    ").append(Component.literal("Seed: ").withStyle(ChatFormatting.GRAY)).append(String.valueOf(lock.getSeed())).append("\n");

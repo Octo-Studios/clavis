@@ -27,6 +27,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.ExplorationMapFunction;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
@@ -63,8 +64,8 @@ public class LootUtils {
         }
     }
 
-    public static float calculateDifficulty(ServerLevel level, BlockPos pos, RandomizableContainer container, int randomIterations) {
-        float value = 0f;
+    public static double calculateDifficulty(ServerLevel level, BlockPos pos, RandomizableContainer container, int randomIterations) {
+        double value = 0f;
         int totalIterations = 0;
         Random random = new Random(container.getLootTableSeed());
 
@@ -87,7 +88,7 @@ public class LootUtils {
             ObjectArrayList<ItemStack> actualItems = buildMainItemList(accessor, makeCtx, actualLootContext, currentSeed, 1f, randomSource);
             actualItems.size(Math.min(actualItems.size(), container.getContainerSize()));
 
-            float iterationValue = 0f;
+            double iterationValue = 0d;
             for (ItemStack stack : actualItems) {
                 if (stack == null) {
                     continue;
@@ -101,7 +102,7 @@ public class LootUtils {
         } while (totalIterations < randomIterations);
 
         value /= totalIterations;
-        return Math.min(value / 128f, 2f);
+        return Math.clamp(value / 192f, 0.01f, 1.5f);
     }
 
     private static final long SEED_STEP = 31571L;
@@ -290,7 +291,9 @@ public class LootUtils {
             }
         }
 
-        return new LootTable(lootTableAccessor.getParamSet(), lootTableAccessor.getRandomSequence(), filteredPools, lootTableAccessor.getFunctions());
+        Constructor<LootTable> constructor = LootTable.class.getDeclaredConstructor(LootContextParamSet.class, Optional.class, List.class, List.class);
+        constructor.setAccessible(true);
+        return constructor.newInstance(lootTableAccessor.getParamSet(), lootTableAccessor.getRandomSequence(), filteredPools, lootTableAccessor.getFunctions());
     }
 
     private static boolean isTreasureMapEntry(LootPoolEntryContainer entry) {
@@ -299,5 +302,9 @@ public class LootUtils {
             return containerAccessor.getFunctions().stream().anyMatch(f -> f instanceof ExplorationMapFunction);
         }
         return false;
+    }
+
+    public static int getColorForDifficulty(float difficulty) {
+        return difficulty < 0.33f ? 0xff33ff22 : difficulty < 0.66f ? 0xffffcc00 : 0xffff0011;
     }
 }
