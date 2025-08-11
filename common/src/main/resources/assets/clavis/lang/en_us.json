@@ -1,26 +1,26 @@
 {
   "rule.clavis.mood_swings": "Mood Swings",
-  "rule.clavis.mood_swings.description": "After each successful click - the arrow changes its direction",
+  "rule.clavis.mood_swings.description": "After each click the pointer changes the direction of its movement",
 
   "rule.clavis.nauseous_carousel": "Nauseous Carousel",
-  "rule.clavis.nauseous_carousel.description": "Every 5 seconds the playing field rotates 90 degrees in a random direction",
+  "rule.clavis.nauseous_carousel.description": "From time to time the game field slowly rotates in a random direction",
 
   "rule.clavis.fake_pin": "Fake Pin",
-  "rule.clavis.fake_pin.description": "Amongst other pins - a fake one appears. Clicking on it will deactivate all active pins. It also moves to a random position with each click",
+  "rule.clavis.fake_pin.description": "A fake pin appears and moves to a random position after each click. Clicking it deactivates all previously activated pins",
 
   "rule.clavis.self_destruction": "Self Destruction Protocol",
-  "rule.clavis.self_destruction.description": "The arrow gets hot occasionally. Clicking while it's hot will take away health",
+  "rule.clavis.self_destruction.description": "The pointer periodically overheats causing any click to take away an extra health point",
 
-  "rule.clavis.full_throttle": "Full Throttle!",
-  "rule.clavis.full_throttle.description": "The arrow gets a 20% speed boost with each click. The speed boost decays with time",
+  "rule.clavis.full_throttle": "Full Throttle",
+  "rule.clavis.full_throttle.description": "The pointer speeds up after each click and gradually slows back down over time",
 
-  "ui.clavis.hold_shift": "Hold [Shift] for more info",
+  "ui.clavis.hold_shift": "Hold Shift for detailed description",
 
-  "ui.clavis.difficulty.summary": "Difficulty of the minigame",
-  "ui.clavis.time.summary": "Time spent solving the minigame",
-  "ui.clavis.quality.summary": "Quality of the generated loot",
+  "ui.clavis.difficulty.summary": "Game Difficulty",
+  "ui.clavis.time.summary": "Game Time",
+  "ui.clavis.quality.summary": "Loot Quality",
 
-  "ui.clavis.difficulty.description": "Difficulty of the minigame. Calculated approximately from the loot inside the chest",
-  "ui.clavis.time.description": "Time spent solving the minigame. blah blah blah :P",
-  "ui.clavis.quality.description": "Quality of the generated loot. You lose some with each mistake you make"
+  "ui.clavis.difficulty.description": "Determined by the average value of loot that could appear in this container and affects the overall difficulty of the game. The difficulty level is also ranked in 3 tiers and determines the number of rules in the mini game.",
+  "ui.clavis.time.description": "Determined by the amount of time from the start of the game until the present moment. Means nothing, but when it reaches 1 minute the whole world will explode!",
+  "ui.clavis.quality.description": "Determines the quality and quantity of loot that will be generated after completing the mini game. Making mistakes during the playthrough reduces this value."
 }
