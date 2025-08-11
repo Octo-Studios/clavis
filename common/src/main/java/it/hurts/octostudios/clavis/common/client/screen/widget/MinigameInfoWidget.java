@@ -25,6 +25,7 @@ public class MinigameInfoWidget extends AbstractWidget {
     public static final ResourceLocation TIME = Clavis.path("textures/icon/time.png");
     public static final ResourceLocation QUALITY = Clavis.path("textures/icon/quality.png");
     public static final ResourceLocation STAT_BG = Clavis.path("textures/lockpicking/stat_background.png");
+    public static final ResourceLocation TOOLTIP = Clavis.path("textures/lockpicking/tooltip.png");
 
     TooltipInfoData difficultyInfo;
     TooltipInfoData timeInfo;
@@ -72,13 +73,16 @@ public class MinigameInfoWidget extends AbstractWidget {
 
         boolean isDescription = LockpickingScreen.hasShiftDown();
 
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(0,0,20);
         if (qualityHovered) {
-            LockpickingScreen.renderTooltip(qualityInfo, guiGraphics, mouseX, mouseY, partialTick, isDescription);
+            LockpickingScreen.renderTooltip(font, qualityInfo, guiGraphics, mouseX, mouseY, partialTick, isDescription);
         } else if (timeHovered) {
-            LockpickingScreen.renderTooltip(timeInfo, guiGraphics, mouseX, mouseY, partialTick, isDescription);
+            LockpickingScreen.renderTooltip(font, timeInfo, guiGraphics, mouseX, mouseY, partialTick, isDescription);
         } else if (difficultyHovered) {
-            LockpickingScreen.renderTooltip(difficultyInfo, guiGraphics, mouseX, mouseY, partialTick, isDescription);
+            LockpickingScreen.renderTooltip(font, difficultyInfo, guiGraphics, mouseX, mouseY, partialTick, isDescription);
         }
+        guiGraphics.pose().popPose();
     }
 
     private void renderStat(GuiGraphics guiGraphics, boolean isHovered, String string, Font font, ResourceLocation icon) {

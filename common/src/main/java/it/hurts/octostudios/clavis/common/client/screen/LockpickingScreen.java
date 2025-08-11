@@ -17,6 +17,7 @@ import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.particle.UIParticle;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.Tickable;
@@ -123,6 +124,8 @@ public class LockpickingScreen extends Screen {
     }
 
     public void animateHeart() {
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.AMETHYST_CLUSTER_BREAK, 1.5f, 0.8f));
+
         float x = this.gear.getX()+this.gear.getWidth()/2f - 64;
         float y = this.gear.getY()+this.gear.getHeight() + 16;
 
@@ -157,11 +160,39 @@ public class LockpickingScreen extends Screen {
         guiGraphics.pose().popPose();
     }
 
-    public static void renderTooltip(TooltipInfoData tooltipInfoData, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, boolean isDescription) {
+    public static void renderTooltip(Font font, TooltipInfoData tooltipInfoData, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, boolean isDescription) {
         List<FormattedCharSequence> toRender = isDescription ? tooltipInfoData.getDescription() : tooltipInfoData.getSummary();
         int length = isDescription ? tooltipInfoData.getDescriptionLength() : tooltipInfoData.getSummaryLength();
+        length = Math.round(length*0.75f)+2;
+        int height = Math.round((toRender.size()-1)*9*0.75f);
 
+        mouseX += 1;
+        mouseY -= (22 + height );
 
+        if (mouseX+length+16 > Minecraft.getInstance().screen.width) {
+            mouseX -= 18 + length;
+        }
+
+        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX, mouseY, 8, 11, 0, 0, 8, 11, 17, 24);
+        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX, mouseY+11, 8, height, 0, 11, 8, 1, 17, 24);
+        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX, mouseY+11+height, 8, 11, 0, 13, 8, 11, 17, 24);
+        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX+8, mouseY, length, 11, 8, 0, 1, 11, 17, 24);
+        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX+8, mouseY+11, length, height, 8, 11, 1, 1, 17, 24);
+        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX+8, mouseY+11+height, length, 11, 8, 13, 1, 11, 17, 24);
+        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX+8+length, mouseY, 8, 11, 9, 0, 8, 11, 17, 24);
+        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX+8+length, mouseY+11, 8, height, 9, 11, 8, 1, 17, 24);
+        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX+8+length, mouseY+11+height, 8, 11, 9, 13, 8, 11, 17, 24);
+
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(mouseX+9, mouseY+8, 1);
+        guiGraphics.pose().scale(0.75f, 0.75f, 1f);
+        for (FormattedCharSequence sequence : toRender) {
+            guiGraphics.drawString(font, sequence, 0, 0, 0xff732f20, false);
+            guiGraphics.pose().translate(0, 9, 0);
+        }
+        guiGraphics.pose().popPose();
+
+        //guiGraphics.renderTooltip(font, toRender, mouseX, mouseY);
     }
 
     @Override
