@@ -77,7 +77,7 @@ public class LootUtils {
         int totalIterations = 0;
         Random random = new Random(container.getLootTableSeed());
 
-        LootTable rawLootTable = level.getServer().reloadableRegistries().getLootTable(container.getLootTable());
+        LootTable rawLootTable = getLootTableSafe(level, container.getLootTable());
         LootTable noMapsTable = stripTreasureMaps(rawLootTable);
         LootTableAccessor accessor = (LootTableAccessor) noMapsTable;
 
@@ -163,7 +163,9 @@ public class LootUtils {
         boolean isLootr = LootrCompat.COMPAT.isLootrBlockEntity(randomizable);
         Container container = isLootr ? LootrCompat.COMPAT.getEmptyInventory(randomizable, player) : randomizable;
         long lootTableSeed = isLootr ? player.getUUID().getLeastSignificantBits() + randomizable.getLootTableSeed() : randomizable.getLootTableSeed();
-        randomizable.setLootTable(null);
+        if (!isLootr) {
+            randomizable.setLootTable(null);
+        }
 
         Function<Long, LootContext> makeCtx = createLootContextFactory(baseBuilder, accessor);
         LootContext defaultContext = makeCtx.apply(lootTableSeed);

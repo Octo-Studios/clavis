@@ -1,6 +1,7 @@
 package it.hurts.octostudios.clavis.common.mixin;
 
 import it.hurts.octostudios.clavis.common.LockManager;
+import it.hurts.octostudios.clavis.common.LootrCompat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -20,6 +21,10 @@ public class BlockMixin {
 
         Level level = (Level) (Object) this;
         if (LockManager.isLocked(level, null, pos) && level instanceof ServerLevel serverLevel) {
+            if (LootrCompat.COMPAT.isStateLootrBarrel(state)) {
+                return;
+            }
+
             LockManager.getLocksAt(serverLevel, null, pos).forEach(lock -> {
                 LockManager.removeLock(serverLevel, lock);
             });

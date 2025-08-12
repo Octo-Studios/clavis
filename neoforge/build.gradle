@@ -34,7 +34,7 @@ dependencies {
 
     modImplementation "dev.architectury:architectury-neoforge:$rootProject.architectury_api_version"
 
-    //implementation "it.hurts.octostudios.octolib:octolib-neoforge:$rootProject.octolib_version"
+    implementation "it.hurts.octostudios.octolib:octolib-neoforge:$rootProject.octolib_version"
 
     modImplementation "noobanidus.mods.lootr:lootr-neoforge:1.21-1.10.35.91"
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }

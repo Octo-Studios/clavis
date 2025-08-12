@@ -99,8 +99,6 @@ subprojects {
         } else file("libs").mkdir()
 
         modCompileOnly "noobanidus.mods.lootr:lootr-common:1.21-1.10.35.91"
-
-        modImplementation "it.hurts.octostudios.octolib:octolib-neoforge:$rootProject.octolib_version"
     }
 
     java {
