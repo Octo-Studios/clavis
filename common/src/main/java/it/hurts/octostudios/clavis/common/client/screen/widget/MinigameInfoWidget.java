@@ -38,9 +38,9 @@ public class MinigameInfoWidget extends AbstractWidget {
         this.game = game;
         Font font = Minecraft.getInstance().font;
 
-        difficultyInfo = new TooltipInfoData(font, "difficulty", Math.round(100/0.75f));
-        timeInfo = new TooltipInfoData(font, "time", Math.round(100/0.75f));
-        qualityInfo = new TooltipInfoData(font, "quality", Math.round(100/0.75f));
+        difficultyInfo = new TooltipInfoData(font, "difficulty", Math.round(128/0.75f));
+        timeInfo = new TooltipInfoData(font, "time", Math.round(128/0.75f));
+        qualityInfo = new TooltipInfoData(font, "quality", Math.round(128/0.75f));
     }
 
     @Override
