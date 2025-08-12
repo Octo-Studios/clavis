@@ -197,11 +197,11 @@ public class LockpickingScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 1) {
-            this.gear.killAllTweens();
-            this.gear = null;
-            rebuildWidgets();
-        }
+//        if (button == 1) {
+//            this.gear.killAllTweens();
+//            this.gear = null;
+//            rebuildWidgets();
+//        }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 

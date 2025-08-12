@@ -129,14 +129,14 @@ public class LootUtils {
         LootParams.Builder baseBuilder = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos));
         baseBuilder.withLuck(player.getLuck()).withParameter(LootContextParams.THIS_ENTITY, player);
 
-        Function<Long, LootContext> makeCtx = createLootContextFactory(randomizable, baseBuilder, accessor);
-        LootContext defaultContext = makeCtx.apply(0L);
-        RandomSource randomSource = defaultContext.getRandom();
-
         // prepare container (handle Lootr compatibility)
         boolean isLootr = LootrCompat.COMPAT.isLootrBlockEntity(randomizable);
         Container container = isLootr ? LootrCompat.COMPAT.getEmptyInventory(randomizable, player) : randomizable;
-        long lootTableSeed = isLootr ? player.getUUID().getLeastSignificantBits() : randomizable.getLootTableSeed();
+        long lootTableSeed = isLootr ? player.getUUID().getLeastSignificantBits() + randomizable.getLootTableSeed() : randomizable.getLootTableSeed();
+
+        Function<Long, LootContext> makeCtx = createLootContextFactory(baseBuilder, accessor);
+        LootContext defaultContext = makeCtx.apply(lootTableSeed);
+        RandomSource randomSource = defaultContext.getRandom();
 
         // build item list according to quality
         ObjectArrayList<ItemStack> mainList = buildMainItemList(accessor, makeCtx, defaultContext, lootTableSeed, quality, randomSource);
@@ -165,8 +165,8 @@ public class LootUtils {
         }
     }
 
-    private static Function<Long, LootContext> createLootContextFactory(RandomizableContainerBlockEntity randomizable, LootParams.Builder baseBuilder, LootTableAccessor accessor) {
-        return seedOffset -> new LootContext.Builder(baseBuilder.create(LootContextParamSets.CHEST)).withOptionalRandomSeed(randomizable.getLootTableSeed() + seedOffset).create(accessor.getRandomSequence());
+    private static Function<Long, LootContext> createLootContextFactory(LootParams.Builder baseBuilder, LootTableAccessor accessor) {
+        return seedOffset -> new LootContext.Builder(baseBuilder.create(LootContextParamSets.CHEST)).withOptionalRandomSeed(seedOffset).create(accessor.getRandomSequence());
     }
 
     private static ObjectArrayList<ItemStack> buildMainItemList(LootTableAccessor accessor, Function<Long, LootContext> makeCtx, LootContext defaultContext, long lootTableSeed, float quality, RandomSource randomSource) {

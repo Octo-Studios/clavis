@@ -12,7 +12,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -21,7 +20,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
@@ -167,7 +165,7 @@ public class LockWorldRenderer {
         }
 
         poseStack.popPose();
-        Minecraft.getInstance().player.displayClientMessage(Component.literal("Rendered locks: " + dataList.size() + ", fps: " + Minecraft.getInstance().getFps()), true);
+        //Minecraft.getInstance().player.displayClientMessage(Component.literal("Rendered locks: " + dataList.size() + ", fps: " + Minecraft.getInstance().getFps()), true);
     }
 
     private static void renderChainAt(VertexConsumer buf, PoseStack ps, double x, double y, double z, Quaternionf rotation, int light, float length) {

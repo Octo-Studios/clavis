@@ -1,18 +1,11 @@
 package it.hurts.octostudios.clavis.common.data;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import it.hurts.octostudios.clavis.common.Clavis;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -65,33 +58,33 @@ public class ItemValues {
         //loadJson();
     }
 
-    private static void loadJson() {
-        InputStream stream = Clavis.class.getResourceAsStream("/internal/clavis/item_values.json");
-        if (stream == null) {
-            return;
-        }
-
-        JsonElement json = JsonParser.parseReader(new InputStreamReader(stream));
-        if (json == null || !json.isJsonObject()) {
-            return;
-        }
-
-        JsonObject obj = json.getAsJsonObject();
-        for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
-            try {
-                ResourceLocation key = ResourceLocation.parse(entry.getKey());
-                double value = entry.getValue().getAsDouble();
-                Item item = BuiltInRegistries.ITEM.get(key);
-                if (item == null) {
-                    continue;
-                }
-
-                ItemValues.VALUES.put(item, value);
-            } catch (Exception e) {
-                System.err.println("Invalid entry: " + entry.getKey() + " -> " + entry.getValue());
-            }
-        }
-    }
+//    private static void loadJson() {
+//        InputStream stream = Clavis.class.getResourceAsStream("/internal/clavis/item_values.json");
+//        if (stream == null) {
+//            return;
+//        }
+//
+//        JsonElement json = JsonParser.parseReader(new InputStreamReader(stream));
+//        if (json == null || !json.isJsonObject()) {
+//            return;
+//        }
+//
+//        JsonObject obj = json.getAsJsonObject();
+//        for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+//            try {
+//                ResourceLocation key = ResourceLocation.parse(entry.getKey());
+//                double value = entry.getValue().getAsDouble();
+//                Item item = BuiltInRegistries.ITEM.get(key);
+//                if (item == null) {
+//                    continue;
+//                }
+//
+//                ItemValues.VALUES.put(item, value);
+//            } catch (Exception e) {
+//                System.err.println("Invalid entry: " + entry.getKey() + " -> " + entry.getValue());
+//            }
+//        }
+//    }
 
     public static double getValue(ItemStack stack) {
         AtomicReference<Double> value = new AtomicReference<>(0d);
