@@ -23,7 +23,7 @@ public class ChunkListeners {
                 return;
             }
 
-            float difficulty = (float) LootUtils.calculateDifficulty(level, blockPos, randomizable, 0);
+            float difficulty = (float) LootUtils.calculateDifficulty(level, blockPos, randomizable, 0, false, null);
             if (difficulty < 0.05f) {
                 return;
             }

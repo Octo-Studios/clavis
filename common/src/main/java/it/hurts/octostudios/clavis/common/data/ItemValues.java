@@ -41,14 +41,14 @@ public class ItemValues {
     }
 
     public static void register() {
-        addBasicValue(c("gems"), 12);
-        addBasicValue(c("storage_blocks"), 24);
-        addBasicValue(c("ores"), 6);
-        addBasicValue(c("raw_materials"), 6);
-        addBasicValue(c("rods"), 8);
-        addBasicValue(c("ingots"), 8);
-        addBasicValue(c("alloys"), 10);
-        addBasicValue(c("circuits"), 10);
+        addBasicValue(c("gems"), 8);
+        addBasicValue(c("storage_blocks"), 16);
+        addBasicValue(c("ores"), 4);
+        addBasicValue(c("raw_materials"), 4);
+        addBasicValue(c("rods"), 6);
+        addBasicValue(c("ingots"), 5);
+        addBasicValue(c("alloys"), 6);
+        addBasicValue(c("circuits"), 8);
         addBasicValue(c("dusts"), 1);
         addBasicValue(c("foods/golden"), 16);
         addBasicValue(c("tools"), 2);

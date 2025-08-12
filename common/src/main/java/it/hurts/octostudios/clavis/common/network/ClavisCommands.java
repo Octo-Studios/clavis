@@ -43,7 +43,7 @@ public class ClavisCommands {
                                                 return 1;
                                             }
 
-                                            float difficulty = (float) LootUtils.calculateDifficulty(context.getSource().getLevel(), pos, rbe, iterations);
+                                            float difficulty = (float) LootUtils.calculateDifficulty(context.getSource().getLevel(), pos, rbe, iterations, true, context.getSource());
                                             Component component = Component.literal("Difficulty: ").append(Component.literal(String.format("%.1f", difficulty*100)+"%").withColor(LootUtils.getColorForDifficulty(difficulty)));
                                             context.getSource().sendSystemMessage(component);
                                             return Command.SINGLE_SUCCESS;

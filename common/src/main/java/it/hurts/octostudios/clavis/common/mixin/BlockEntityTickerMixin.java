@@ -20,7 +20,7 @@ public class BlockEntityTickerMixin {
     @Inject(require = 0, method = "onServerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/entity/RandomizableContainerBlockEntity;setLootTable(Lnet/minecraft/resources/ResourceKey;J)V", shift = At.Shift.AFTER))
     private static void injected(CallbackInfo ci, @Local BlockEntityTicker.Entry entry, @Local(name = "rbe") RandomizableContainerBlockEntity rbe, @Local ServerLevel level) {
         long startTimestamp = System.nanoTime();
-        float difficulty = (float) LootUtils.calculateDifficulty(level, entry.getPosition(), rbe, 20);
+        float difficulty = (float) LootUtils.calculateDifficulty(level, entry.getPosition(), rbe, 20, false, null);
         //OctoLib.LOGGER.info("Elapsed time: {}", String.format("%.3f", (System.nanoTime() - startTimestamp) / 1000000d));
 
         if (difficulty < 0.05f) {

@@ -9,8 +9,11 @@ import it.hurts.octostudios.clavis.common.mixin.LootTableAccessor;
 import it.hurts.octostudios.octolib.OctoLib;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.SneakyThrows;
+import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -32,6 +35,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -64,7 +68,11 @@ public class LootUtils {
         }
     }
 
-    public static double calculateDifficulty(ServerLevel level, BlockPos pos, RandomizableContainer container, int randomIterations) {
+    public static double calculateDifficulty(ServerLevel level, BlockPos pos, RandomizableContainer container, int randomIterations, boolean debug, @Nullable CommandSourceStack source) {
+        if (debug) {
+            source.sendSystemMessage(Component.literal("CALCULATING..."));
+        }
+
         double value = 0f;
         int totalIterations = 0;
         Random random = new Random(container.getLootTableSeed());
@@ -80,6 +88,10 @@ public class LootUtils {
         Function<Long, LootContext> makeCtx = seed -> new LootContext.Builder(builder.create(LootContextParamSets.CHEST)).withOptionalRandomSeed(seed).create(randomSequence);
 
         do {
+            if (debug) {
+                source.sendSystemMessage(Component.literal("Iteration: "+totalIterations).withStyle(ChatFormatting.BOLD, ChatFormatting.BLUE));
+            }
+
             long currentSeed = totalIterations > 0 ? random.nextLong() : container.getLootTableSeed();
 
             LootContext actualLootContext = makeCtx.apply(currentSeed);
@@ -94,15 +106,33 @@ public class LootUtils {
                     continue;
                 }
 
-                iterationValue += ItemValues.getValue(stack);
+                double stackValue = ItemValues.getValue(stack);
+
+                if (debug) {
+                    source.sendSystemMessage(Component.literal("  ").append(stack.getDisplayName().copy().append(" x"+stack.getCount()+": ").append(Component.literal(String.format("%.2f", stackValue)).withStyle(ChatFormatting.GOLD))));
+                }
+
+                iterationValue += stackValue;
             }
 
+            if (debug) {
+                source.sendSystemMessage(Component.literal("  Iteration "+totalIterations+" value: "+String.format("%.2f", iterationValue)));
+            }
             totalIterations++;
             value += iterationValue;
         } while (totalIterations < randomIterations);
 
+        if (debug) {
+            source.sendSystemMessage(Component.literal("Finished iterating. Total value: "+String.format("%.3f", value)));
+        }
+
         value /= totalIterations;
-        return Math.clamp(value / 192f, 0.01f, 1.5f);
+
+        if (debug) {
+            source.sendSystemMessage(Component.literal("Dividing by number of iterations ("+totalIterations+"): "+String.format("%.3f", value)));
+        }
+
+        return Math.clamp(value / 224f, 0.01f, 1.5f);
     }
 
     private static final long SEED_STEP = 31571L;
@@ -133,6 +163,7 @@ public class LootUtils {
         boolean isLootr = LootrCompat.COMPAT.isLootrBlockEntity(randomizable);
         Container container = isLootr ? LootrCompat.COMPAT.getEmptyInventory(randomizable, player) : randomizable;
         long lootTableSeed = isLootr ? player.getUUID().getLeastSignificantBits() + randomizable.getLootTableSeed() : randomizable.getLootTableSeed();
+        randomizable.setLootTable(null);
 
         Function<Long, LootContext> makeCtx = createLootContextFactory(baseBuilder, accessor);
         LootContext defaultContext = makeCtx.apply(lootTableSeed);
