@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "cc",
+    "c ",
+    "c "
+  ],
+  "key": {
+    "c": {
+      "item": "minecraft:copper_ingot"
+    }
+  },
+  "result": {
+    "id": "clavis:lock_pick",
+    "count": 4
+  }
+}

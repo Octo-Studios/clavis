@@ -15,6 +15,8 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
@@ -58,6 +60,7 @@ public class RemoveLockPacket extends Packet {
         AABB aabb = lock.getBox().getAABB();
         Random random = new Random();
 
+        level.playSound(packetContext.getPlayer(), pos.x, pos.y, pos.z, SoundEvents.CHAIN_BREAK, SoundSource.BLOCKS, 1f, 1.125f);
         for (int i = 0; i < 4; i++) {
             Vec3 p = new Vec3(
                     pos.x,

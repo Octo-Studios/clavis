@@ -5,12 +5,14 @@ import it.hurts.octostudios.clavis.common.data.ItemValues;
 import it.hurts.octostudios.clavis.common.network.ClavisCommands;
 import it.hurts.octostudios.clavis.common.network.LockInteractionBlockers;
 import it.hurts.octostudios.clavis.common.network.PacketRegistry;
+import it.hurts.octostudios.clavis.common.registry.ItemRegistry;
 import net.minecraft.resources.ResourceLocation;
 
 public class Clavis {
     public static final String MODID = "clavis";
 
     public static void init() {
+        ItemRegistry.ITEMS.register();
         PacketRegistry.register();
         ItemValues.register();
 

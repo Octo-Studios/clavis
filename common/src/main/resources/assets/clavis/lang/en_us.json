@@ -22,5 +22,7 @@
 
   "ui.clavis.difficulty.description": "Determined by the average value of loot that could appear in this container and affects the overall difficulty of the game. The difficulty level is also ranked in 3 tiers and determines the number of rules in the mini game.",
   "ui.clavis.time.description": "Determined by the amount of time from the start of the game until the present moment. Means nothing, but when it reaches 1 minute the whole world will explode!",
-  "ui.clavis.quality.description": "Determines the quality and quantity of loot that will be generated after completing the mini game. Making mistakes during the playthrough reduces this value."
+  "ui.clavis.quality.description": "Determines the quality and quantity of loot that will be generated after completing the mini game. Making mistakes during the playthrough reduces this value.",
+
+  "item.clavis.lock_pick": "Lock Pick"
 }

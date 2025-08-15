@@ -54,7 +54,7 @@ public class LockInteractionBlockers {
         }
 
         if (player.level().isClientSide()) {
-            NetworkManager.sendToServer(new CheckIfLockedPacket(pos));
+            NetworkManager.sendToServer(new CheckIfLockedPacket(pos, interactionHand));
         }
 
         return cancelInteraction(player, interactionHand, pos, direction);
