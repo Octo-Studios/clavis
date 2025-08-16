@@ -26,7 +26,7 @@ import java.util.Random;
 
 public class RemoveLockPacket extends Packet {
     public static final Type<RemoveLockPacket> TYPE =
-            Packet.createType(Clavis.MODID, "remove_lock");
+            Packet.createType(Clavis.MOD_ID, "remove_lock");
     public static final StreamCodec<RegistryFriendlyByteBuf, RemoveLockPacket> STREAM_CODEC =
             Packet.createCodec(RemoveLockPacket::write, RemoveLockPacket::new);
 

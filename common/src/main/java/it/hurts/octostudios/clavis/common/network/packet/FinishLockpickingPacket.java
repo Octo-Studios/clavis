@@ -14,7 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class FinishLockpickingPacket extends Packet {
     public static final Type<FinishLockpickingPacket> TYPE =
-            Packet.createType(Clavis.MODID, "finish_lockpick");
+            Packet.createType(Clavis.MOD_ID, "finish_lockpick");
     public static final StreamCodec<RegistryFriendlyByteBuf, FinishLockpickingPacket> STREAM_CODEC =
             Packet.createCodec(FinishLockpickingPacket::write, FinishLockpickingPacket::new);
 

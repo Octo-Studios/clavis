@@ -16,7 +16,7 @@ import java.util.List;
 
 public class LockRequestPacket extends Packet {
     public static final Type<LockRequestPacket> TYPE =
-            Packet.createType(Clavis.MODID, "request_locks");
+            Packet.createType(Clavis.MOD_ID, "request_locks");
     public static final StreamCodec<RegistryFriendlyByteBuf, LockRequestPacket> STREAM_CODEC =
             Packet.createCodec(LockRequestPacket::write, LockRequestPacket::new);
 

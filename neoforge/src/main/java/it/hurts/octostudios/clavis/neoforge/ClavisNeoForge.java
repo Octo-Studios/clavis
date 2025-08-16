@@ -12,7 +12,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.level.ChunkEvent;
 
-@Mod(Clavis.MODID)
+@Mod(Clavis.MOD_ID)
 @EventBusSubscriber
 public final class ClavisNeoForge {
     public ClavisNeoForge(IEventBus modBus) {

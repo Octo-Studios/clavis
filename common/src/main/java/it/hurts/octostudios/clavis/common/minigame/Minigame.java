@@ -1,5 +1,6 @@
 package it.hurts.octostudios.clavis.common.minigame;
 
+import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.client.screen.widget.AbstractMinigameWidget;
 import it.hurts.octostudios.clavis.common.data.Lock;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
@@ -27,12 +28,12 @@ public class Minigame<T extends AbstractMinigameWidget<?>> {
     public Minigame(T widget) {
         this.widget = widget;
         this.difficulty = 1f;
-        this.lootQuality = 2f;
+        this.lootQuality = Clavis.CONFIG.getStartingQuality();
     }
 
     public void hurt() {
         this.health--;
-        this.lootQuality -= 0.2f;
+        this.lootQuality -= Clavis.CONFIG.getQualityPenaltyPerHit();
         this.widget.getScreen().animateHeart();
 
         if (this.health <= 0) {

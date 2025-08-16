@@ -19,7 +19,7 @@ import java.util.List;
 
 public class CheckIfLockedPacket extends Packet {
     public static final Type<CheckIfLockedPacket> TYPE =
-            Packet.createType(Clavis.MODID, "check_locked");
+            Packet.createType(Clavis.MOD_ID, "check_locked");
     public static final StreamCodec<RegistryFriendlyByteBuf, CheckIfLockedPacket> STREAM_CODEC =
             Packet.createCodec(CheckIfLockedPacket::write, CheckIfLockedPacket::new);
 
@@ -51,7 +51,7 @@ public class CheckIfLockedPacket extends Packet {
 
         ItemStack itemInHand = player.getItemInHand(hand);
         if (itemInHand.is(ItemRegistry.LOCK_PICK.get())) {
-            LootUtils.unlockWithQuality(player.serverLevel(), player, blockPos, locks.getFirst(), 2f);
+            LootUtils.unlockWithQuality(player.serverLevel(), player, blockPos, locks.getFirst(), Clavis.CONFIG.getStartingQuality());
             itemInHand.shrink(1);
             return;
         }

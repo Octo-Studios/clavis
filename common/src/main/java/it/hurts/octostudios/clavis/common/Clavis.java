@@ -1,20 +1,22 @@
 package it.hurts.octostudios.clavis.common;
 
 import dev.architectury.event.events.common.*;
-import it.hurts.octostudios.clavis.common.data.ItemValues;
 import it.hurts.octostudios.clavis.common.network.ClavisCommands;
 import it.hurts.octostudios.clavis.common.network.LockInteractionBlockers;
 import it.hurts.octostudios.clavis.common.network.PacketRegistry;
 import it.hurts.octostudios.clavis.common.registry.ItemRegistry;
+import it.hurts.octostudios.octolib.module.config.ConfigManager;
 import net.minecraft.resources.ResourceLocation;
 
 public class Clavis {
-    public static final String MODID = "clavis";
+    public static final String MOD_ID = "clavis";
+    public static final Config CONFIG = new Config();
 
     public static void init() {
+        ConfigManager.registerConfig(Clavis.MOD_ID, Clavis.CONFIG);
+
         ItemRegistry.ITEMS.register();
         PacketRegistry.register();
-        ItemValues.register();
 
         LootrCompat.init();
 
@@ -29,6 +31,6 @@ public class Clavis {
     }
 
     public static ResourceLocation path(String path) {
-        return ResourceLocation.fromNamespaceAndPath(Clavis.MODID, path);
+        return ResourceLocation.fromNamespaceAndPath(Clavis.MOD_ID, path);
     }
 }

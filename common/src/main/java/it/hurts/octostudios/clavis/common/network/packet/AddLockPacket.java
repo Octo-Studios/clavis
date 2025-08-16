@@ -13,7 +13,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public class AddLockPacket extends Packet {
     public static final Type<AddLockPacket> TYPE =
-            Packet.createType(Clavis.MODID, "add_lock");
+            Packet.createType(Clavis.MOD_ID, "add_lock");
     public static final StreamCodec<RegistryFriendlyByteBuf, AddLockPacket> STREAM_CODEC =
             Packet.createCodec(AddLockPacket::write, AddLockPacket::new);
 

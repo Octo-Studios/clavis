@@ -8,16 +8,14 @@ import it.hurts.octostudios.octolib.client.screen.widget.Child;
 import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector2f;
 
 public class LockPinWidget extends AbstractWidget implements Child<RotatingParent> {
-    public static final ResourceLocation ACTIVE = ResourceLocation.fromNamespaceAndPath(Clavis.MODID, "textures/minigame/pin_active.png");
-    public static final ResourceLocation INACTIVE = ResourceLocation.fromNamespaceAndPath(Clavis.MODID, "textures/minigame/pin_inactive.png");
+    public static final ResourceLocation ACTIVE = ResourceLocation.fromNamespaceAndPath(Clavis.MOD_ID, "textures/minigame/pin_active.png");
+    public static final ResourceLocation INACTIVE = ResourceLocation.fromNamespaceAndPath(Clavis.MOD_ID, "textures/minigame/pin_inactive.png");
 
     RotatingParent parent;
     public boolean active;

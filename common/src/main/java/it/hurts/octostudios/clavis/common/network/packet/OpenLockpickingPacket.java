@@ -3,7 +3,6 @@ package it.hurts.octostudios.clavis.common.network.packet;
 import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.ClavisClient;
-import it.hurts.octostudios.clavis.common.client.render.LockWorldRenderer;
 import it.hurts.octostudios.clavis.common.client.screen.LockpickingScreen;
 import it.hurts.octostudios.clavis.common.data.Lock;
 import it.hurts.octostudios.octolib.module.network.Packet;
@@ -17,7 +16,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public class OpenLockpickingPacket extends Packet {
     public static final Type<OpenLockpickingPacket> TYPE =
-            Packet.createType(Clavis.MODID, "lockpicking_packet");
+            Packet.createType(Clavis.MOD_ID, "lockpicking_packet");
     public static final StreamCodec<RegistryFriendlyByteBuf, OpenLockpickingPacket> STREAM_CODEC =
             Packet.createCodec(OpenLockpickingPacket::write, OpenLockpickingPacket::new);
 
