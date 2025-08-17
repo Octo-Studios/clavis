@@ -1,14 +1,18 @@
-package it.hurts.octostudios.clavis.common;
+package it.hurts.octostudios.clavis.common.config;
 
 import it.hurts.octostudios.octolib.module.config.annotation.Prop;
 import it.hurts.octostudios.octolib.module.config.impl.OctoConfig;
 import lombok.Data;
+import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Data
 public class Config implements OctoConfig {
+    @Prop(comment = "Minigame type by dimension.")
+    private Map<String, String> minigameType = new HashMap<>();
+
     @Prop(comment = "Starting quality of a minigame.", inlineComment = "0.0 - 10.0")
     private float startingQuality = 2f;
 
@@ -21,7 +25,29 @@ public class Config implements OctoConfig {
     @Prop(comment = "A collection of valuable tags and its values. If an item doesn't have any of these tags, it will use the base item value above.")
     private Map<String, Double> valuableTags = new HashMap<>();
 
+    @Prop(comment = "Additional value multipliers. Added on top of item value")
+    private ModifiersConfig modifiers = new ModifiersConfig();
+
+    @Prop(comment = "Linearly maps calculated item values within this range to a 0% – 100% difficulty scale.")
+    private Range itemValueRange = new Range(0d, 224d);
+
+    @Prop(comment = "Difficulty threshold for spawning locks. Locks with difficulty below this value will not spawn.")
+    private double difficultyThreshold = 0.05d;
+
+    @Prop(comment = "Clamps the difficulty to this value.")
+    private double upperDifficultyClamp = 1.5d;
+
+    @Prop(comment = "Multiplies every difficulty by this value before clamping, simple as that.")
+    private double globalDifficultyMultiplier = 1.0d;
+
+    @Prop(comment = "Multiplies the difficulty for the loot table by the value provided below (before clamping).")
+    private Map<String, Double> lootTableMultiplier = new HashMap<>();
+
     public Config() {
+        minigameType.put(Level.OVERWORLD.registry().toString(), "clavis:overworld");
+
+        lootTableMultiplier.put("minecraft:chests/example", 1.5d);
+
         valuableTags.put("c:ingots", 5d);
         valuableTags.put("c:gems", 8d);
         valuableTags.put("c:storage_blocks", 16d);

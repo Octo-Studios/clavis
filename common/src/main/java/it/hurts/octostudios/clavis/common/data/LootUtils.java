@@ -1,6 +1,7 @@
 package it.hurts.octostudios.clavis.common.data;
 
 import dev.architectury.platform.Platform;
+import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.LockManager;
 import it.hurts.octostudios.clavis.common.LootrCompat;
 import it.hurts.octostudios.clavis.common.mixin.LootPoolAccessor;
@@ -77,7 +78,12 @@ public class LootUtils {
         int totalIterations = 0;
         Random random = new Random(container.getLootTableSeed());
 
-        LootTable rawLootTable = getLootTableSafe(level, container.getLootTable());
+        ResourceKey<LootTable> lootTableKey = container.getLootTable();
+        LootTable rawLootTable = getLootTableSafe(level, lootTableKey);
+        if (rawLootTable == null || lootTableKey == null) {
+            return 0;
+        }
+
         LootTable noMapsTable = stripTreasureMaps(rawLootTable);
         LootTableAccessor accessor = (LootTableAccessor) noMapsTable;
 
@@ -132,7 +138,13 @@ public class LootUtils {
             source.sendSystemMessage(Component.literal("Dividing by number of iterations ("+totalIterations+"): "+String.format("%.3f", value)));
         }
 
-        return Math.clamp(value / 224f, 0.01f, 1.5f);
+        double bottomOffset = Clavis.CONFIG.getItemValueRange().getMin();
+        double topValue = Clavis.CONFIG.getItemValueRange().getMax() - bottomOffset;
+        double unclampedDifficulty = (value / topValue)
+                * Clavis.CONFIG.getGlobalDifficultyMultiplier()
+                * Clavis.CONFIG.getLootTableMultiplier().getOrDefault(lootTableKey.location().toString(), 1d);
+
+        return Math.clamp(unclampedDifficulty, 0.01f, Clavis.CONFIG.getUpperDifficultyClamp());
     }
 
     private static final long SEED_STEP = 31571L;

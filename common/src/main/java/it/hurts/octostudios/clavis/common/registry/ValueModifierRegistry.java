@@ -16,6 +16,8 @@ public class ValueModifierRegistry {
 
     public static final ValueModifier ENCHANTMENT = createModifier(Clavis.path("enchantment"), itemStack -> {
         ItemEnchantments enchantments = EnchantmentHelper.getEnchantmentsForCrafting(itemStack);
+        double perEnchantmentLevel = Clavis.CONFIG.getModifiers().getPerEnchantmentLevel();
+
         if (enchantments.isEmpty()) {
             return 1d;
         }
@@ -24,7 +26,7 @@ public class ValueModifierRegistry {
 
         enchantments.keySet().forEach(enchantmentHolder -> {
             int level = itemStack.getEnchantments().getLevel(enchantmentHolder);
-            multiplier.updateAndGet(v -> v + (level * 0.25d));
+            multiplier.updateAndGet(v -> v + (level * perEnchantmentLevel));
         });
 
         return multiplier.get();
@@ -34,7 +36,7 @@ public class ValueModifierRegistry {
         // reward low-stack-size items with a value boost
         int maxStack = itemStack.getMaxStackSize();
         if (maxStack <= 16) {
-            return 1.25d;
+            return Clavis.CONFIG.getModifiers().getLowStackSize();
         } else if (maxStack <= 64) {
             return 1d;
         }
@@ -43,17 +45,12 @@ public class ValueModifierRegistry {
 
     public static final ValueModifier RARITY = createModifier(Clavis.path("rarity"), itemStack -> {
         Rarity rarity = itemStack.getRarity();
-        return switch (rarity) {
-            case UNCOMMON -> 1.25d;
-            case RARE -> 1.5d;
-            case EPIC -> 2d;
-            default -> 1d;
-        };
+        return Clavis.CONFIG.getModifiers().getRarity().getOrDefault(rarity, 1.0);
     });
 
     public static final ValueModifier CURIOS = createModifier(Clavis.path("curios"), itemStack -> {
         if (itemStack.getTags().anyMatch(itemTagKey -> itemTagKey.location().getNamespace().equals("curios") || itemTagKey.location().getNamespace().equals("trinkets"))) {
-            return 8d;
+            return Clavis.CONFIG.getModifiers().getIsCuriosOrTrinkets();
         }
         return 1d;
     });

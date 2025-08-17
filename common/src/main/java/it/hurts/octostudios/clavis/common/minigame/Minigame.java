@@ -5,10 +5,14 @@ import it.hurts.octostudios.clavis.common.client.screen.widget.AbstractMinigameW
 import it.hurts.octostudios.clavis.common.data.Lock;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
 import lombok.Getter;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.*;
 
 public class Minigame<T extends AbstractMinigameWidget<?>> {
+    @Getter
+    ResourceLocation minigameType;
+
     T widget;
     @Getter
     List<Rule<T>> rules = new ArrayList<>();

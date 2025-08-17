@@ -1,6 +1,7 @@
 package it.hurts.octostudios.clavis.common.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.LockManager;
 import it.hurts.octostudios.clavis.common.data.Box;
 import it.hurts.octostudios.clavis.common.data.Lock;
@@ -25,7 +26,7 @@ public class BlockEntityTickerMixin {
         float difficulty = (float) LootUtils.calculateDifficulty(level, entry.getPosition(), rbe, 20, false, null);
         //OctoLib.LOGGER.info("Elapsed time: {}", String.format("%.3f", (System.nanoTime() - startTimestamp) / 1000000d));
 
-        if (difficulty < 0.05f) {
+        if (difficulty < Clavis.CONFIG.getDifficultyThreshold()) {
             return;
         }
 

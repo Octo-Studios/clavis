@@ -1,6 +1,7 @@
 package it.hurts.octostudios.clavis.common;
 
 import dev.architectury.event.events.common.*;
+import it.hurts.octostudios.clavis.common.config.Config;
 import it.hurts.octostudios.clavis.common.network.ClavisCommands;
 import it.hurts.octostudios.clavis.common.network.LockInteractionBlockers;
 import it.hurts.octostudios.clavis.common.network.PacketRegistry;

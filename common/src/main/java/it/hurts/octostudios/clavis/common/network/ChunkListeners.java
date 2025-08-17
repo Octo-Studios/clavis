@@ -1,5 +1,6 @@
 package it.hurts.octostudios.clavis.common.network;
 
+import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.LockManager;
 import it.hurts.octostudios.clavis.common.LootrCompat;
 import it.hurts.octostudios.clavis.common.data.Box;
@@ -24,7 +25,7 @@ public class ChunkListeners {
             }
 
             float difficulty = (float) LootUtils.calculateDifficulty(level, blockPos, randomizable, 0, false, null);
-            if (difficulty < 0.05f) {
+            if (difficulty < Clavis.CONFIG.getDifficultyThreshold()) {
                 return;
             }
 
