@@ -44,7 +44,7 @@ public class Config implements OctoConfig {
     private Map<String, Double> lootTableMultiplier = new HashMap<>();
 
     public Config() {
-        minigameType.put(Level.OVERWORLD.registry().toString(), "clavis:overworld");
+        minigameType.put(Level.OVERWORLD.location().toString(), "clavis:overworld");
 
         lootTableMultiplier.put("minecraft:chests/example", 1.5d);
 
