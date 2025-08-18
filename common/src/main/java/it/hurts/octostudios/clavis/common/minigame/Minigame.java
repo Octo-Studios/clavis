@@ -52,7 +52,7 @@ public class Minigame<T extends AbstractMinigameWidget<?>> {
         widget.playLoseAnimation();
     }
 
-    public void win() {
+    public void finish() {
         widget.playWinAnimation();
     }
 

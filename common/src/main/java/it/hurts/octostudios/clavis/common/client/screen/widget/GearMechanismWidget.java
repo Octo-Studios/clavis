@@ -125,7 +125,7 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
 
     @Override
     public void playWinAnimation() {
-        this.screen.win();
+        this.screen.finish(false);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         this.mainTween = Tween.create();
         this.mainTween.tweenMethod(this::setGameColor, OctoColor.WHITE, new OctoColor(1f, 0.2f, 0.2f, 1f), 1.5f);
         this.mainTween.tweenInterval(0.5f);
-        this.mainTween.tweenRunnable(this.screen::win);
+        this.mainTween.tweenRunnable(() -> this.screen.finish(true));
         this.mainTween.start();
     }
 
@@ -237,7 +237,7 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         this.screen.getGame().processOnClickRules(result);
 
         if (this.areAllPinsActive()) {
-            this.screen.getGame().win();
+            this.screen.getGame().finish();
         }
 
         return result;

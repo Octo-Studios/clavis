@@ -81,9 +81,9 @@ public class LockpickingScreen extends Screen {
         }
     }
 
-    public void win() {
+    public void finish(boolean hasLostTheGame) {
         ClavisClient.SCREEN_CACHE.remove(lock);
-        NetworkManager.sendToServer(new FinishLockpickingPacket(blockPos, lock, this.game.getLootQuality()));
+        NetworkManager.sendToServer(new FinishLockpickingPacket(blockPos, lock, this.game.getLootQuality(), hasLostTheGame));
         Minecraft.getInstance().setScreen(null);
     }
 

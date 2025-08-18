@@ -42,6 +42,9 @@ public class Config implements OctoConfig {
 
     @Prop(comment = "Multiplies the difficulty for the loot table by the value provided below (before clamping).")
     private Map<String, Double> lootTableMultiplier = new HashMap<>();
+    
+    @Prop(comment = "Determines whether or not losing the minigame unlocks the lock.")
+    private boolean unlocksAfterLosing = true;
 
     public Config() {
         minigameType.put(Level.OVERWORLD.location().toString(), "clavis:overworld");
