@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.mojang.serialization.DataResult;
 import dev.architectury.networking.NetworkManager;
+import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.client.render.LockWorldRenderer;
 import it.hurts.octostudios.clavis.common.network.packet.AddLockPacket;
 import it.hurts.octostudios.clavis.common.network.packet.RemoveLockPacket;
@@ -103,7 +104,9 @@ public class ClavisSavedData extends SavedData {
             }
         }
 
-        NetworkManager.sendToPlayers(toSend, new AddLockPacket(lock));
+        if (!Clavis.CONFIG.isDisableLockRendering()) {
+            NetworkManager.sendToPlayers(toSend, new AddLockPacket(lock));
+        }
 
         this.setDirty();
     }

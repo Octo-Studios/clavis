@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
@@ -108,14 +109,17 @@ public class LockWorldRenderer {
             }
 
             AABB renderBox = new AABB(min, max);
-            Vec3 center = new Vec3(Mth.lerp(0.5, min.x, max.x), max.y, Mth.lerp(0.5, min.z, max.z));
-            BlockPos pos = new BlockPos(Mth.floor(center.x), Mth.floor(center.y + 0.66f), Mth.floor(center.z));
+            Vec3 center = new Vec3(Mth.lerp(0.5, min.x, max.x), max.y+0.5f, Mth.lerp(0.5, min.z, max.z));
+            BlockPos pos = new BlockPos(Mth.floor(center.x), Mth.floor(center.y), Mth.floor(center.z));
             int sky = level.getBrightness(LightLayer.SKY, pos);
             int block = level.getBrightness(LightLayer.BLOCK, pos);
             int light = LightTexture.pack(block, sky);
             float hash = (new Random(lock.getSeed()).nextFloat() * (float) Math.PI);
             float ticks = (level.getGameTime() + partialTick.getGameTimeDeltaPartialTick(true)) / 10f + hash;
-            return new LockRenderData(lock, renderBox, center, light, ticks, level.getBlockState(pos).isAir());
+
+            VoxelShape atLockPos = level.getBlockState(pos).getShape(level, pos);
+            AABB lockAABB = new AABB(center, center).inflate(0.25,0.5,0.25);
+            return new LockRenderData(lock, renderBox, center, light, ticks, atLockPos.isEmpty() || !atLockPos.bounds().move(pos).intersects(lockAABB));
         }).toList();
 
         Vec3 camPos = camera.getPosition();
@@ -128,8 +132,10 @@ public class LockWorldRenderer {
                 continue;
             }
 
+            level.addParticle(ParticleTypes.WAX_OFF, data.center.x, data.center.y, data.center.z, 0, 0, 0);
+
             poseStack.pushPose();
-            poseStack.translate(data.center.x, data.center.y + 0.75f + (float) Math.sin(data.ticks) * 0.075f, data.center.z);
+            poseStack.translate(data.center.x, data.center.y + 0.25f + (float) Math.sin(data.ticks) * 0.075f, data.center.z);
             poseStack.mulPose(Axis.YP.rotation((data.ticks / 2f) % ((float) Math.PI * 2)));
             LOCK.renderToBuffer(poseStack, lockBuf, data.light, OverlayTexture.NO_OVERLAY);
             poseStack.popPose();
@@ -143,7 +149,7 @@ public class LockWorldRenderer {
 
             int color = data.lock.getDifficulty() < 0.33f ? 0xff33ff22 : data.lock.getDifficulty() < 0.66f ? 0xffffcc00 : 0xffff0011;
             poseStack.pushPose();
-            poseStack.translate(data.center.x, data.center.y + 0.75f + (float) Math.sin(data.ticks) * 0.075f, data.center.z);
+            poseStack.translate(data.center.x, data.center.y + 0.25f + (float) Math.sin(data.ticks) * 0.075f, data.center.z);
             poseStack.mulPose(Axis.YP.rotation((data.ticks / 2f) % ((float) Math.PI * 2)));
             GLOW.renderToBuffer(poseStack, glowBuf, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, color);
             poseStack.popPose();
