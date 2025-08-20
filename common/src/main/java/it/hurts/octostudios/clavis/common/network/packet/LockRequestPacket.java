@@ -37,6 +37,10 @@ public class LockRequestPacket extends Packet {
 
     @Override
     protected void handleServer(NetworkManager.PacketContext packetContext) {
+        if (Clavis.CONFIG.isDisableLockRendering()) {
+            return;
+        }
+
         ServerPlayer player = (ServerPlayer) packetContext.getPlayer();
         ServerLevel level = player.serverLevel();
 

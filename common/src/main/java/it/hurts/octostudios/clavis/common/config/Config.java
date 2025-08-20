@@ -46,6 +46,9 @@ public class Config implements OctoConfig {
     @Prop(comment = "Determines whether or not losing the minigame unlocks the lock.")
     private boolean unlocksAfterLosing = true;
 
+    @Prop(comment = "Disables rendering of locks for players.")
+    private boolean disableLockRendering = false;
+
     public Config() {
         minigameType.put(Level.OVERWORLD.location().toString(), "clavis:overworld");
 
