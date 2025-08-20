@@ -72,13 +72,15 @@ public class LockWorldRenderer {
         final float ticks;
         final Lock lock;
         final AABB renderBox;
+        final boolean shouldRenderLock;
 
-        LockRenderData(Lock lock, AABB renderBox, Vec3 center, int light, float ticks) {
+        LockRenderData(Lock lock, AABB renderBox, Vec3 center, int light, float ticks, boolean shouldRenderLock) {
             this.lock = lock;
             this.center = center;
             this.light = light;
             this.ticks = ticks;
             this.renderBox = renderBox;
+            this.shouldRenderLock = shouldRenderLock;
         }
     }
 
@@ -113,7 +115,7 @@ public class LockWorldRenderer {
             int light = LightTexture.pack(block, sky);
             float hash = (new Random(lock.getSeed()).nextFloat() * (float) Math.PI);
             float ticks = (level.getGameTime() + partialTick.getGameTimeDeltaPartialTick(true)) / 10f + hash;
-            return new LockRenderData(lock, renderBox, center, light, ticks);
+            return new LockRenderData(lock, renderBox, center, light, ticks, level.getBlockState(pos).isAir());
         }).toList();
 
         Vec3 camPos = camera.getPosition();
@@ -122,6 +124,10 @@ public class LockWorldRenderer {
 
         VertexConsumer lockBuf = multiBufferSource.getBuffer(LOCK_TYPE);
         for (LockRenderData data : dataList) {
+            if (!data.shouldRenderLock) {
+                continue;
+            }
+
             poseStack.pushPose();
             poseStack.translate(data.center.x, data.center.y + 0.75f + (float) Math.sin(data.ticks) * 0.075f, data.center.z);
             poseStack.mulPose(Axis.YP.rotation((data.ticks / 2f) % ((float) Math.PI * 2)));
@@ -131,6 +137,10 @@ public class LockWorldRenderer {
 
         VertexConsumer glowBuf = multiBufferSource.getBuffer(GLOW_TYPE);
         for (LockRenderData data : dataList) {
+            if (!data.shouldRenderLock) {
+                continue;
+            }
+
             int color = data.lock.getDifficulty() < 0.33f ? 0xff33ff22 : data.lock.getDifficulty() < 0.66f ? 0xffffcc00 : 0xffff0011;
             poseStack.pushPose();
             poseStack.translate(data.center.x, data.center.y + 0.75f + (float) Math.sin(data.ticks) * 0.075f, data.center.z);
