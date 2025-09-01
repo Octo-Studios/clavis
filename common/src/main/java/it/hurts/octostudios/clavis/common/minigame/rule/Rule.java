@@ -1,6 +1,5 @@
 package it.hurts.octostudios.clavis.common.minigame.rule;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import it.hurts.octostudios.clavis.common.client.screen.widget.AbstractMinigameWidget;
@@ -9,7 +8,9 @@ import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.util.Cast;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 

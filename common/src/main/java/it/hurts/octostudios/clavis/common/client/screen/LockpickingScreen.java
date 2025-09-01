@@ -33,11 +33,6 @@ import java.util.List;
 public class LockpickingScreen extends Screen {
     public static final ResourceLocation EMPTY_HEART = Clavis.path("textures/lockpicking/empty_heart.png");
     public static final ResourceLocation HEART = Clavis.path("textures/lockpicking/heart.png");
-    public static final ResourceLocation EASY = Clavis.path("textures/icon/easy.png");
-    public static final ResourceLocation MEDIUM = Clavis.path("textures/icon/medium.png");
-    public static final ResourceLocation HARD = Clavis.path("textures/icon/hard.png");
-    public static final ResourceLocation QUALITY = Clavis.path("textures/icon/quality.png");
-    public static final ResourceLocation TIME = Clavis.path("textures/icon/time.png");
 
     @Getter
     Minigame<GearMechanismWidget> game;
@@ -107,7 +102,7 @@ public class LockpickingScreen extends Screen {
         int x = Math.round(this.width/2f)+20;
         int y = Math.round(this.height/2f-gear.getHeight()/2f)-8;
         for (Rule<?> rule : this.game.getRules()) {
-            RuleWidget widget = new RuleWidget(x, y, rule);
+            RuleWidget widget = new RuleWidget(x, y, rule, game.getMinigameType());
             this.addRenderableWidget(widget);
             y += widget.getHeight()+2;
         }

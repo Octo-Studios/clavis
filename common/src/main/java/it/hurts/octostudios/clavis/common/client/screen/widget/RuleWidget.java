@@ -18,21 +18,26 @@ import net.minecraft.util.FormattedCharSequence;
 import java.util.List;
 
 public class RuleWidget extends AbstractWidget {
-    public static final ResourceLocation BOTTOM = Clavis.path("textures/lockpicking/bottom_box.png");
-    public static final ResourceLocation FILL = Clavis.path("textures/lockpicking/woodplate.png");
-    public static final ResourceLocation SIDE = Clavis.path("textures/lockpicking/sidewalls.png");
-    public static final ResourceLocation TOP = Clavis.path("textures/lockpicking/top_banner.png");
+    public final ResourceLocation BOTTOM;
+    public final ResourceLocation FILL;
+    public final ResourceLocation SIDE;
+    public final ResourceLocation TOP;
 
     ResourceLocation icon;
     List<FormattedCharSequence> description;
 
-    public RuleWidget(int x, int y, Rule<?> rule) {
+    public RuleWidget(int x, int y, Rule<?> rule, ResourceLocation minigameType) {
         super(x, y, 160, 32, Component.translatable(rule.getId().toLanguageKey("rule")).withStyle(ChatFormatting.BOLD));
+        BOTTOM = Clavis.path(minigameType.getNamespace(), "textures/lockpicking/"+minigameType.getPath()+"/bottom.png");
+        FILL = Clavis.path(minigameType.getNamespace(), "textures/lockpicking/"+minigameType.getPath()+"/fill.png");
+        SIDE = Clavis.path(minigameType.getNamespace(), "textures/lockpicking/"+minigameType.getPath()+"/side.png");
+        TOP = Clavis.path(minigameType.getNamespace(), "textures/lockpicking/"+minigameType.getPath()+"/top.png");
+        
         Component description = Component.translatable(rule.getId().toLanguageKey("rule", "description"));
         this.description = Minecraft.getInstance().font.split(description, Math.round(152/0.75f));
 
         int lines = this.description.size();
-        this.setHeight((int) Math.max(32, 22+lines*8));
+        this.setHeight(Math.max(32, 22+lines*8));
 
         this.icon = ResourceLocation.fromNamespaceAndPath(rule.getId().getNamespace(), "textures/icon/rule/"+rule.getId().getPath()+".png");
     }

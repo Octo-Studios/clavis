@@ -14,8 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 public class LockPinWidget extends AbstractWidget implements Child<RotatingParent> {
-    public static final ResourceLocation ACTIVE = ResourceLocation.fromNamespaceAndPath(Clavis.MOD_ID, "textures/minigame/pin_active.png");
-    public static final ResourceLocation INACTIVE = ResourceLocation.fromNamespaceAndPath(Clavis.MOD_ID, "textures/minigame/pin_inactive.png");
+    public static final ResourceLocation ACTIVE = ResourceLocation.fromNamespaceAndPath(Clavis.MOD_ID, "textures/minigame/gear/pin_active.png");
+    public static final ResourceLocation INACTIVE = ResourceLocation.fromNamespaceAndPath(Clavis.MOD_ID, "textures/minigame/gear/pin_inactive.png");
 
     RotatingParent parent;
     public boolean active;

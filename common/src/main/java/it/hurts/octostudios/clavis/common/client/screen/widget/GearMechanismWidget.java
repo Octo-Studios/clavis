@@ -31,13 +31,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<LockPinWidget, GearMechanismWidget>> {
-    public static final ResourceLocation BACKGROUND = Clavis.path("textures/minigame/background.png");
-    public static final ResourceLocation COGWHEEL = Clavis.path("textures/minigame/gear.png");
-    public static final ResourceLocation ARROW = Clavis.path("textures/minigame/arrow.png");
-    public static final ResourceLocation ARROW_HOT = Clavis.path("textures/minigame/arrow_hot.png");
-    public static final ResourceLocation CENTER = Clavis.path("textures/minigame/center.png");
-    public static final ResourceLocation CENTER_WARNING_ON = Clavis.path("textures/minigame/center_warning_on.png");
-    public static final ResourceLocation CENTER_WARNING_OFF = Clavis.path("textures/minigame/center_warning_off.png");
+    public static final ResourceLocation BACKGROUND = Clavis.path("textures/minigame/gear/background.png");
+    public static final ResourceLocation COGWHEEL = Clavis.path("textures/minigame/gear/gear.png");
+    public static final ResourceLocation ARROW = Clavis.path("textures/minigame/gear/arrow.png");
+    public static final ResourceLocation ARROW_HOT = Clavis.path("textures/minigame/gear/arrow_hot.png");
+    public static final ResourceLocation CENTER = Clavis.path("textures/minigame/gear/center.png");
+    public static final ResourceLocation CENTER_WARNING_ON = Clavis.path("textures/minigame/gear/center_warning_on.png");
+    public static final ResourceLocation CENTER_WARNING_OFF = Clavis.path("textures/minigame/gear/center_warning_off.png");
 
     @Setter
     OctoColor gameColor = OctoColor.WHITE;

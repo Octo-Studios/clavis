@@ -50,7 +50,7 @@ public class Config implements OctoConfig {
     private boolean disableLockRendering = false;
 
     public Config() {
-        minigameType.put(Level.OVERWORLD.location().toString(), "clavis:overworld");
+        minigameType.put(Level.OVERWORLD.location().toString(), "clavis:gear");
 
         lootTableMultiplier.put("minecraft:chests/example", 1.5d);
 

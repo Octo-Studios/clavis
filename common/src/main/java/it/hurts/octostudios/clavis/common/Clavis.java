@@ -32,6 +32,10 @@ public class Clavis {
     }
 
     public static ResourceLocation path(String path) {
-        return ResourceLocation.fromNamespaceAndPath(Clavis.MOD_ID, path);
+        return Clavis.path(Clavis.MOD_ID, path);
+    }
+
+    public static ResourceLocation path(String namespace, String path) {
+        return ResourceLocation.fromNamespaceAndPath(namespace, path);
     }
 }
