@@ -51,6 +51,7 @@ public class Config implements OctoConfig {
 
     public Config() {
         minigameType.put(Level.OVERWORLD.location().toString(), "clavis:gear");
+        minigameType.put(Level.END.location().toString(), "clavis:mirror");
 
         lootTableMultiplier.put("minecraft:chests/example", 1.5d);
 
