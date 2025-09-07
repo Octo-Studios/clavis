@@ -1,11 +1,12 @@
 package it.hurts.octostudios.clavis.common.client.screen;
 
+import com.google.common.collect.Lists;
 import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.ClavisClient;
 import it.hurts.octostudios.clavis.common.client.particle.HalfHeartUIParticle;
 import it.hurts.octostudios.clavis.common.client.particle.HeartPartUIParticle;
-import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidget;
+import it.hurts.octostudios.clavis.common.client.screen.widget.AbstractMinigameWidget;
 import it.hurts.octostudios.clavis.common.client.screen.widget.MinigameInfoWidget;
 import it.hurts.octostudios.clavis.common.client.screen.widget.RuleWidget;
 import it.hurts.octostudios.clavis.common.data.Lock;
@@ -28,23 +29,28 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
-public class LockpickingScreen extends Screen {
+public class LockpickingScreen<T extends AbstractMinigameWidget<?>> extends Screen {
     public static final ResourceLocation EMPTY_HEART = Clavis.path("textures/lockpicking/empty_heart.png");
     public static final ResourceLocation HEART = Clavis.path("textures/lockpicking/heart.png");
 
+    private final Supplier<T> widgetFactory;
+
     @Getter
-    Minigame<GearMechanismWidget> game;
-    GearMechanismWidget gear;
+    Minigame<T> game;
+    T minigameWidget;
     BlockPos blockPos;
     @Getter
     Lock lock;
 
-    public LockpickingScreen(BlockPos blockPos, Lock lock) {
+    public LockpickingScreen(BlockPos blockPos, Lock lock, Supplier<T> widgetFactory) {
         super(Component.empty());
         this.blockPos = blockPos;
         this.lock = lock;
+        this.widgetFactory = widgetFactory;
 
         Tween tween = Tween.create().setLoops(-1);
         tween.tweenRunnable(() -> Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WOODEN_BUTTON_CLICK_ON, 2F)));
@@ -84,23 +90,33 @@ public class LockpickingScreen extends Screen {
 
     @Override
     protected void init() {
-        this.addOrRepositionGear();
+        this.addOrRepositionWidget(widgetFactory.get());
     }
 
-    private void addOrRepositionGear() {
-        if (this.gear == null) {
-            this.gear = new GearMechanismWidget(this);
-            this.game = new Minigame<>(this.gear);
+    @SuppressWarnings("unchecked")
+    private void addOrRepositionWidget(T genericWidget) {
+        if (this.minigameWidget == null) {
+            this.minigameWidget = genericWidget;
+            this.game = new Minigame<>(this.minigameWidget);
 
-            game.load(lock);
-            gear.processDifficulty(game);
+            game.load(lock, Minecraft.getInstance().level);
+            minigameWidget.processDifficulty(game);
+
+            if (game.getRules().isEmpty()) {
+                int ruleNumber = (int) Math.min(Math.ceil(game.getDifficulty() / 0.33f), 3);
+
+                List<Rule<T>> rules = Lists.newArrayList(Rule.getRegisteredRules((Class<T>) minigameWidget.getClass()));
+                Collections.shuffle(rules, minigameWidget.getRandom());
+                game.addRules(rules.stream().limit(ruleNumber).toList());
+            }
+
             game.processOnCreateRules();
         }
 
-        this.gear.setPosition(Math.round(this.width/2f-this.gear.getWidth()+8), Math.round(this.height/2f-this.gear.getHeight()/2f-8));
+        this.minigameWidget.setPosition(Math.round(this.width/2f-this.minigameWidget.getWidth()+8), Math.round(this.height/2f-this.minigameWidget.getHeight()/2f-8));
 
         int x = Math.round(this.width/2f)+20;
-        int y = Math.round(this.height/2f-gear.getHeight()/2f)-8;
+        int y = Math.round(this.height/2f- minigameWidget.getHeight()/2f)-8;
         for (Rule<?> rule : this.game.getRules()) {
             RuleWidget widget = new RuleWidget(x, y, rule, game.getMinigameType());
             this.addRenderableWidget(widget);
@@ -110,7 +126,7 @@ public class LockpickingScreen extends Screen {
         MinigameInfoWidget infoWidget = new MinigameInfoWidget(this.game);
         infoWidget.setPosition(x, y);
         this.addRenderableWidget(infoWidget);
-        this.addRenderableWidget(this.gear);
+        this.addRenderableWidget(this.minigameWidget);
     }
 
     @Override
@@ -121,8 +137,8 @@ public class LockpickingScreen extends Screen {
     public void animateHeart() {
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.AMETHYST_CLUSTER_BREAK, 1.5f, 0.8f));
 
-        float x = this.gear.getX()+this.gear.getWidth()/2f - 64;
-        float y = this.gear.getY()+this.gear.getHeight() + 16;
+        float x = this.minigameWidget.getX()+this.minigameWidget.getWidth()/2f - 64;
+        float y = this.minigameWidget.getY()+this.minigameWidget.getHeight() + 16;
 
         int health = this.game.getHealth();
         x += health * 32;
@@ -145,7 +161,7 @@ public class LockpickingScreen extends Screen {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(this.gear.getX()+this.gear.getWidth()/2f, this.gear.getY()+this.gear.getHeight(), 0);
+        guiGraphics.pose().translate(this.minigameWidget.getX()+this.minigameWidget.getWidth()/2f, this.minigameWidget.getY()+this.minigameWidget.getHeight(), 0);
         guiGraphics.pose().translate(-80, 0, 0);
         for (int i = 1; i <= 5; i++) {
             guiGraphics.blit(i <= this.getGame().getHealth() ? HEART : EMPTY_HEART, 0, 0, 32, 32, 0, 0, 32, 32, 32, 32);

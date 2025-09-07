@@ -6,6 +6,7 @@ import it.hurts.octostudios.clavis.common.data.Lock;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 
@@ -83,9 +84,10 @@ public class Minigame<T extends AbstractMinigameWidget<?>> {
     }
 
     @SuppressWarnings("unchecked")
-    public void load(Lock lock) {
+    public void load(Lock lock, Level level) {
         this.difficulty = lock.getDifficulty();
         this.seed = lock.getSeed();
+        this.minigameType = lock.getType(level);
         if (!lock.getRules().isEmpty()) {
             this.rules.addAll(lock.getRules()
                     .stream()

@@ -2,12 +2,13 @@ package it.hurts.octostudios.clavis.common.client.screen.widget;
 
 import it.hurts.octostudios.clavis.common.client.screen.LockpickingScreen;
 import it.hurts.octostudios.clavis.common.minigame.Minigame;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 
 public class MirrorWidget extends AbstractMinigameWidget<GuiEventListener> {
-    protected MirrorWidget(LockpickingScreen screen) {
-        super(0, 0, 192, 192, screen);
+    public MirrorWidget() {
+        super(0, 0, 192, 192, (LockpickingScreen) Minecraft.getInstance().screen);
     }
 
     @Override

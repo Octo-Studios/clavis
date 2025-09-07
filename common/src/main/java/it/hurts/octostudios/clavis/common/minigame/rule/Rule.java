@@ -4,6 +4,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import it.hurts.octostudios.clavis.common.client.screen.widget.AbstractMinigameWidget;
 import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidget;
+import it.hurts.octostudios.clavis.common.client.screen.widget.MirrorWidget;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.util.Cast;
@@ -64,5 +65,6 @@ public class Rule<T extends AbstractMinigameWidget<?>> {
         OverworldRules.ROTATE_GEAR.register(GearMechanismWidget.class);
         OverworldRules.FULL_THROTTLE.register(GearMechanismWidget.class);
         OverworldRules.SELF_DESTRUCTION.register(GearMechanismWidget.class);
+        EndRules.TEST.register(MirrorWidget.class);
     }
 }

@@ -4,6 +4,7 @@ import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.networking.NetworkManager;
 import it.hurts.octostudios.clavis.common.client.render.LockWorldRenderer;
 import it.hurts.octostudios.clavis.common.client.screen.LockpickingScreen;
+import it.hurts.octostudios.clavis.common.client.screen.widget.AbstractMinigameWidget;
 import it.hurts.octostudios.clavis.common.data.Lock;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
 import it.hurts.octostudios.clavis.common.network.packet.LockRequestPacket;
@@ -29,7 +30,7 @@ public class ClavisClient {
     }
 
     public static void openScreen(Lock lock, BlockPos pos) {
-        Minecraft.getInstance().setScreen(SCREEN_CACHE.computeIfAbsent(lock, l -> new LockpickingScreen(pos, l)));
+        Minecraft.getInstance().setScreen(SCREEN_CACHE.computeIfAbsent(lock, l -> new LockpickingScreen<>(pos, l, AbstractMinigameWidget.getFactory(l.getType(Minecraft.getInstance().level)))));
     }
 
     public static void onUnloadChunk(ClientLevel level, LevelChunk levelChunk) {

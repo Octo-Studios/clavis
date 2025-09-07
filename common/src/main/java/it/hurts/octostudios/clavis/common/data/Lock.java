@@ -7,12 +7,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 
 @EqualsAndHashCode(callSuper = false)
-@Getter
 public class Lock {
+    public static final ResourceLocation DEFAULT = Clavis.path("default");
+
     public static final Codec<Lock> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             UUIDUtil.CODEC.fieldOf("uuid").forGetter(lock -> lock.uuid),
             Box.CODEC.fieldOf("box").forGetter(lock -> lock.box),
@@ -20,21 +22,27 @@ public class Lock {
             Codec.LONG.fieldOf("seed").forGetter(lock -> lock.seed),
             Codec.BOOL.fieldOf("perPlayer").forGetter(lock -> lock.perPlayer),
             ResourceLocation.CODEC.listOf().optionalFieldOf("rules", new ArrayList<>()).forGetter(lock -> lock.rules),
-            ResourceLocation.CODEC.optionalFieldOf("type", Clavis.path("overworld")).forGetter(lock -> lock.type)
+            ResourceLocation.CODEC.optionalFieldOf("type", DEFAULT).forGetter(lock -> lock.type)
     ).apply(instance, Lock::new));
 
     public static final Codec<Set<Lock>> SET_CODEC = Lock.CODEC.listOf().xmap(HashSet::new, ArrayList::new);
 
     // mandatory
-    UUID uuid;
-    Box box;
-    float difficulty;
-    long seed;
-    boolean perPlayer;
+    @Getter UUID uuid;
+    @Getter Box box;
+    @Getter float difficulty;
+    @Getter long seed;
+    @Getter boolean perPlayer;
 
     // override
     ResourceLocation type;
-    List<ResourceLocation> rules;
+    @Getter List<ResourceLocation> rules;
+
+    public ResourceLocation getType(Level level) {
+        return type.equals(Lock.DEFAULT) ?
+                ResourceLocation.parse(Clavis.CONFIG.getMinigameType().getOrDefault(level.dimension().location().toString(), "clavis:gear")) :
+                type;
+    }
 
     public Lock(UUID uuid, Box box, float difficulty, long seed, boolean perPlayer) {
         this.uuid = uuid;
@@ -42,7 +50,7 @@ public class Lock {
         this.difficulty = difficulty;
         this.seed = seed;
         this.perPlayer = perPlayer;
-        this.type = Clavis.path("overworld");
+        this.type = DEFAULT;
         this.rules = new ArrayList<>();
     }
 

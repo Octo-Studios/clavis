@@ -1,5 +1,6 @@
 package it.hurts.octostudios.clavis.common.client.screen.widget;
 
+import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.client.screen.LockpickingScreen;
 import it.hurts.octostudios.clavis.common.minigame.Minigame;
 import it.hurts.octostudios.octolib.client.screen.widget.HasRenderMatrix;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.texture.Tickable;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -19,6 +21,7 @@ import org.joml.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 public abstract class AbstractMinigameWidget<T extends GuiEventListener> extends AbstractWidget implements ContainerEventHandler, HasRenderMatrix, Tickable {
     @Getter Random random = new Random();
@@ -32,6 +35,16 @@ public abstract class AbstractMinigameWidget<T extends GuiEventListener> extends
     protected AbstractMinigameWidget(int x, int y, int width, int height, LockpickingScreen screen) {
         super(x, y, width, height, Component.empty());
         this.screen = screen;
+    }
+
+    public static Supplier<AbstractMinigameWidget<?>> getFactory(ResourceLocation type) {
+        if (type.equals(Clavis.path("gear"))) {
+            return GearMechanismWidget::new;
+        } else if (type.equals(Clavis.path("mirror"))) {
+            return MirrorWidget::new;
+        }
+
+        return GearMechanismWidget::new;
     }
 
     public abstract void playHurtAnimation();

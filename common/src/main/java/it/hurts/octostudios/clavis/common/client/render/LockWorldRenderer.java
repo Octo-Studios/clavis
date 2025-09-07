@@ -20,7 +20,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
@@ -131,8 +130,6 @@ public class LockWorldRenderer {
             if (!data.shouldRenderLock) {
                 continue;
             }
-
-            level.addParticle(ParticleTypes.WAX_OFF, data.center.x, data.center.y, data.center.z, 0, 0, 0);
 
             poseStack.pushPose();
             poseStack.translate(data.center.x, data.center.y + 0.25f + (float) Math.sin(data.ticks) * 0.075f, data.center.z);
