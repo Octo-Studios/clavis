@@ -14,6 +14,9 @@
   "rule.clavis.full_throttle": "Full Throttle",
   "rule.clavis.full_throttle.description": "The pointer speeds up after each click and gradually slows back down over time",
 
+  "rule.clavis.test": "Test Rule",
+  "rule.clavis.test.description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+
   "ui.clavis.hold_shift": "Hold [Shift] for detailed description",
 
   "ui.clavis.difficulty.summary": "Game Difficulty",

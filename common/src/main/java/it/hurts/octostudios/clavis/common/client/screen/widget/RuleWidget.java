@@ -2,6 +2,7 @@ package it.hurts.octostudios.clavis.common.client.screen.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.hurts.octostudios.clavis.common.Clavis;
+import it.hurts.octostudios.clavis.common.data.MinigameStyleData;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
 import it.hurts.octostudios.octolib.util.RenderUtils;
 import net.minecraft.ChatFormatting;
@@ -14,6 +15,7 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import org.joml.Vector2i;
 
 import java.util.List;
 
@@ -24,6 +26,8 @@ public class RuleWidget extends AbstractWidget {
     public final ResourceLocation TOP;
 
     ResourceLocation icon;
+    MinigameStyleData styleData;
+
     List<FormattedCharSequence> description;
 
     public RuleWidget(int x, int y, Rule<?> rule, ResourceLocation minigameType) {
@@ -32,6 +36,8 @@ public class RuleWidget extends AbstractWidget {
         FILL = Clavis.path(minigameType.getNamespace(), "textures/lockpicking/"+minigameType.getPath()+"/fill.png");
         SIDE = Clavis.path(minigameType.getNamespace(), "textures/lockpicking/"+minigameType.getPath()+"/side.png");
         TOP = Clavis.path(minigameType.getNamespace(), "textures/lockpicking/"+minigameType.getPath()+"/top.png");
+
+        this.styleData = MinigameStyleData.get(minigameType);
         
         Component description = Component.translatable(rule.getId().toLanguageKey("rule", "description"));
         this.description = Minecraft.getInstance().font.split(description, Math.round(152/0.75f));
@@ -47,9 +53,9 @@ public class RuleWidget extends AbstractWidget {
         Font font = Minecraft.getInstance().font;
 
         if (this.isHovered()) {
-            guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.getWidth(), this.getY()+this.getHeight(), 0, 0xffd7e3f2);
-            guiGraphics.fill(this.getX()-1, this.getY(), this.getX()+this.getWidth()+1, this.getY()+this.getHeight(), 0, 0xffd7e3f2);
-            guiGraphics.fill(this.getX(), this.getY()-1, this.getX()+this.getWidth(), this.getY()+this.getHeight()+1, 0, 0xffd7e3f2);
+            guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.getWidth(), this.getY()+this.getHeight(), 0, styleData.getTitleColor());
+            guiGraphics.fill(this.getX()-1, this.getY(), this.getX()+this.getWidth()+1, this.getY()+this.getHeight(), 0, styleData.getTitleColor());
+            guiGraphics.fill(this.getX(), this.getY()-1, this.getX()+this.getWidth(), this.getY()+this.getHeight()+1, 0, styleData.getTitleColor());
         }
 
         guiGraphics.pose().pushPose();
@@ -58,8 +64,10 @@ public class RuleWidget extends AbstractWidget {
         guiGraphics.blit(TOP, 0, 0, 160, 16, 0, 0, 160, 16, 160, 16);
         guiGraphics.blit(icon, 3, 3, 10, 10, 0, 0, 10, 10, 10, 10);
 
+        Vector2i fill = styleData.getFillTextureSize();
+
         RenderSystem.setShaderTexture(0, FILL);
-        RenderUtils.renderTilingTexture(guiGraphics.pose(), 2, 16, 0, 0, 156, 8, 156, this.height-20, 0, false, true);
+        RenderUtils.renderTilingTexture(guiGraphics.pose(), 2, 16, 0, 0, fill.x, fill.y, 156, this.height-20, 0, false, true);
         RenderSystem.setShaderTexture(0, SIDE);
         RenderUtils.renderTilingTexture(guiGraphics.pose(), 0, 16, 0, 0, 160, 1, 160, this.height-32, 0, false, true);
         guiGraphics.blit(BOTTOM, 0, this.height-16, 160, 16, 0, 0, 160, 16, 160, 16);
@@ -67,17 +75,17 @@ public class RuleWidget extends AbstractWidget {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(18, 5.5, 0);
         guiGraphics.pose().scale(0.75f, 0.75f, 1f);
-        guiGraphics.drawString(font, this.getMessage(), 0, 0, 0xffd7e3f2, true);
+        guiGraphics.drawString(font, this.getMessage(), 0, 0, styleData.getTitleColor(), true);
         guiGraphics.pose().popPose();
 
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(6, 17.5, 0);
+        guiGraphics.pose().translate(5.75, 17.75, 0);
         int y = 0;
         for (FormattedCharSequence line : this.description) {
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate(0, y, 0);
             guiGraphics.pose().scale(0.75f, 0.75f, 1f);
-            guiGraphics.drawString(font, line, 0, 0, 0xeed1ad, false);
+            guiGraphics.drawString(font, line, 0, 0, styleData.getDescriptionColor(), false);
             guiGraphics.pose().popPose();
             y+=8;
         }
