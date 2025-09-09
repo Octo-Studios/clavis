@@ -85,7 +85,7 @@ public class RuleWidget extends AbstractWidget {
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate(0, y, 0);
             guiGraphics.pose().scale(0.75f, 0.75f, 1f);
-            guiGraphics.drawString(font, line, 0, 0, styleData.getDescriptionColor(), false);
+            guiGraphics.drawString(font, line, 0, 0, 0xff594638, false);
             guiGraphics.pose().popPose();
             y+=8;
         }

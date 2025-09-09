@@ -42,7 +42,6 @@ public class MirrorWidget extends AbstractMinigameWidget<GuiEventListener> {
 
         guiGraphics.blit(FRAME, this.getX(), this.getY(), 192, 192, 0, 0, 192, 192, 192, 192);
 
-
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.getX() + this.width / 2f, this.getY() + this.height / 2f, 0);
         guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(rot));

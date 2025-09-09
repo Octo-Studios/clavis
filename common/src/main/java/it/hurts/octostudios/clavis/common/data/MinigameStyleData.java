@@ -24,7 +24,7 @@ public class MinigameStyleData {
 
     public static final MinigameStyleData GEAR = new MinigameStyleData(0xffd7e3f2, 0xeed1ad, new Vector2i(156, 8))
             .register(Clavis.path("gear"));
-    public static final MinigameStyleData MIRROR = new MinigameStyleData(0xffffe9ff, 0xff33322a, new Vector2i(156, 16))
+    public static final MinigameStyleData MIRROR = new MinigameStyleData(0xffffe9ff, 0xff595138, new Vector2i(156, 16))
             .register(Clavis.path("mirror"));
 
     private MinigameStyleData register(ResourceLocation id) {
