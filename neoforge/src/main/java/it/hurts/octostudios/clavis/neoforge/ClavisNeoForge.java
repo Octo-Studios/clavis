@@ -18,8 +18,9 @@ public final class ClavisNeoForge {
     public ClavisNeoForge(IEventBus modBus) {
         Clavis.init();
 
-        if (FMLEnvironment.dist == Dist.CLIENT)
+        if (FMLEnvironment.dist == Dist.CLIENT) {
             new ClavisNeoForgeClient(modBus);
+        }
     }
 
     @SubscribeEvent

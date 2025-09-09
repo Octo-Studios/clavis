@@ -4,6 +4,7 @@
   "package": "it.hurts.octostudios.clavis.common.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "ArgumentTypesAccessor",
     "BlockEntityTickerMixin",
     "BlockMixin",
     "ChestMixin",

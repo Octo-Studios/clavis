@@ -1,4 +1,4 @@
-package it.hurts.octostudios.clavis.common.network;
+package it.hurts.octostudios.clavis.common.network.command;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;

@@ -208,11 +208,10 @@ public class LockpickingScreen<T extends AbstractMinigameWidget<?>> extends Scre
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-//        if (button == 1) {
-//            this.gear.killAllTweens();
-//            this.gear = null;
-//            rebuildWidgets();
-//        }
+        if (button == 1) {
+            this.minigameWidget = null;
+            rebuildWidgets();
+        }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 

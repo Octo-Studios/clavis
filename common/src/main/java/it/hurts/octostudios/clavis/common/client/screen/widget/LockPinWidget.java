@@ -104,11 +104,7 @@ public class LockPinWidget extends AbstractWidget implements Child<RotatingParen
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.active) {
-            return false;
-        }
-
-        return super.mouseClicked(mouseX, mouseY, button);
+        return false;
     }
 
     @Override

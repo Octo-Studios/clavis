@@ -2,9 +2,9 @@ package it.hurts.octostudios.clavis.common;
 
 import dev.architectury.event.events.common.*;
 import it.hurts.octostudios.clavis.common.config.Config;
-import it.hurts.octostudios.clavis.common.network.ClavisCommands;
 import it.hurts.octostudios.clavis.common.network.LockInteractionBlockers;
 import it.hurts.octostudios.clavis.common.network.PacketRegistry;
+import it.hurts.octostudios.clavis.common.network.command.ClavisCommands;
 import it.hurts.octostudios.clavis.common.registry.ItemRegistry;
 import it.hurts.octostudios.octolib.module.config.ConfigManager;
 import net.minecraft.resources.ResourceLocation;

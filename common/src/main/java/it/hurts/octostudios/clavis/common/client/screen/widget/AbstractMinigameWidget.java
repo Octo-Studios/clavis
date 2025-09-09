@@ -69,6 +69,15 @@ public abstract class AbstractMinigameWidget<T extends GuiEventListener> extends
     }
 
     @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (ContainerEventHandler.super.mouseClicked(mouseX,mouseY,button)) {
+            return false;
+        }
+
+        return super.mouseClicked(mouseX,mouseY,button);
+    }
+
+    @Override
     public @NotNull List<T> children() {
         return this.children;
     }
