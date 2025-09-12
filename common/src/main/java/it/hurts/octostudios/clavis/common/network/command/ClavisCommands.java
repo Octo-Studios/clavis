@@ -14,16 +14,19 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.coordinates.WorldCoordinates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,7 +47,7 @@ public class ClavisCommands {
                                             }
 
                                             float difficulty = (float) LootUtils.calculateDifficulty(context.getSource().getLevel(), pos, rbe, iterations, true, context.getSource());
-                                            Component component = Component.literal("Difficulty: ").append(Component.literal(String.format("%.1f", difficulty*100)+"%").withColor(LootUtils.getColorForDifficulty(difficulty)));
+                                            Component component = Component.literal("Difficulty: ").append(Component.literal(String.format("%.1f", difficulty * 100) + "%").withColor(LootUtils.getColorForDifficulty(difficulty)));
                                             context.getSource().sendSystemMessage(component);
                                             return Command.SINGLE_SUCCESS;
                                         })
@@ -53,29 +56,27 @@ public class ClavisCommands {
                 )
                 .then(Commands.literal("lock")
                         .then(Commands.literal("add")
-                                .then(Commands.argument("blockpos", BlockPosArgument.blockPos())
+                                .then(Commands.argument("type", ResourceLocationArgument.id())
                                         .then(Commands.argument("difficulty", FloatArgumentType.floatArg(0f))
                                                 .then(Commands.argument("seed", LongArgumentType.longArg())
                                                         .then(Commands.argument("perplayer", BoolArgumentType.bool())
-                                                                .executes(context -> {
-                                                                    Lock lock = new Lock(
-                                                                            UUID.randomUUID(),
-                                                                            new Box(context.getArgument("blockpos", WorldCoordinates.class).getBlockPos(context.getSource())),
-                                                                            context.getArgument("difficulty", Float.class),
-                                                                            context.getArgument("seed", Long.class),
-                                                                            context.getArgument("perplayer", Boolean.class)
-                                                                    );
+                                                                .then(Commands.argument("blockpos", BlockPosArgument.blockPos())
+                                                                        .executes(context -> {
+                                                                            Lock lock = new Lock(
+                                                                                    UUID.randomUUID(),
+                                                                                    new Box(context.getArgument("blockpos", WorldCoordinates.class).getBlockPos(context.getSource())),
+                                                                                    context.getArgument("difficulty", Float.class),
+                                                                                    context.getArgument("seed", Long.class),
+                                                                                    context.getArgument("perplayer", Boolean.class),
+                                                                                    new ArrayList<>(),
+                                                                                    context.getArgument("type", ResourceLocation.class)
+                                                                            );
 
-                                                                    LockManager.addLock(context.getSource().getLevel(), lock);
-                                                                    return Command.SINGLE_SUCCESS;
-                                                                })
-                                                        )
-                                                )
-                                        )
-                                        .then(Commands.argument("blockpos2", BlockPosArgument.blockPos())
-                                                .then(Commands.argument("difficulty", FloatArgumentType.floatArg(0f))
-                                                        .then(Commands.argument("seed", LongArgumentType.longArg())
-                                                                .then(Commands.argument("perplayer", BoolArgumentType.bool())
+                                                                            LockManager.addLock(context.getSource().getLevel(), lock);
+                                                                            return Command.SINGLE_SUCCESS;
+                                                                        })
+                                                                )
+                                                                .then(Commands.argument("blockpos2", BlockPosArgument.blockPos())
                                                                         .executes(context -> {
                                                                             Lock lock = new Lock(
                                                                                     UUID.randomUUID(),
@@ -85,7 +86,9 @@ public class ClavisCommands {
                                                                                     ),
                                                                                     context.getArgument("difficulty", Float.class),
                                                                                     context.getArgument("seed", Long.class),
-                                                                                    context.getArgument("perplayer", Boolean.class)
+                                                                                    context.getArgument("perplayer", Boolean.class),
+                                                                                    new ArrayList<>(),
+                                                                                    context.getArgument("type", ResourceLocation.class)
                                                                             );
 
                                                                             LockManager.addLock(context.getSource().getLevel(), lock);
@@ -96,7 +99,6 @@ public class ClavisCommands {
                                                 )
                                         )
                                 )
-
                         )
                         .then(Commands.literal("remove")
                                 .then(Commands.argument("blockpos", BlockPosArgument.blockPos())

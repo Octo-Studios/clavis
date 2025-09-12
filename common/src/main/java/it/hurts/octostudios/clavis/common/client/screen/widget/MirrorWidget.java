@@ -8,16 +8,21 @@ import it.hurts.octostudios.clavis.common.client.screen.LockpickingScreen;
 import it.hurts.octostudios.clavis.common.minigame.Minigame;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import org.joml.Vector2d;
 
-public class MirrorWidget extends AbstractMinigameWidget<RotatingParent<MeteorWidget, MirrorWidget>> {
+public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
     public static final ResourceLocation BACKGROUND = Clavis.path("textures/minigame/mirror/black_circle.png");
     public static final ResourceLocation FRAME = Clavis.path("textures/minigame/mirror/frame.png");
     public static final ResourceLocation ROTATING_PART = Clavis.path("textures/minigame/mirror/rotating_part.png");
     public static final ResourceLocation MIRROR = Clavis.path("textures/minigame/mirror/mirror.png");
-    public static final ResourceLocation CLOUDS = Clavis.path("textures/minigame/mirror/background_clouds.png");
+    public static final ResourceLocation BACK_CLOUDS = Clavis.path("textures/minigame/mirror/background_back_clouds.png");
+    public static final ResourceLocation MIDDLE_CLOUDS = Clavis.path("textures/minigame/mirror/background_middle_clouds.png");
+    public static final ResourceLocation TOP_CLOUDS = Clavis.path("textures/minigame/mirror/background_top_clouds.png");
     public static final ResourceLocation CROSSHAIR = Clavis.path("textures/minigame/mirror/crosshair.png");
     public static final ResourceLocation CROSSHAIR_SQUARE = Clavis.path("textures/minigame/mirror/crosshair_square.png");
 
@@ -28,22 +33,29 @@ public class MirrorWidget extends AbstractMinigameWidget<RotatingParent<MeteorWi
 
     public MirrorWidget() {
         super(0, 0, 192, 192, (LockpickingScreen) Minecraft.getInstance().screen);
-        children().add(MeteorWidget.create(60, 35, 0f, this));
+        children().add(new MeteorWidget(60, 35, this));
     }
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        Vector2d center = new Vector2d(this.getX()+this.width/2f, this.getY()+this.height/2f);
+        Vector2d mousePos = mirrorPosition(new Vector2d(mouseX, mouseY), center, rot);
+        Vector2d actualMousePos = new Vector2d(mouseX, mouseY);
+        actualMousePos.sub(center);
+
+        if (actualMousePos.lengthSquared() > 86 * 86) {
+            actualMousePos.normalize(86);
+        }
+
         //int offset = (int) ((192 - 146) / 2f);
         guiGraphics.pose().pushPose();
         guiGraphics.blit(BACKGROUND, this.getX(), this.getY(), 192, 192, 0, 0, 192, 192, 192, 192);
-        guiGraphics.pose().translate(this.getX() + this.width / 2f, this.getY() + this.height / 2f, 0);
-        guiGraphics.pose().mulPose(Axis.ZP.rotation(Mth.lerp(partialTick, oldBackgroundRotation, backgroundRotation)));
-        guiGraphics.pose().translate(-this.width / 2f - this.getX(), -this.height / 2f - this.getY(), 0);
-        guiGraphics.blit(CLOUDS, this.getX(), this.getY(), 192, 192, 0, 0, 192, 192, 192, 192);
+        drawClouds(guiGraphics, partialTick, BACK_CLOUDS, 1.5f, actualMousePos.x, actualMousePos.y);
+        drawClouds(guiGraphics, partialTick, MIDDLE_CLOUDS, 2f, actualMousePos.x, actualMousePos.y);
+        drawClouds(guiGraphics, partialTick, TOP_CLOUDS, 3f, actualMousePos.x, actualMousePos.y);
         guiGraphics.pose().popPose();
 
         super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
-        Vector2d mousePos = mirrorPosition(new Vector2d(mouseX, mouseY), new Vector2d(this.getX()+this.width/2f, this.getY()+this.height/2f), rot);
         //guiGraphics.fill(mousePos.x, mousePos.y, mousePos.x+1, mousePos.y+1, 0xff00ff00);
         guiGraphics.blit(CROSSHAIR, (int) (mousePos.x-8), (int) (mousePos.y-8), 17, 17, 0, 0, 17, 17, 17, 17);
 
@@ -61,10 +73,32 @@ public class MirrorWidget extends AbstractMinigameWidget<RotatingParent<MeteorWi
         guiGraphics.pose().popPose();
     }
 
+    private void drawClouds(GuiGraphics guiGraphics, float partialTick, ResourceLocation topClouds, float speedFactor, double x, double y) {
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(-x/96f*(speedFactor-1.25f), -y/96f*(speedFactor-1.25f), 0);
+        guiGraphics.pose().translate(this.getX() + this.width / 2f, this.getY() + this.height / 2f, 0);
+        guiGraphics.pose().mulPose(Axis.ZP.rotation(Mth.lerp(partialTick, oldBackgroundRotation, backgroundRotation)*speedFactor));
+        guiGraphics.pose().translate(-this.width / 2f - this.getX(), -this.height / 2f - this.getY(), 0);
+
+        guiGraphics.blit(topClouds, this.getX(), this.getY(), 192, 192, 0, 0, 192, 192, 192, 192);
+        guiGraphics.pose().popPose();
+    }
+
+    @Override
+    public void playDownSound(SoundManager handler) {
+        handler.play(SimpleSoundInstance.forUI(SoundEvents.ALLAY_HURT, 0.5f, 0.5f));
+    }
+
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         Vector2d pos = mirrorPosition(new Vector2d(mouseX, mouseY), new Vector2d(this.getX()+this.width/2f, this.getY()+this.height/2f), rot);
         return super.mouseClicked(pos.x, pos.y, button);
+    }
+
+    @Override
+    public void onClick(double mouseX, double mouseY) {
+        this.getMinigame().hurt();
+        this.getMinigame().processOnClickRules(false);
     }
 
     @Override
@@ -102,17 +136,21 @@ public class MirrorWidget extends AbstractMinigameWidget<RotatingParent<MeteorWi
         double fx = cos * rx - sin * ry;
         double fy = sin * rx + cos * ry;
 
-        fx += center.x;
-        fy += center.y;
+        Vector2d pos = new Vector2d(fx, fy);
+        if (pos.lengthSquared() > 86 * 86) {
+            pos.normalize(86);
+        }
 
-        return new Vector2d(fx, fy);
+        pos.add(center);
+
+        return pos;
     }
 
     @Override
     public void tick() {
         oldBackgroundRotation = backgroundRotation;
-        backgroundRotation += 0.01f;
+        backgroundRotation += 0.003f;
 
-        rot += 0.005f;
+        //rot += 0.005f;
     }
 }

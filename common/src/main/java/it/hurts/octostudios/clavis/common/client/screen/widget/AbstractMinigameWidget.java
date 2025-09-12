@@ -5,6 +5,7 @@ import it.hurts.octostudios.clavis.common.client.screen.LockpickingScreen;
 import it.hurts.octostudios.clavis.common.minigame.Minigame;
 import it.hurts.octostudios.octolib.client.screen.widget.HasRenderMatrix;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
@@ -26,6 +27,8 @@ import java.util.function.Supplier;
 public abstract class AbstractMinigameWidget<T extends GuiEventListener> extends AbstractWidget implements ContainerEventHandler, HasRenderMatrix, Tickable {
     @Getter Random random = new Random();
     @Getter LockpickingScreen screen;
+    @Getter @Setter
+    Minigame minigame;
 
     Matrix4f matrix;
     List<T> children = new ArrayList<>();

@@ -10,18 +10,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.Nullable;
 
-public class MeteorWidget extends AbstractWidget implements Child<RotatingParent> {
+public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget> {
     int size = 1;
-    RotatingParent parent;
+    MirrorWidget parent;
 
-    public MeteorWidget(int x, int y) {
+    public MeteorWidget(int x, int y, MirrorWidget parent) {
         super(x, y, 19, 19, Component.empty());
-    }
-
-    public static RotatingParent<MeteorWidget, MirrorWidget> create(int x, int y, float degrees, MirrorWidget parent) {
-        RotatingParent<MeteorWidget, MirrorWidget> rotatingParent = new RotatingParent<>(x, y, degrees, new MeteorWidget(-10, -10));
-        rotatingParent.setParent(parent);
-        return rotatingParent;
+        this.setParent(parent);
     }
 
     @Override
@@ -40,12 +35,12 @@ public class MeteorWidget extends AbstractWidget implements Child<RotatingParent
     }
 
     @Override
-    public @Nullable RotatingParent getParent() {
+    public @Nullable MirrorWidget getParent() {
         return parent;
     }
 
     @Override
-    public void setParent(@Nullable RotatingParent parent) {
+    public void setParent(@Nullable MirrorWidget parent) {
         this.parent = parent;
     }
 }

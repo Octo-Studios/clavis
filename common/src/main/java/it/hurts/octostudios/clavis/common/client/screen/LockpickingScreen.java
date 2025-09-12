@@ -98,6 +98,7 @@ public class LockpickingScreen<T extends AbstractMinigameWidget<?>> extends Scre
         if (this.minigameWidget == null) {
             this.minigameWidget = genericWidget;
             this.game = new Minigame<>(this.minigameWidget);
+            this.minigameWidget.setMinigame(this.game);
 
             game.load(lock, Minecraft.getInstance().level);
             minigameWidget.processDifficulty(game);
