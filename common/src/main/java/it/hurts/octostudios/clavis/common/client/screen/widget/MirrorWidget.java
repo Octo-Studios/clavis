@@ -152,5 +152,9 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         backgroundRotation += 0.003f;
 
         //rot += 0.005f;
+
+        for (MeteorWidget child : this.children()) {
+            child.tick();
+        }
     }
 }
