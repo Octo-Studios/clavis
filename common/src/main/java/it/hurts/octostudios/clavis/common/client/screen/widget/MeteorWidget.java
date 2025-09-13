@@ -129,16 +129,14 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
             //normalize it back to what it was bc wtf
             velocity.normalize(prevLength);
 
-            // --- NEW: add spin reaction ---
-            // compute tangential velocity
             double tangentX = velocity.x - normX * (velocity.x * normX + velocity.y * normY);
             double tangentY = velocity.y - normY * (velocity.x * normX + velocity.y * normY);
 
             double tangentialSpeed = Math.sqrt(tangentX * tangentX + tangentY * tangentY);
 
             // flip spin direction and add tangential influence
-            this.rotSpeed = -this.rotSpeed; // flip spin when you bounce
-            this.rotSpeed += (float)(tangentialSpeed * 0.01); // scale factor to tweak spin gain
+            this.rotSpeed = -this.rotSpeed;
+            this.rotSpeed += (float)(tangentialSpeed * 0.01);
 
             // clamp spin so it doesn't get ridiculous
             this.rotSpeed = Mth.clamp(this.rotSpeed, -0.1f, 0.1f);
