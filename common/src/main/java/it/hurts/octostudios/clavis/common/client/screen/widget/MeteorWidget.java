@@ -1,5 +1,7 @@
 package it.hurts.octostudios.clavis.common.client.screen.widget;
 
+import com.mojang.math.Axis;
+import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.octolib.client.screen.widget.Child;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -10,6 +12,7 @@ import net.minecraft.client.renderer.texture.Tickable;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
@@ -17,10 +20,20 @@ import org.joml.Vector2d;
 import org.joml.Vector2i;
 
 public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>, Tickable {
+    public static final ResourceLocation METEOR = Clavis.path("textures/minigame/mirror/meteor.png");
+    public static final ResourceLocation METEOR_CRACKED = Clavis.path("textures/minigame/mirror/meteor_cracked.png");
+
+    @Getter
+    boolean cracked = false;
+
+    float oldRot;
+    float rot;
+    float rotSpeed;
+
+    float conservedMomentum = 0.966f;
+
     int size = 1;
     MirrorWidget parent;
-
-    double gravityAccel;
 
     Vector2d oldPos;
     Vector2d precisePosition;
@@ -30,6 +43,7 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
 
     public MeteorWidget(int x, int y, MirrorWidget parent) {
         super(x, y, 19, 19, Component.empty());
+        this.rotSpeed = parent.random.nextFloat(-0.05f, 0.05f);
         this.setParent(parent);
         this.precisePosition = new Vector2d(x, y);
         this.oldPos = new Vector2d(x, y);
@@ -47,7 +61,11 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
                 Mth.lerp(partial, oldPos.y, precisePosition.y),
                 0
         );
-        guiGraphics.fill(0, 0, width, height, 0xffff0000);
+        guiGraphics.pose().translate(width/2f, height/2f, 0);
+        guiGraphics.pose().mulPose(Axis.ZP.rotation(Mth.lerp(partial, oldRot, rot)));
+        guiGraphics.pose().translate(-width/2f, -height/2f, 0);
+        //guiGraphics.fill(0, 0, width, height, 0xffff0000);
+        guiGraphics.blit(METEOR, 0, 0, 19, 19, 0, 0, 19, 19, 19, 19);
         guiGraphics.pose().popPose();
     }
 
@@ -74,7 +92,7 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
     @Override
     public void onClick(double mouseX, double mouseY) {
         super.onClick(mouseX, mouseY);
-        this.velocity.set(7, 4);
+        this.velocity.set(14, 4);
     }
 
     private void collide() {
@@ -85,15 +103,14 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
         double dy = objCenterY - this.getParent().getHeight()/2f;
         float dist = (float)Math.sqrt(dx*dx + dy*dy);
 
-        //float objRadius = Math.max(this.width, this.height)/2f;
-        float objRadius = (float)Math.sqrt( (this.width/2.0f)*(this.height/2.0f) * 2 );
+        float objRadius = Math.max(this.width, this.height)/2f;
+        objRadius += (float)Math.sqrt( (this.width/2.0f)*(this.height/2.0f) * 2 );
+        objRadius /= 2f;
 
         float radius = this.getParent().getWidth()/2f-2;
 
         if (dist + objRadius > radius) {
-            gravityAccel = 0;
-
-            float overlap = (dist + objRadius) - radius;
+            float overlap = (dist + objRadius) - radius + 1f;
             double normX = dx / dist;
             double normY = dy / dist;
 
@@ -110,24 +127,43 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
             velocity.y -= 2 * dot * normY;
 
             //normalize it back to what it was bc wtf
-            velocity.normalize(prevLength*0.85f);
+            velocity.normalize(prevLength);
+
+            // --- NEW: add spin reaction ---
+            // compute tangential velocity
+            double tangentX = velocity.x - normX * (velocity.x * normX + velocity.y * normY);
+            double tangentY = velocity.y - normY * (velocity.x * normX + velocity.y * normY);
+
+            double tangentialSpeed = Math.sqrt(tangentX * tangentX + tangentY * tangentY);
+
+            // flip spin direction and add tangential influence
+            this.rotSpeed = -this.rotSpeed; // flip spin when you bounce
+            this.rotSpeed += (float)(tangentialSpeed * 0.01); // scale factor to tweak spin gain
+
+            // clamp spin so it doesn't get ridiculous
+            this.rotSpeed = Mth.clamp(this.rotSpeed, -0.1f, 0.1f);
         }
     }
 
     @Override
     public void tick() {
         this.oldPos = new Vector2d(this.precisePosition);
-        gravityAccel += 0.1d;
-        this.velocity.y += gravityAccel;
 
-        if (this.velocity.lengthSquared() > 1) {
-            this.collide();
+        this.oldRot = rot;
+        this.rot += rotSpeed;
 
+        if (this.velocity.lengthSquared() > 0.005) {
             this.precisePosition.x += this.velocity.x;
             this.precisePosition.y += this.velocity.y;
+
+            this.collide();
+        } else if (this.velocity.lengthSquared() != 0) {
+            this.velocity.mul(0);
         }
 
         this.setX((int) this.precisePosition.x);
         this.setY((int) this.precisePosition.y);
+
+        this.velocity.mul(conservedMomentum);
     }
 }
