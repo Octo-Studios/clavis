@@ -1,11 +1,13 @@
 package it.hurts.octostudios.clavis.common.client.screen.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;
 import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.client.screen.LockpickingScreen;
 import it.hurts.octostudios.clavis.common.minigame.Minigame;
+import it.hurts.octostudios.clavis.common.mixin.MouseHandlerAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -14,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import org.joml.Vector2d;
+import org.lwjgl.glfw.GLFW;
 
 public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
     public static final ResourceLocation BACKGROUND = Clavis.path("textures/minigame/mirror/black_circle.png");
@@ -48,6 +51,7 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         }
 
         //int offset = (int) ((192 - 146) / 2f);
+        //swapMousePositions();
         guiGraphics.pose().pushPose();
         guiGraphics.blit(BACKGROUND, this.getX(), this.getY(), 192, 192, 0, 0, 192, 192, 192, 192);
         drawClouds(guiGraphics, partialTick, BACK_CLOUDS, 1.5f, actualMousePos.x, actualMousePos.y);
@@ -99,6 +103,7 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
     public void onClick(double mouseX, double mouseY) {
         this.getMinigame().hurt();
         this.getMinigame().processOnClickRules(false);
+        swapMousePositions();
     }
 
     @Override
@@ -144,6 +149,29 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         pos.add(center);
 
         return pos;
+    }
+
+    public void swapMousePositions() {
+        double guiScale = Minecraft.getInstance().getWindow().getGuiScale();
+        double mouseX = Minecraft.getInstance().mouseHandler.xpos()/guiScale;
+        double mouseY = Minecraft.getInstance().mouseHandler.ypos()/guiScale;
+
+        Vector2d swapped = mirrorPosition(
+                new Vector2d(mouseX, mouseY),
+                new Vector2d(this.getX()+this.width/2f, this.getY()+this.height/2f),
+                rot
+        );
+
+        MouseHandlerAccessor accessor = (MouseHandlerAccessor) Minecraft.getInstance().mouseHandler;
+        double sX = swapped.x * guiScale;
+        double sY = swapped.y * guiScale;
+
+        long windowHandle = Minecraft.getInstance().getWindow().getWindow();
+
+        GLFW.glfwSetCursorPos(windowHandle, sX, sY);
+        GLFW.glfwSetInputMode(windowHandle, 208897, GLFW.GLFW_CURSOR_DISABLED);
+        InputConstants.grabOrReleaseMouse(windowHandle, InputConstants.CURSOR_NORMAL, sX, sY);
+        Minecraft.getInstance().execute(() -> accessor.invokeOnMove(windowHandle, sX, sY));
     }
 
     @Override

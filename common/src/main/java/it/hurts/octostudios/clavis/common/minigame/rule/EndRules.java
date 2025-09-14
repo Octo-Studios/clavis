@@ -8,4 +8,9 @@ public class EndRules {
             .withOnClick((gear, activated) -> {
 
             });
+
+    public static final Rule<MirrorWidget> SWAP = new Rule<MirrorWidget>(Clavis.path("swap"))
+            .withOnClick((mirror, activated) -> {
+
+            });
 }

@@ -18,7 +18,8 @@
     "RandomizableContainerMixin"
   ],
   "client": [
-    "MinecraftMixin"
+    "MinecraftMixin",
+    "MouseHandlerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

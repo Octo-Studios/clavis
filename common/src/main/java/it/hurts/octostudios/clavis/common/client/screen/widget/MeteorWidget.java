@@ -65,7 +65,7 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
         guiGraphics.pose().mulPose(Axis.ZP.rotation(Mth.lerp(partial, oldRot, rot)));
         guiGraphics.pose().translate(-width/2f, -height/2f, 0);
         //guiGraphics.fill(0, 0, width, height, 0xffff0000);
-        guiGraphics.blit(METEOR, 0, 0, 19, 19, 0, 0, 19, 19, 19, 19);
+        guiGraphics.blit(cracked ? METEOR_CRACKED : METEOR, 0, 0, 19, 19, 0, 0, 19, 19, 19, 19);
         guiGraphics.pose().popPose();
     }
 
@@ -91,8 +91,7 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
 
     @Override
     public void onClick(double mouseX, double mouseY) {
-        super.onClick(mouseX, mouseY);
-        this.velocity.set(14, 4);
+        this.getParent().getMinigame().processOnClickRules(true);
     }
 
     private void collide() {
