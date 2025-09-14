@@ -90,7 +90,18 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
     }
 
     @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.isCracked()) {
+            return false;
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
     public void onClick(double mouseX, double mouseY) {
+        this.cracked = true;
+        this.velocity = new Vector2d(23,-7);
         this.getParent().getMinigame().processOnClickRules(true);
     }
 

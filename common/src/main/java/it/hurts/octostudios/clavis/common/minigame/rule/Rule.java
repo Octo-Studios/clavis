@@ -66,5 +66,6 @@ public class Rule<T extends AbstractMinigameWidget<?>> {
         OverworldRules.FULL_THROTTLE.register(GearMechanismWidget.class);
         OverworldRules.SELF_DESTRUCTION.register(GearMechanismWidget.class);
         EndRules.TEST.register(MirrorWidget.class);
+        EndRules.SWAP.register(MirrorWidget.class);
     }
 }

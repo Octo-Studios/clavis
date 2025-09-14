@@ -11,6 +11,6 @@ public class EndRules {
 
     public static final Rule<MirrorWidget> SWAP = new Rule<MirrorWidget>(Clavis.path("swap"))
             .withOnClick((mirror, activated) -> {
-
+                mirror.swapMousePositions();
             });
 }

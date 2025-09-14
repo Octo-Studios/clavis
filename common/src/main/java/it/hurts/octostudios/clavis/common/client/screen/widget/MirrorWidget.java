@@ -94,7 +94,13 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Vector2d pos = mirrorPosition(new Vector2d(mouseX, mouseY), new Vector2d(this.getX()+this.width/2f, this.getY()+this.height/2f), rot);
+        Vector2d realMousePos = new Vector2d(mouseX, mouseY);
+        Vector2d center = new Vector2d(this.getX()+this.width/2f, this.getY()+this.height/2f);
+        if (realMousePos.distanceSquared(center) > 108*108) {
+            return false;
+        }
+
+        Vector2d pos = mirrorPosition(realMousePos, new Vector2d(this.getX()+this.width/2f, this.getY()+this.height/2f), rot);
         return super.mouseClicked(pos.x, pos.y, button);
     }
 
@@ -102,7 +108,6 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
     public void onClick(double mouseX, double mouseY) {
         this.getMinigame().hurt();
         this.getMinigame().processOnClickRules(false);
-        swapMousePositions();
     }
 
     @Override
