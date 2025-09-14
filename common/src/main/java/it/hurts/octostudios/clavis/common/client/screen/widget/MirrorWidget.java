@@ -1,7 +1,6 @@
 package it.hurts.octostudios.clavis.common.client.screen.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;
 import it.hurts.octostudios.clavis.common.Clavis;
@@ -168,9 +167,13 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
 
         long windowHandle = Minecraft.getInstance().getWindow().getWindow();
 
+        int prevMode = GLFW.glfwGetInputMode(windowHandle, GLFW.GLFW_CURSOR);
+
         GLFW.glfwSetCursorPos(windowHandle, sX, sY);
-        GLFW.glfwSetInputMode(windowHandle, 208897, GLFW.GLFW_CURSOR_DISABLED);
-        InputConstants.grabOrReleaseMouse(windowHandle, InputConstants.CURSOR_NORMAL, sX, sY);
+        GLFW.glfwSetInputMode(windowHandle, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
+        GLFW.glfwSetCursorPos(windowHandle, sX, sY);
+        GLFW.glfwSetInputMode(windowHandle, GLFW.GLFW_CURSOR, prevMode);
+
         Minecraft.getInstance().execute(() -> accessor.invokeOnMove(windowHandle, sX, sY));
     }
 
