@@ -13,4 +13,9 @@ public class EndRules {
             .withOnClick((mirror, activated) -> {
                 mirror.swapMousePositions();
             });
+
+    public static final Rule<MirrorWidget> SHOCKWAVE = new Rule<MirrorWidget>(Clavis.path("shockwave"))
+            .withOnClick((mirror, activated) -> {
+                mirror.doShockwave();
+            });
 }

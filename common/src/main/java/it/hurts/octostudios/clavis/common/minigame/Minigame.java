@@ -2,7 +2,9 @@ package it.hurts.octostudios.clavis.common.minigame;
 
 import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.client.screen.widget.AbstractMinigameWidget;
+import it.hurts.octostudios.clavis.common.client.screen.widget.MirrorWidget;
 import it.hurts.octostudios.clavis.common.data.Lock;
+import it.hurts.octostudios.clavis.common.minigame.rule.EndRules;
 import it.hurts.octostudios.clavis.common.minigame.rule.Rule;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
@@ -76,11 +78,22 @@ public class Minigame<T extends AbstractMinigameWidget<?>> {
     }
 
     public void processOnClickRules(boolean result) {
-        rules.forEach(rule -> {
+        boolean shouldSwap = false;
+
+        for (Rule<T> rule : rules) {
+            if (rule.equals(EndRules.SWAP)) {
+                shouldSwap = true;
+                continue;
+            }
+
             if (rule.getOnClick() != null) {
                 rule.getOnClick().accept(widget, result);
             }
-        });
+        }
+
+        if (shouldSwap) {
+            EndRules.SWAP.getOnClick().accept((MirrorWidget) widget, result);
+        }
     }
 
     @SuppressWarnings("unchecked")

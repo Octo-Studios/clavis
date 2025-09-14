@@ -1,6 +1,9 @@
 package it.hurts.octostudios.clavis.common;
 
 import dev.architectury.event.events.common.*;
+import it.hurts.octostudios.clavis.common.client.FallbackCursorMover;
+import it.hurts.octostudios.clavis.common.client.NativeCursorMover;
+import it.hurts.octostudios.clavis.common.client.WaylandCursorMover;
 import it.hurts.octostudios.clavis.common.config.Config;
 import it.hurts.octostudios.clavis.common.network.LockInteractionBlockers;
 import it.hurts.octostudios.clavis.common.network.PacketRegistry;
@@ -12,8 +15,16 @@ import net.minecraft.resources.ResourceLocation;
 public class Clavis {
     public static final String MOD_ID = "clavis";
     public static final Config CONFIG = new Config();
+    public static NativeCursorMover CURSOR_MOVER;
 
     public static void init() {
+        boolean isWayland = System.getenv("WAYLAND_DISPLAY") != null;
+        if (isWayland) {
+            CURSOR_MOVER = new WaylandCursorMover();
+        } else {
+            CURSOR_MOVER = new FallbackCursorMover();
+        }
+
         ConfigManager.registerConfig(Clavis.MOD_ID, Clavis.CONFIG);
 
         ItemRegistry.ITEMS.register();

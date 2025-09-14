@@ -20,8 +20,8 @@ import org.joml.Vector2d;
 import org.joml.Vector2i;
 
 public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>, Tickable {
-    public static final ResourceLocation METEOR = Clavis.path("textures/minigame/mirror/meteor.png");
-    public static final ResourceLocation METEOR_CRACKED = Clavis.path("textures/minigame/mirror/meteor_cracked.png");
+    public static final ResourceLocation METEOR = Clavis.path("textures/minigame/mirror/meteor_3.png");
+    public static final ResourceLocation METEOR_CRACKED = Clavis.path("textures/minigame/mirror/meteor_cracked_3.png");
 
     @Getter
     boolean cracked = false;
@@ -30,9 +30,9 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
     float rot;
     float rotSpeed;
 
-    float conservedMomentum = 0.966f;
+    float conservedMomentum = 0.975f;
 
-    int size = 1;
+    int size = 0;
     MirrorWidget parent;
 
     Vector2d oldPos;
@@ -41,8 +41,8 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
     @Getter
     Vector2d velocity = new Vector2d();
 
-    public MeteorWidget(int x, int y, MirrorWidget parent) {
-        super(x, y, 19, 19, Component.empty());
+    public MeteorWidget(int x, int y, int size, MirrorWidget parent) {
+        super(x, y, 11, 11, Component.empty());
         this.rotSpeed = parent.random.nextFloat(-0.05f, 0.05f);
         this.setParent(parent);
         this.precisePosition = new Vector2d(x, y);
@@ -101,8 +101,17 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
     @Override
     public void onClick(double mouseX, double mouseY) {
         this.cracked = true;
-        this.velocity = new Vector2d(23,-7);
         this.getParent().getMinigame().processOnClickRules(true);
+    }
+
+    public Vector2d getCenterPos(boolean global) {
+        Vector2d localCenterPos = new Vector2d(precisePosition).add(this.width/2f, this.height/2f);
+        if (!global) {
+            return localCenterPos;
+        }
+
+        Vector2i parentPos = this.getParentPosition();
+        return localCenterPos.add(parentPos.x, parentPos.y);
     }
 
     private void collide() {
@@ -137,7 +146,7 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
             velocity.y -= 2 * dot * normY;
 
             //normalize it back to what it was bc wtf
-            velocity.normalize(prevLength);
+            velocity.normalize(prevLength*0.875f);
 
             double tangentX = velocity.x - normX * (velocity.x * normX + velocity.y * normY);
             double tangentY = velocity.y - normY * (velocity.x * normX + velocity.y * normY);

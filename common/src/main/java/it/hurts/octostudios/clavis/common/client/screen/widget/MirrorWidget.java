@@ -15,7 +15,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import org.joml.Vector2d;
-import org.lwjgl.glfw.GLFW;
+
+import java.util.Random;
 
 public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
     public static final ResourceLocation BACKGROUND = Clavis.path("textures/minigame/mirror/black_circle.png");
@@ -35,7 +36,6 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
 
     public MirrorWidget() {
         super(0, 0, 192, 192, (LockpickingScreen) Minecraft.getInstance().screen);
-        children().add(new MeteorWidget(60, 35, this));
     }
 
     @Override
@@ -127,7 +127,12 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
 
     @Override
     public void processDifficulty(Minigame<? extends AbstractMinigameWidget<?>> game) {
+        this.random = new Random(game.getSeed());
+        float difficulty = game.getDifficulty();
 
+        children().add(new MeteorWidget(60, 35, this));
+        children().add(new MeteorWidget(100, 100, this));
+        children().add(new MeteorWidget(44, 90, this));
     }
 
     private static Vector2d mirrorPosition(Vector2d point, Vector2d center, double angle) {
@@ -155,16 +160,16 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         return pos;
     }
 
+    private Vector2d getMirroredMousePos(double mouseX, double mouseY) {
+        return mirrorPosition(new Vector2d(mouseX, mouseY), new Vector2d(this.getX()+this.width/2f, this.getY()+this.height/2f), rot);
+    }
+
     public void swapMousePositions() {
         double guiScale = Minecraft.getInstance().getWindow().getGuiScale();
         double mouseX = Minecraft.getInstance().mouseHandler.xpos()/guiScale;
         double mouseY = Minecraft.getInstance().mouseHandler.ypos()/guiScale;
 
-        Vector2d swapped = mirrorPosition(
-                new Vector2d(mouseX, mouseY),
-                new Vector2d(this.getX()+this.width/2f, this.getY()+this.height/2f),
-                rot
-        );
+        Vector2d swapped = getMirroredMousePos(mouseX, mouseY);
 
         MouseHandlerAccessor accessor = (MouseHandlerAccessor) Minecraft.getInstance().mouseHandler;
         double sX = swapped.x * guiScale;
@@ -172,14 +177,29 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
 
         long windowHandle = Minecraft.getInstance().getWindow().getWindow();
 
-        int prevMode = GLFW.glfwGetInputMode(windowHandle, GLFW.GLFW_CURSOR);
+        Clavis.CURSOR_MOVER.moveMouse(windowHandle, sX, sY);
 
-        //GLFW.glfwSetCursorPos(windowHandle, sX, sY);
-        //GLFW.glfwSetInputMode(windowHandle, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
-        GLFW.glfwSetCursorPos(windowHandle, sX, sY);
-        GLFW.glfwSetInputMode(windowHandle, GLFW.GLFW_CURSOR, prevMode);
+        accessor.invokeOnMove(windowHandle, sX, sY);
+    }
 
-        Minecraft.getInstance().execute(() -> accessor.invokeOnMove(windowHandle, sX, sY));
+    public void doShockwave() {
+        Vector2d mousePos;
+
+        double guiScale = Minecraft.getInstance().getWindow().getGuiScale();
+        double mouseX = Minecraft.getInstance().mouseHandler.xpos()/guiScale;
+        double mouseY = Minecraft.getInstance().mouseHandler.ypos()/guiScale;
+
+        mousePos = getMirroredMousePos(mouseX, mouseY);
+
+        for (MeteorWidget meteor : this.children()) {
+            Vector2d centerPos = meteor.getCenterPos(true);
+            double dist = mousePos.distance(centerPos);
+            Vector2d direction = new Vector2d(mousePos).sub(centerPos).normalize((192-dist)/64f);
+            if (dist <= Math.max(meteor.getWidth(), meteor.getHeight())/2f) {
+                direction.mul(0.25f);
+            }
+            meteor.velocity.sub(direction);
+        }
     }
 
     @Override

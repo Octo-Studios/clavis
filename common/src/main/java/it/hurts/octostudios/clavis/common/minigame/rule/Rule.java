@@ -67,5 +67,6 @@ public class Rule<T extends AbstractMinigameWidget<?>> {
         OverworldRules.SELF_DESTRUCTION.register(GearMechanismWidget.class);
         EndRules.TEST.register(MirrorWidget.class);
         EndRules.SWAP.register(MirrorWidget.class);
+        EndRules.SHOCKWAVE.register(MirrorWidget.class);
     }
 }
