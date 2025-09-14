@@ -7,6 +7,10 @@ import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.client.screen.LockpickingScreen;
 import it.hurts.octostudios.clavis.common.minigame.Minigame;
 import it.hurts.octostudios.clavis.common.mixin.MouseHandlerAccessor;
+import it.hurts.octostudios.octolib.client.animation.Tween;
+import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
+import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
+import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -32,7 +36,9 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
     float oldBackgroundRotation;
     float backgroundRotation;
 
-    float rot;
+    //float oldRot;
+    @Setter
+    double rot;
 
     public MirrorWidget() {
         super(0, 0, 192, 192, (LockpickingScreen) Minecraft.getInstance().screen);
@@ -40,9 +46,13 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        float partial = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
         Vector2d center = new Vector2d(this.getX()+this.width/2f, this.getY()+this.height/2f);
-        Vector2d mousePos = mirrorPosition(new Vector2d(mouseX, mouseY), center, rot);
-        Vector2d actualMousePos = new Vector2d(mouseX, mouseY);
+        double guiScale = Minecraft.getInstance().getWindow().getGuiScale();
+        double i = Minecraft.getInstance().mouseHandler.xpos()/guiScale;
+        double j = Minecraft.getInstance().mouseHandler.ypos()/guiScale;
+        Vector2d mousePos = mirrorPosition(new Vector2d(i, j), center, rot);
+        Vector2d actualMousePos = new Vector2d(i, j);
         actualMousePos.sub(center);
 
         if (actualMousePos.lengthSquared() > 86 * 86) {
@@ -60,13 +70,16 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
 
         super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
         //guiGraphics.fill(mousePos.x, mousePos.y, mousePos.x+1, mousePos.y+1, 0xff00ff00);
-        guiGraphics.blit(CROSSHAIR, (int) (mousePos.x-8), (int) (mousePos.y-8), 17, 17, 0, 0, 17, 17, 17, 17);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(mousePos.x, mousePos.y, 0);
+        guiGraphics.blit(CROSSHAIR, -8, -8, 17, 17, 0, 0, 17, 17, 17, 17);
+        guiGraphics.pose().popPose();
 
         guiGraphics.blit(FRAME, this.getX(), this.getY(), 192, 192, 0, 0, 192, 192, 192, 192);
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.getX() + this.width / 2f, this.getY() + this.height / 2f, 0);
-        guiGraphics.pose().mulPose(Axis.ZP.rotation(rot));
+        guiGraphics.pose().mulPose(Axis.ZP.rotation((float) rot));
         guiGraphics.pose().translate(-this.width / 2f - this.getX(), -this.height / 2f - this.getY(), 0);
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
@@ -130,9 +143,9 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         this.random = new Random(game.getSeed());
         float difficulty = game.getDifficulty();
 
-        children().add(new MeteorWidget(60, 35, this));
-        children().add(new MeteorWidget(100, 100, this));
-        children().add(new MeteorWidget(44, 90, this));
+        children().add(new MeteorWidget(60, 35, 0, this));
+        children().add(new MeteorWidget(100, 100, 1, this));
+        children().add(new MeteorWidget(44, 90, 2, this));
     }
 
     private static Vector2d mirrorPosition(Vector2d point, Vector2d center, double angle) {
@@ -207,10 +220,21 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         oldBackgroundRotation = backgroundRotation;
         backgroundRotation += 0.003f;
 
-        //rot += 0.005f;
+        //rot += 0.01f;
 
         for (MeteorWidget child : this.children()) {
             child.tick();
         }
+    }
+
+    Tween rotationTween = Tween.create();
+
+    public void rotate(float alpha) {
+        rotationTween.kill();
+        rotationTween = Tween.create();
+        rotationTween.parallel().tweenMethod(this::setRot, this.rot, this.rot + Math.toRadians(alpha), 5f)
+                .setEaseType(EaseType.EASE_IN_OUT)
+                .setTransitionType(TransitionType.QUART);
+        rotationTween.start();
     }
 }

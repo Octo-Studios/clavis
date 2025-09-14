@@ -1,12 +1,15 @@
 package it.hurts.octostudios.clavis.common.minigame.rule;
 
 import it.hurts.octostudios.clavis.common.Clavis;
+import it.hurts.octostudios.clavis.common.client.screen.widget.GearMechanismWidget;
 import it.hurts.octostudios.clavis.common.client.screen.widget.MirrorWidget;
 
 public class EndRules {
     public static final Rule<MirrorWidget> TEST = new Rule<MirrorWidget>(Clavis.path("test"))
-            .withOnClick((gear, activated) -> {
-
+            .withEveryTick((mirror, tickCount) -> {
+                if ((tickCount+80) % 180 == 0) {
+                    mirror.rotate(135f);
+                }
             });
 
     public static final Rule<MirrorWidget> SWAP = new Rule<MirrorWidget>(Clavis.path("swap"))

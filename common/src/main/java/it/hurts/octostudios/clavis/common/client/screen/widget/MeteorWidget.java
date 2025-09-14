@@ -20,8 +20,8 @@ import org.joml.Vector2d;
 import org.joml.Vector2i;
 
 public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>, Tickable {
-    public static final ResourceLocation METEOR = Clavis.path("textures/minigame/mirror/meteor_3.png");
-    public static final ResourceLocation METEOR_CRACKED = Clavis.path("textures/minigame/mirror/meteor_cracked_3.png");
+    public ResourceLocation METEOR;
+    public ResourceLocation METEOR_CRACKED;
 
     @Getter
     boolean cracked = false;
@@ -42,17 +42,23 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
     Vector2d velocity = new Vector2d();
 
     public MeteorWidget(int x, int y, int size, MirrorWidget parent) {
-        super(x, y, 11, 11, Component.empty());
+        super(x, y, 11+size*4, 11+size*4, Component.empty());
+        this.size = size;
         this.rotSpeed = parent.random.nextFloat(-0.05f, 0.05f);
         this.setParent(parent);
         this.precisePosition = new Vector2d(x, y);
         this.oldPos = new Vector2d(x, y);
+
+        METEOR = Clavis.path("textures/minigame/mirror/meteor_"+size+".png");
+        METEOR_CRACKED = Clavis.path("textures/minigame/mirror/meteor_cracked_"+size+".png");
     }
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         Vector2i parentPos = this.getParentPosition();
         float partial = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
+
+        //guiGraphics.renderOutline(this.getX(), this.getY(), this.width, this.height, 0xffff0000);
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(parentPos.x, parentPos.y, 0);
@@ -63,9 +69,9 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
         );
         guiGraphics.pose().translate(width/2f, height/2f, 0);
         guiGraphics.pose().mulPose(Axis.ZP.rotation(Mth.lerp(partial, oldRot, rot)));
+        guiGraphics.blit(cracked ? METEOR_CRACKED : METEOR, -10, -10, 19, 19, 0, 0, 19, 19, 19, 19);
         guiGraphics.pose().translate(-width/2f, -height/2f, 0);
         //guiGraphics.fill(0, 0, width, height, 0xffff0000);
-        guiGraphics.blit(cracked ? METEOR_CRACKED : METEOR, 0, 0, 19, 19, 0, 0, 19, 19, 19, 19);
         guiGraphics.pose().popPose();
     }
 
