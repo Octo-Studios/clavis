@@ -169,8 +169,8 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
 
         int prevMode = GLFW.glfwGetInputMode(windowHandle, GLFW.GLFW_CURSOR);
 
-        GLFW.glfwSetCursorPos(windowHandle, sX, sY);
-        GLFW.glfwSetInputMode(windowHandle, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
+        //GLFW.glfwSetCursorPos(windowHandle, sX, sY);
+        //GLFW.glfwSetInputMode(windowHandle, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
         GLFW.glfwSetCursorPos(windowHandle, sX, sY);
         GLFW.glfwSetInputMode(windowHandle, GLFW.GLFW_CURSOR, prevMode);
 
