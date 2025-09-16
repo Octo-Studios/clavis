@@ -2,6 +2,8 @@ package it.hurts.octostudios.clavis.common.client.screen.widget;
 
 import com.mojang.math.Axis;
 import it.hurts.octostudios.clavis.common.Clavis;
+import it.hurts.octostudios.clavis.common.client.particle.MeteorPartUIParticle;
+import it.hurts.octostudios.octolib.client.particle.UIParticle;
 import it.hurts.octostudios.octolib.client.screen.widget.Child;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -107,6 +109,21 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
     @Override
     public void onClick(double mouseX, double mouseY) {
         this.cracked = true;
+        Vector2d center = this.getCenterPos(true);
+
+        for (int i = 0; i < 4; i++) {
+            MeteorPartUIParticle particle = new MeteorPartUIParticle(
+                    MeteorPartUIParticle.getRandomPart(parent.random),
+                    (float) center.x,
+                    (float) center.y,
+                    this.width,
+                    UIParticle.Layer.SCREEN,
+                    0
+            );
+            particle.setScreen(parent.getScreen());
+            particle.instantiate();
+        }
+
         this.getParent().getMinigame().processOnClickRules(true);
     }
 
