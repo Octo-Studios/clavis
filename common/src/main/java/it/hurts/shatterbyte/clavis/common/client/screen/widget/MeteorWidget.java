@@ -1,12 +1,16 @@
 package it.hurts.shatterbyte.clavis.common.client.screen.widget;
 
 import com.mojang.math.Axis;
+import it.hurts.octostudios.octolib.client.animation.Tween;
+import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
+import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
+import it.hurts.octostudios.octolib.client.particle.UIParticle;
+import it.hurts.octostudios.octolib.client.screen.widget.Child;
 import it.hurts.shatterbyte.clavis.common.Clavis;
 import it.hurts.shatterbyte.clavis.common.client.particle.MeteorPartUIParticle;
 import it.hurts.shatterbyte.clavis.common.registry.SoundEventRegistry;
-import it.hurts.octostudios.octolib.client.particle.UIParticle;
-import it.hurts.octostudios.octolib.client.screen.widget.Child;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -20,11 +24,16 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector2i;
 
 public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>, Tickable {
     public ResourceLocation METEOR;
     public ResourceLocation METEOR_CRACKED;
+
+    Tween scaleTween = Tween.create();
+    @Setter
+    Vector2f visualSize = new Vector2f(1, 1);
 
     @Getter
     boolean cracked = false;
@@ -38,8 +47,8 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
     int size = 0;
     MirrorWidget parent;
 
-    Vector2d oldPos;
-    Vector2d precisePosition;
+    public Vector2d oldPos;
+    public Vector2d precisePosition;
 
     @Getter
     Vector2d velocity = new Vector2d();
@@ -72,6 +81,7 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
         );
         guiGraphics.pose().translate(width/2f, height/2f, 0);
         guiGraphics.pose().mulPose(Axis.ZP.rotation(Mth.lerp(partial, oldRot, rot)));
+        guiGraphics.pose().scale(visualSize.x, visualSize.y, 1);
         guiGraphics.blit(cracked ? METEOR_CRACKED : METEOR, -10, -10, 19, 19, 0, 0, 19, 19, 19, 19);
         guiGraphics.pose().translate(-width/2f, -height/2f, 0);
         //guiGraphics.fill(0, 0, width, height, 0xffff0000);
@@ -90,7 +100,37 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
     }
 
     public void regenerate() {
-        this.cracked = false;
+        if (!this.isCracked()) {
+            return;
+        }
+
+        scaleTween.kill();
+        scaleTween = Tween.create();
+        scaleTween.setTransitionType(TransitionType.QUART);
+        scaleTween.setEase(EaseType.EASE_IN);
+        scaleTween.tweenMethod(this::setVisualSize, new Vector2f(0.95f, 0.95f), new Vector2f(1.25f, 1.25f), 0.58f);
+        scaleTween.tweenRunnable(() -> {
+            this.cracked = false;
+            Vector2d center = this.getCenterPos(true);
+
+            for (int i = 0; i < 4 + size; i++) {
+                MeteorPartUIParticle particle = new MeteorPartUIParticle(
+                        MeteorPartUIParticle.getRandomPart(parent.random),
+                        16,
+                        (float) center.x,
+                        (float) center.y,
+                        this.width*1.75f,
+                        UIParticle.Layer.SCREEN,
+                        1
+                );
+                particle.setSpeed(0.75f);
+                particle.getDirection().mul(-1);
+                particle.setScreen(parent.getScreen());
+                particle.instantiate();
+            }
+        });
+        scaleTween.tweenMethod(this::setVisualSize, new Vector2f(1.25f, 1.25f), new Vector2f(1f, 1f), 0.25f).setEaseType(EaseType.EASE_OUT);
+        scaleTween.start();
     }
 
     @Override
@@ -116,7 +156,7 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
     public void onClick(double mouseX, double mouseY) {
         this.cracked = true;
 
-        if (this.getParent().children.stream().allMatch(MeteorWidget::isCracked)) {
+        if (this.getParent().children.stream().filter(meteor -> !(meteor instanceof FakeMeteorWidget)).allMatch(MeteorWidget::isCracked)) {
             this.getParent().playWinAnimation();
             return;
         }
@@ -126,6 +166,13 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
     }
 
     public void playCrackAnimation() {
+        scaleTween.kill();
+        scaleTween = Tween.create();
+        scaleTween.setTransitionType(TransitionType.QUART);
+        scaleTween.setEase(EaseType.EASE_OUT);
+        scaleTween.tweenMethod(this::setVisualSize, new Vector2f(1.25f, 1.25f), new Vector2f(1f, 1f), 1f);
+        scaleTween.start();
+
         Vector2d center = this.getCenterPos(true);
 
         for (int i = 0; i < 4 + size; i++) {
@@ -185,7 +232,7 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
             velocity.y -= 2 * dot * normY;
 
             //normalize it back to what it was bc wtf
-            velocity.normalize(prevLength*0.875f);
+            velocity.normalize(prevLength*0.925f);
 
             double tangentX = velocity.x - normX * (velocity.x * normX + velocity.y * normY);
             double tangentY = velocity.y - normY * (velocity.x * normX + velocity.y * normY);
@@ -207,6 +254,19 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
 
         this.oldRot = rot;
         this.rot += rotSpeed;
+
+        for (MeteorWidget child : this.getParent().children()) {
+            if (child == this) {
+                continue;
+            }
+
+            Vector2d thisPos = this.getCenterPos(false);
+            Vector2d otherPos = child.getCenterPos(false);
+
+            if (thisPos.distance(otherPos) < this.width) {
+                this.velocity.add(thisPos.sub(otherPos).normalize());
+            }
+        }
 
         if (this.velocity.lengthSquared() > 0.005) {
             this.precisePosition.x += this.velocity.x;

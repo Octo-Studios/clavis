@@ -14,8 +14,17 @@
   "rule.clavis.full_throttle": "Full Throttle",
   "rule.clavis.full_throttle.description": "The pointer speeds up after each click and gradually slows back down over time",
 
-  "rule.clavis.test": "Test Rule",
-  "rule.clavis.test.description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
+  "rule.clavis.fake_meteor": "Fake Meteor",
+  "rule.clavis.fake_meteor.description": "A fake meteor appears and moves to a random position after each click. Clicking it regenerates all previously destroyed meteors",
+
+  "rule.clavis.rotate_mirror": "A Truly Nauseous Carousel",
+  "rule.clavis.rotate_mirror.description": "Occasionally the central mirror slowly rotates clockwise",
+
+  "rule.clavis.swap_mousepos": "Teleportation",
+  "rule.clavis.swap_mousepos.description": "Your mouse moves to the mirrored position after each click",
+
+  "rule.clavis.mirror_shockwave": "Shockwave",
+  "rule.clavis.mirror_shockwave.description": "Meteors scatter around after each click",
 
   "ui.clavis.hold_shift": "Hold [Shift] for detailed description",
 

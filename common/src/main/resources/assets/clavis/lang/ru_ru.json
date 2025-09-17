@@ -25,5 +25,15 @@
   "ui.clavis.quality.description": "Определяет качество и количество лута, который будет сгенерирован после завершения мини-игры. Совершение ошибок во время прохождения уменьшает этот показатель.",
 
   "item.clavis.lock_pick": "Отмычка",
-  "item.clavis.lock_pick.tooltip": "При использовании на запертом сундуке отпирает его замок, сохраняя максимальное качество лута внутри, будто мини-игра была пройдена без ошибок. Расходуется."
+  "item.clavis.lock_pick.tooltip": "При использовании на запертом сундуке отпирает его замок, сохраняя максимальное качество лута внутри, будто мини-игра была пройдена без ошибок. Расходуется.",
+  "rule.clavis.fake_meteor": "Fake Meteor",
+  "rule.clavis.fake_meteor.description": "A fake meteor appears and moves to a random position after each click. Clicking it regenerates all previously destroyed meteors",
+  "rule.clavis.rotate_mirror": "Действительно тошнотворная карусель",
+  "rule.clavis.rotate_mirror.description": "Occasionally the central mirror slowly rotates clockwise",
+  "rule.clavis.swap_mousepos": "Teleportation",
+  "rule.clavis.swap_mousepos.description": "Your mouse moves to the mirrored position after each click",
+  "rule.clavis.mirror_shockwave": "Shockwave",
+  "rule.clavis.mirror_shockwave.description": "Meteors scatter around after each click",
+  "sound.clavis.meteor_smash": "Взрыв метеора",
+  "sound.clavis.meteor_regenerate": "Регенерация метеора"
 }

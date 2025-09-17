@@ -129,6 +129,10 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
     }
 
     public void regenerateAll() {
+        if (this.children().stream().noneMatch(MeteorWidget::isCracked)) {
+            return;
+        }
+
         this.children().forEach(MeteorWidget::regenerate);
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEventRegistry.METEOR_REGENERATE.get(), 0.66f, 1f));
     }
@@ -190,11 +194,24 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
     @Override
     public void processDifficulty(Minigame<? extends AbstractMinigameWidget<?>> game) {
         this.random = new Random(game.getSeed());
+
+        if (this.random.nextBoolean()) {
+            this.rot = 1.5707f;
+        }
+
         float difficulty = game.getDifficulty();
 
-        children().add(new MeteorWidget(60, 35, 0, this));
-        children().add(new MeteorWidget(100, 100, 1, this));
-        children().add(new MeteorWidget(44, 90, 2, this));
+        float scaled = (2 / 3f + difficulty * (1 / 3f));
+
+        int meteorCount = Mth.ceil(random.nextFloat(5, 8) * scaled);
+        for (int i = 0; i < meteorCount; i++) {
+            MeteorWidget meteor = new MeteorWidget(0, 0, this.getRandomMeteorSize(), this);
+            Vector2d randomPos = this.getRandomPos().sub(meteor.getWidth()/2f, meteor.getHeight()/2f);
+            meteor.setPosition((int) randomPos.x, (int) randomPos.y);
+            meteor.precisePosition = randomPos;
+            meteor.oldPos = new Vector2d(randomPos);
+            this.children.add(meteor);
+        }
     }
 
     @Override
@@ -302,5 +319,25 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
                 .setEaseType(EaseType.EASE_IN_OUT)
                 .setTransitionType(TransitionType.QUART);
         rotationTween.start();
+    }
+
+    public Vector2d getRandomPos() {
+        Vector2d randomPos = new Vector2d(this.getRandom().nextDouble(-90, 90), this.getRandom().nextDouble(-90, 90));
+        if (randomPos.length() > 80 ) {
+            randomPos.normalize(80);
+        }
+        randomPos.add(96, 96);
+        return randomPos;
+    }
+
+    public int getRandomMeteorSize() {
+        float difficulty = this.minigame.getDifficulty();
+        int smallestSize = difficulty > 0.66f ? 0 : difficulty > 0.33f ? 1 : 2;
+
+        if (smallestSize == 2) {
+            return 2;
+        }
+
+        return random.nextInt(3-smallestSize);
     }
 }
