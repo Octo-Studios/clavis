@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.clavis.common.client.screen.widget;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
@@ -32,11 +33,15 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
     public ResourceLocation METEOR_CRACKED;
 
     Tween scaleTween = Tween.create();
+    Tween hotTween = Tween.create();
     @Setter
     Vector2f visualSize = new Vector2f(1, 1);
 
     @Getter
     boolean cracked = false;
+
+    @Setter
+    float heatProgress;
 
     float oldRot;
     float rot;
@@ -72,6 +77,8 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
 
         //guiGraphics.renderOutline(this.getX(), this.getY(), this.width, this.height, 0xffff0000);
 
+        RenderSystem.setShaderColor(1f + heatProgress/8f, 1f - heatProgress*0.75f, 1f - heatProgress, 1f);
+
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(parentPos.x, parentPos.y, 0);
         guiGraphics.pose().translate(
@@ -86,6 +93,8 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
         guiGraphics.pose().translate(-width/2f, -height/2f, 0);
         //guiGraphics.fill(0, 0, width, height, 0xffff0000);
         guiGraphics.pose().popPose();
+
+        RenderSystem.setShaderColor(parent.gameColor.r(), parent.gameColor.g(), parent.gameColor.b(), parent.gameColor.a());
     }
 
     @Override
@@ -97,6 +106,24 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
     public void playDownSound(SoundManager handler) {
         handler.play(SimpleSoundInstance.forUI(SoundEvents.GENERIC_EXPLODE.value(), 1.33f, 0.25f));
         handler.play(SimpleSoundInstance.forUI(SoundEventRegistry.METEOR_SMASH.get(), 0.66f, 1.25f));
+    }
+
+    public boolean isHot() {
+        return heatProgress >= 0.6f;
+    }
+
+    public void makeItHot() {
+        heatProgress = 0f;
+
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BEACON_ACTIVATE, 1.25f));
+        hotTween.kill();
+        hotTween = Tween.create();
+        hotTween.tweenInterval(0.4);
+        hotTween.tweenRunnable(() -> Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.FIRE_AMBIENT, 0.85f)));
+        hotTween.tweenMethod(this::setHeatProgress, 0f, 1f, 1.25d).setEaseType(EaseType.EASE_IN_OUT).setTransitionType(TransitionType.QUAD);
+        hotTween.tweenInterval(1.5);
+        hotTween.tweenMethod(this::setHeatProgress, 1f, 0f, 0.8d).setEaseType(EaseType.EASE_OUT).setTransitionType(TransitionType.EXPO);
+        hotTween.start();
     }
 
     public void regenerate() {
@@ -154,6 +181,12 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
 
     @Override
     public void onClick(double mouseX, double mouseY) {
+        if (this.isHot()) {
+            this.parent.minigame.hurt();
+            this.getParent().getMinigame().processOnClickRules(false);
+            return;
+        }
+
         this.cracked = true;
 
         if (this.getParent().children.stream().filter(meteor -> !(meteor instanceof FakeMeteorWidget)).allMatch(MeteorWidget::isCracked)) {

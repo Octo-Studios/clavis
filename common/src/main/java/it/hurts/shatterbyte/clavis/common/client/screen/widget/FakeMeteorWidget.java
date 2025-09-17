@@ -28,6 +28,11 @@ public class FakeMeteorWidget extends MeteorWidget {
     }
 
     @Override
+    public void makeItHot() {
+
+    }
+
+    @Override
     public void tick() {
         if (this.parent.minigame.getTickCount() % 40 == 0) {
             susTween.kill();

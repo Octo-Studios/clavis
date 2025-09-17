@@ -108,7 +108,7 @@ public class LockpickingScreen<T extends AbstractMinigameWidget<?>> extends Scre
 
                 List<Rule<T>> rules = Lists.newArrayList(Rule.getRegisteredRules((Class<T>) minigameWidget.getClass()));
                 Collections.shuffle(rules, minigameWidget.getRandom());
-                rules = rules.stream().limit(99).toList();
+                rules = rules.stream().limit(ruleNumber).toList();
                 game.addRules(rules);
             }
 

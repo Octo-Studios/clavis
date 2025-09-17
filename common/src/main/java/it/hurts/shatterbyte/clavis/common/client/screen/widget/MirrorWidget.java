@@ -41,7 +41,7 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
     float oldBackgroundRotation;
     float backgroundRotation;
 
-    @Setter
+    @Getter @Setter
     OctoColor gameColor = OctoColor.WHITE;
 
     @Getter
@@ -338,6 +338,6 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
             return 2;
         }
 
-        return random.nextInt(3-smallestSize);
+        return random.nextInt(smallestSize, 3);
     }
 }

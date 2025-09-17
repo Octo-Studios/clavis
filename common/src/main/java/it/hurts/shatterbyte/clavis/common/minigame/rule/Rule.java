@@ -69,5 +69,6 @@ public class Rule<T extends AbstractMinigameWidget<?>> {
         EndRules.SWAP.register(MirrorWidget.class);
         EndRules.SHOCKWAVE.register(MirrorWidget.class);
         EndRules.FAKE.register(MirrorWidget.class);
+        EndRules.HOT_METEOR.register(MirrorWidget.class);
     }
 }
