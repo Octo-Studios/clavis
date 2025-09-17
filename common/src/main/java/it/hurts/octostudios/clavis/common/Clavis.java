@@ -9,6 +9,7 @@ import it.hurts.octostudios.clavis.common.network.LockInteractionBlockers;
 import it.hurts.octostudios.clavis.common.network.PacketRegistry;
 import it.hurts.octostudios.clavis.common.network.command.ClavisCommands;
 import it.hurts.octostudios.clavis.common.registry.ItemRegistry;
+import it.hurts.octostudios.clavis.common.registry.SoundEventRegistry;
 import it.hurts.octostudios.octolib.module.config.ConfigManager;
 import net.minecraft.resources.ResourceLocation;
 
@@ -29,6 +30,8 @@ public class Clavis {
 
         ItemRegistry.ITEMS.register();
         PacketRegistry.register();
+
+        SoundEventRegistry.SOUNDS.register();
 
         LootrCompat.init();
 

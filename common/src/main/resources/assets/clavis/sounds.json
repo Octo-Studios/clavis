@@ -1,0 +1,8 @@
+{
+  "meteor_smash": {
+    "subtitle": "sound.clavis.meteor_smash",
+    "sounds": [
+      "clavis:meteor_smash"
+    ]
+  }
+}

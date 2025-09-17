@@ -75,16 +75,20 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         guiGraphics.blit(CROSSHAIR, -8, -8, 17, 17, 0, 0, 17, 17, 17, 17);
         guiGraphics.pose().popPose();
 
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(0,0,2);
         guiGraphics.blit(FRAME, this.getX(), this.getY(), 192, 192, 0, 0, 192, 192, 192, 192);
+        guiGraphics.pose().popPose();
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.getX() + this.width / 2f, this.getY() + this.height / 2f, 0);
         guiGraphics.pose().mulPose(Axis.ZP.rotation((float) rot));
-        guiGraphics.pose().translate(-this.width / 2f - this.getX(), -this.height / 2f - this.getY(), 0);
+        guiGraphics.pose().translate(-this.width / 2f - this.getX(), -this.height / 2f - this.getY(), 1);
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
         guiGraphics.blit(MIRROR, this.getX(), this.getY(), 192, 192, 0, 0, 192, 192, 192, 192);
         RenderSystem.disableBlend();
+        guiGraphics.pose().translate(0,0,1);
         guiGraphics.blit(ROTATING_PART, this.getX()-9, (int) (this.getY()+this.height/2f-21), 210, 41, 0, 0, 210, 41, 210, 41);
         guiGraphics.pose().popPose();
     }

@@ -28,5 +28,7 @@
   "ui.clavis.quality.description": "Determines the quality and quantity of loot that will be generated after completing the mini game. Making mistakes during the playthrough reduces this value.",
 
   "item.clavis.lock_pick": "Lock Pick",
-  "item.clavis.lock_pick.tooltip": "When used on a locked chest, it unlocks it while preserving the maximum quality of the loot inside, as if the mini-game had been completed without any mistakes. Consumed on use."
+  "item.clavis.lock_pick.tooltip": "When used on a locked chest, it unlocks it while preserving the maximum quality of the loot inside, as if the mini-game had been completed without any mistakes. Consumed on use.",
+
+  "sound.clavis.meteor_smash": "Meteor Smash"
 }

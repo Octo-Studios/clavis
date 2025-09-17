@@ -3,6 +3,7 @@ package it.hurts.octostudios.clavis.common.client.screen.widget;
 import com.mojang.math.Axis;
 import it.hurts.octostudios.clavis.common.Clavis;
 import it.hurts.octostudios.clavis.common.client.particle.MeteorPartUIParticle;
+import it.hurts.octostudios.clavis.common.registry.SoundEventRegistry;
 import it.hurts.octostudios.octolib.client.particle.UIParticle;
 import it.hurts.octostudios.octolib.client.screen.widget.Child;
 import lombok.Getter;
@@ -84,7 +85,8 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
 
     @Override
     public void playDownSound(SoundManager handler) {
-        handler.play(SimpleSoundInstance.forUI(SoundEvents.ANVIL_PLACE, 1f, 1f));
+        handler.play(SimpleSoundInstance.forUI(SoundEvents.GENERIC_EXPLODE.value(), 1.25f, 0.3f));
+        handler.play(SimpleSoundInstance.forUI(SoundEventRegistry.METEOR_SMASH.get(), 0.75f, 1.25f));
     }
 
     @Override
@@ -111,14 +113,14 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
         this.cracked = true;
         Vector2d center = this.getCenterPos(true);
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4 + size; i++) {
             MeteorPartUIParticle particle = new MeteorPartUIParticle(
                     MeteorPartUIParticle.getRandomPart(parent.random),
                     (float) center.x,
                     (float) center.y,
                     this.width,
                     UIParticle.Layer.SCREEN,
-                    0
+                    1
             );
             particle.setScreen(parent.getScreen());
             particle.instantiate();
