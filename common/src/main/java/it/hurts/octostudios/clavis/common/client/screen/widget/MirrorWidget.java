@@ -4,12 +4,15 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;
 import it.hurts.octostudios.clavis.common.Clavis;
+import it.hurts.octostudios.clavis.common.client.particle.MeteorPartUIParticle;
 import it.hurts.octostudios.clavis.common.client.screen.LockpickingScreen;
 import it.hurts.octostudios.clavis.common.minigame.Minigame;
 import it.hurts.octostudios.clavis.common.mixin.MouseHandlerAccessor;
+import it.hurts.octostudios.clavis.common.registry.SoundEventRegistry;
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
 import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
+import it.hurts.octostudios.octolib.client.particle.UIParticle;
 import it.hurts.octostudios.octolib.util.OctoColor;
 import lombok.Getter;
 import lombok.Setter;
@@ -122,7 +125,12 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
 
     @Override
     public void playDownSound(SoundManager handler) {
-        handler.play(SimpleSoundInstance.forUI(SoundEvents.ALLAY_HURT, 0.5f, 0.5f));
+        handler.play(SimpleSoundInstance.forUI(SoundEvents.ALLAY_HURT, 0.5f, 0.3f));
+    }
+
+    public void regenerateAll() {
+        this.children().forEach(MeteorWidget::regenerate);
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEventRegistry.METEOR_REGENERATE.get(), 0.66f, 1f));
     }
 
     @Override
@@ -229,6 +237,7 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         double mouseX = Minecraft.getInstance().mouseHandler.xpos()/guiScale;
         double mouseY = Minecraft.getInstance().mouseHandler.ypos()/guiScale;
 
+        Vector2d original = new Vector2d(mouseX, mouseY);
         Vector2d swapped = getMirroredMousePos(mouseX, mouseY);
 
         MouseHandlerAccessor accessor = (MouseHandlerAccessor) Minecraft.getInstance().mouseHandler;
@@ -240,6 +249,16 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         Clavis.CURSOR_MOVER.moveMouse(windowHandle, sX, sY);
 
         accessor.invokeOnMove(windowHandle, sX, sY);
+
+
+        for (float f = 0; f < 1f; f += 0.033f) {
+            Vector2d lerped = new Vector2d();
+            original.lerp(swapped, f, lerped);
+            MeteorPartUIParticle particle = new MeteorPartUIParticle(MeteorPartUIParticle.PART_4, 5, (float) lerped.x, (float) lerped.y, 0.1f, UIParticle.Layer.SCREEN, 1);
+            particle.setSpeed(0.1f);
+            particle.setScreen(this.getScreen());
+            particle.instantiate();
+        }
     }
 
     public void doShockwave() {

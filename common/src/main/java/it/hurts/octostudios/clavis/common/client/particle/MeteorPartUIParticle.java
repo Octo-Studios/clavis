@@ -20,14 +20,16 @@ public class MeteorPartUIParticle extends ExtendedUIParticle {
         return PARTS.get(random.nextInt(PARTS.size()-1));
     }
 
-    public MeteorPartUIParticle(Texture2D texture, float meteorCenterX, float meteorCenterY, float spread, Layer layer, float zOffset) {
-        super(texture, 2f, 30, meteorCenterX, meteorCenterY, layer, zOffset);
+    public MeteorPartUIParticle(Texture2D texture, int lifetime, float meteorCenterX, float meteorCenterY, float spread, Layer layer, float zOffset) {
+        super(texture, 2f, lifetime, meteorCenterX, meteorCenterY, layer, zOffset);
         Random random = new Random();
-        float halfSpread = spread / 2f;
-        this.getTransform().getPosition().add(
-                random.nextFloat(-halfSpread, halfSpread),
-                random.nextFloat(-halfSpread, halfSpread)
-        );
+        if (spread != 0) {
+            float halfSpread = spread / 2f;
+            this.getTransform().getPosition().add(
+                    random.nextFloat(-halfSpread, halfSpread),
+                    random.nextFloat(-halfSpread, halfSpread)
+            );
+        }
         this.setDirection(new Vector2f(this.getTransform().getPosition()).sub(meteorCenterX, meteorCenterY));
         this.setSpeed(random.nextFloat(0.5f, 2));
         this.setFriction(0.025f);

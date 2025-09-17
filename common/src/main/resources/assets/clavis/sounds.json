@@ -4,5 +4,11 @@
     "sounds": [
       "clavis:meteor_smash"
     ]
+  },
+  "meteor_regenerate": {
+    "subtitle": "sound.clavis.meteor_regenerate",
+    "sounds": [
+      "clavis:meteor_regenerate"
+    ]
   }
 }

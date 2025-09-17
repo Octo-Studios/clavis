@@ -85,8 +85,12 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
 
     @Override
     public void playDownSound(SoundManager handler) {
-        handler.play(SimpleSoundInstance.forUI(SoundEvents.GENERIC_EXPLODE.value(), 1.25f, 0.3f));
-        handler.play(SimpleSoundInstance.forUI(SoundEventRegistry.METEOR_SMASH.get(), 0.75f, 1.25f));
+        handler.play(SimpleSoundInstance.forUI(SoundEvents.GENERIC_EXPLODE.value(), 1.33f, 0.25f));
+        handler.play(SimpleSoundInstance.forUI(SoundEventRegistry.METEOR_SMASH.get(), 0.66f, 1.25f));
+    }
+
+    public void regenerate() {
+        this.cracked = false;
     }
 
     @Override
@@ -127,6 +131,7 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
         for (int i = 0; i < 4 + size; i++) {
             MeteorPartUIParticle particle = new MeteorPartUIParticle(
                     MeteorPartUIParticle.getRandomPart(parent.random),
+                    30,
                     (float) center.x,
                     (float) center.y,
                     this.width,

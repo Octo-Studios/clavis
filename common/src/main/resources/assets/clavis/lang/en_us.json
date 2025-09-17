@@ -30,5 +30,6 @@
   "item.clavis.lock_pick": "Lock Pick",
   "item.clavis.lock_pick.tooltip": "When used on a locked chest, it unlocks it while preserving the maximum quality of the loot inside, as if the mini-game had been completed without any mistakes. Consumed on use.",
 
-  "sound.clavis.meteor_smash": "Meteor Smash"
+  "sound.clavis.meteor_smash": "Meteor explosion",
+  "sound.clavis.meteor_regenerate": "Meteor regeneration"
 }
