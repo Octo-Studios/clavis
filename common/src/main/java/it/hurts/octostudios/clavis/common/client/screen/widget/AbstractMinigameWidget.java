@@ -50,6 +50,10 @@ public abstract class AbstractMinigameWidget<T extends GuiEventListener> extends
         return GearMechanismWidget::new;
     }
 
+    public void killTweens() {
+
+    }
+
     public abstract void playHurtAnimation();
     public abstract void playWinAnimation();
     public abstract void playLoseAnimation();

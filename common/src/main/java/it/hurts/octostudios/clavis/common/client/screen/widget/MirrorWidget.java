@@ -10,6 +10,8 @@ import it.hurts.octostudios.clavis.common.mixin.MouseHandlerAccessor;
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
 import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
+import it.hurts.octostudios.octolib.util.OctoColor;
+import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -36,6 +38,14 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
     float oldBackgroundRotation;
     float backgroundRotation;
 
+    @Setter
+    OctoColor gameColor = OctoColor.WHITE;
+
+    @Getter
+    boolean playing = true;
+
+    Tween mainTween = Tween.create();
+
     //float oldRot;
     @Setter
     double rot;
@@ -58,6 +68,9 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         if (actualMousePos.lengthSquared() > 86 * 86) {
             actualMousePos.normalize(86);
         }
+
+        RenderSystem.setShaderColor(gameColor.r(), gameColor.g(), gameColor.b(), gameColor.a());
+        RenderSystem.enableBlend();
 
         //int offset = (int) ((192 - 146) / 2f);
         //swapMousePositions();
@@ -91,6 +104,9 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         guiGraphics.pose().translate(0,0,1);
         guiGraphics.blit(ROTATING_PART, this.getX()-9, (int) (this.getY()+this.height/2f-21), 210, 41, 0, 0, 210, 41, 210, 41);
         guiGraphics.pose().popPose();
+
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.disableBlend();
     }
 
     private void drawClouds(GuiGraphics guiGraphics, float partialTick, ResourceLocation topClouds, float speedFactor, double x, double y) {
@@ -111,6 +127,10 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (!isPlaying()) {
+            return false;
+        }
+
         Vector2d realMousePos = new Vector2d(mouseX, mouseY);
         Vector2d center = new Vector2d(this.getX()+this.width/2f, this.getY()+this.height/2f);
         if (realMousePos.distanceSquared(center) > 108*108) {
@@ -129,17 +149,34 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
 
     @Override
     public void playHurtAnimation() {
-
+        this.mainTween.kill();
+        this.mainTween = Tween.create();
+        this.mainTween.tweenMethod(this::setGameColor, new OctoColor(0.8f, 0.2f, 1f, 1f), OctoColor.WHITE, 0.5f);
+        this.mainTween.start();
     }
 
     @Override
     public void playWinAnimation() {
+        this.playing = false;
+        this.children().forEach(meteor -> {
+            meteor.playCrackAnimation();
+            meteor.playCrackAnimation();
+        });
+        this.children().clear();
 
+        rotationTween.kill();
+        rotationTween = Tween.create();
+        rotationTween.tweenMethod(this::setRot, this.rot, this.rot + Math.toRadians(180), 1f)
+                .setEaseType(EaseType.EASE_OUT)
+                .setTransitionType(TransitionType.CUBIC);
+        rotationTween.tweenRunnable(() -> this.screen.finish(false));
+        rotationTween.start();
     }
 
     @Override
     public void playLoseAnimation() {
-
+        this.playing = false;
+        this.screen.finish(true);
     }
 
     @Override
@@ -150,6 +187,12 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         children().add(new MeteorWidget(60, 35, 0, this));
         children().add(new MeteorWidget(100, 100, 1, this));
         children().add(new MeteorWidget(44, 90, 2, this));
+    }
+
+    @Override
+    public void killTweens() {
+        mainTween.kill();
+        rotationTween.kill();
     }
 
     private static Vector2d mirrorPosition(Vector2d point, Vector2d center, double angle) {

@@ -310,7 +310,8 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
     Tween mainTween = Tween.create();
     Tween selfDestructionTween = Tween.create();
 
-    public void killAllTweens() {
+    @Override
+    public void killTweens() {
         gearTween.kill();
         arrowTween.kill();
         mainTween.kill();

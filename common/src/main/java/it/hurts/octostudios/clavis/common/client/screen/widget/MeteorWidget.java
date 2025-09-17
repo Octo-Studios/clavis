@@ -111,6 +111,17 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
     @Override
     public void onClick(double mouseX, double mouseY) {
         this.cracked = true;
+
+        if (this.getParent().children.stream().allMatch(MeteorWidget::isCracked)) {
+            this.getParent().playWinAnimation();
+            return;
+        }
+
+        this.playCrackAnimation();
+        this.getParent().getMinigame().processOnClickRules(true);
+    }
+
+    public void playCrackAnimation() {
         Vector2d center = this.getCenterPos(true);
 
         for (int i = 0; i < 4 + size; i++) {
@@ -125,8 +136,6 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
             particle.setScreen(parent.getScreen());
             particle.instantiate();
         }
-
-        this.getParent().getMinigame().processOnClickRules(true);
     }
 
     public Vector2d getCenterPos(boolean global) {

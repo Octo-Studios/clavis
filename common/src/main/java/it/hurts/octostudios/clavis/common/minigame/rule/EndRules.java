@@ -6,7 +6,7 @@ import it.hurts.octostudios.clavis.common.client.screen.widget.MirrorWidget;
 public class EndRules {
     public static final Rule<MirrorWidget> ROTATE = new Rule<MirrorWidget>(Clavis.path("rotate"))
             .withEveryTick((mirror, tickCount) -> {
-                if ((tickCount+80) % 200 == 0) {
+                if (mirror.isPlaying() && (tickCount+80) % 200 == 0) {
                     mirror.rotate(135f);
                 }
             });
