@@ -77,7 +77,7 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
 
         //guiGraphics.renderOutline(this.getX(), this.getY(), this.width, this.height, 0xffff0000);
 
-        RenderSystem.setShaderColor(1f + heatProgress/8f, 1f - heatProgress*0.75f, 1f - heatProgress, 1f);
+        RenderSystem.setShaderColor(1f, 1f - heatProgress*0.66f, 1f - heatProgress*0.8f, 1f);
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(parentPos.x, parentPos.y, 0);

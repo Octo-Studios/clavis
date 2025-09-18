@@ -57,7 +57,7 @@ public class EndRules {
                     if (meteors.isEmpty()) {
                         return;
                     }
-                    Collections.shuffle(meteors);
+                    Collections.shuffle(meteors, mirror.getRandom());
                     meteors.getFirst().makeItHot();
                 }
             });
