@@ -188,6 +188,8 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
         }
 
         this.cracked = true;
+        this.hotTween.kill();
+        this.heatProgress = 0f;
 
         if (this.getParent().children.stream().filter(meteor -> !(meteor instanceof FakeMeteorWidget)).allMatch(MeteorWidget::isCracked)) {
             this.getParent().playWinAnimation();
