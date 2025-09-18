@@ -247,10 +247,10 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
         objRadius += (float)Math.sqrt( (this.width/2.0f)*(this.height/2.0f) * 2 );
         objRadius /= 2f;
 
-        float radius = this.getParent().getWidth()/2f-2;
+        float radius = this.getParent().getWidth()/2f-6;
 
         if (dist + objRadius > radius) {
-            float overlap = (dist + objRadius) - radius + 1f;
+            float overlap = (dist + objRadius) - radius;
             double normX = dx / dist;
             double normY = dy / dist;
 
@@ -298,8 +298,9 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
             Vector2d thisPos = this.getCenterPos(false);
             Vector2d otherPos = child.getCenterPos(false);
 
-            if (thisPos.distance(otherPos) < this.width) {
-                this.velocity.add(thisPos.sub(otherPos).normalize());
+            if (thisPos.distance(otherPos) < this.width*0.9f) {
+                this.velocity.add(thisPos.sub(otherPos).normalize(0.75f));
+                child.velocity.sub(thisPos);
             }
         }
 
