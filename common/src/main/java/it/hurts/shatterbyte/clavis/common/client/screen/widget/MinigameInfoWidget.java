@@ -2,6 +2,7 @@ package it.hurts.shatterbyte.clavis.common.client.screen.widget;
 
 import it.hurts.shatterbyte.clavis.common.Clavis;
 import it.hurts.shatterbyte.clavis.common.client.screen.LockpickingScreen;
+import it.hurts.shatterbyte.clavis.common.data.MinigameStyleData;
 import it.hurts.shatterbyte.clavis.common.data.TooltipInfoData;
 import it.hurts.shatterbyte.clavis.common.minigame.Minigame;
 import net.minecraft.ChatFormatting;
@@ -24,18 +25,22 @@ public class MinigameInfoWidget extends AbstractWidget {
     public static final ResourceLocation HARD = Clavis.path("textures/icon/hard.png");
     public static final ResourceLocation TIME = Clavis.path("textures/icon/time.png");
     public static final ResourceLocation QUALITY = Clavis.path("textures/icon/quality.png");
-    public static final ResourceLocation STAT_BG = Clavis.path("textures/lockpicking/stat_background.png");
     public static final ResourceLocation TOOLTIP = Clavis.path("textures/lockpicking/tooltip.png");
+    public final ResourceLocation STAT_BG;
 
     TooltipInfoData difficultyInfo;
     TooltipInfoData timeInfo;
     TooltipInfoData qualityInfo;
 
     Minigame<?> game;
+    MinigameStyleData styleData;
 
-    public MinigameInfoWidget(Minigame<?> game) {
+    public MinigameInfoWidget(Minigame<?> game, MinigameStyleData styleData) {
         super(0, 0, 160, 16, Component.empty());
         this.game = game;
+        this.styleData = styleData;
+
+        STAT_BG = Clavis.path("textures/lockpicking/" + game.getMinigameType().getPath() + "/stat_background.png");
         Font font = Minecraft.getInstance().font;
 
         difficultyInfo = new TooltipInfoData(font, "difficulty", Math.round(128/0.75f));
@@ -87,16 +92,16 @@ public class MinigameInfoWidget extends AbstractWidget {
 
     private void renderStat(GuiGraphics guiGraphics, boolean isHovered, String string, Font font, ResourceLocation icon) {
         if (isHovered) {
-            guiGraphics.fill(0, 0, 52, 16, 0, 0xffd7e3f2);
-            guiGraphics.fill(-1, 0, 52+1, 16, 0, 0xffd7e3f2);
-            guiGraphics.fill(0, -1, 52, 16+1, 0, 0xffd7e3f2);
+            guiGraphics.fill(0, 0, 52, 16, 0, styleData.getTitleColor());
+            guiGraphics.fill(-1, 0, 52+1, 16, 0, styleData.getTitleColor());
+            guiGraphics.fill(0, -1, 52, 16+1, 0, styleData.getTitleColor());
         }
         guiGraphics.blit(STAT_BG, 0, 0, 52, 16, 0, 0, 52, 16, 52, 16);
         guiGraphics.blit(icon, 2, 2, 12, 13, 0, 0, 12, 13, 12, 13);
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(18, 5.5, 0);
         guiGraphics.pose().scale(0.75f, 0.75f, 1f);
-        guiGraphics.drawString(font, Component.literal(string).withStyle(ChatFormatting.BOLD), 0, 0, 0xd7e3f2, false);
+        guiGraphics.drawString(font, Component.literal(string).withStyle(ChatFormatting.BOLD), 0, 0, styleData.getTitleColor(), false);
         guiGraphics.pose().popPose();
     }
 

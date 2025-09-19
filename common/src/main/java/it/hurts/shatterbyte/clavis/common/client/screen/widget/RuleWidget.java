@@ -1,10 +1,10 @@
 package it.hurts.shatterbyte.clavis.common.client.screen.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import it.hurts.shatterbyte.clavis.common.Clavis;
-import it.hurts.shatterbyte.clavis.common.data.MinigameStyleData;
-import it.hurts.shatterbyte.clavis.common.minigame.rule.Rule;
 import it.hurts.octostudios.octolib.util.RenderUtils;
+import it.hurts.shatterbyte.clavis.common.Clavis;
+import it.hurts.shatterbyte.clavis.common.client.screen.LockpickingScreen;
+import it.hurts.shatterbyte.clavis.common.minigame.rule.Rule;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -26,19 +26,21 @@ public class RuleWidget extends AbstractWidget {
     public final ResourceLocation TOP;
 
     ResourceLocation icon;
-    MinigameStyleData styleData;
+
+    LockpickingScreen screen;
 
     List<FormattedCharSequence> description;
 
-    public RuleWidget(int x, int y, Rule<?> rule, ResourceLocation minigameType) {
+    public RuleWidget(int x, int y, Rule<?> rule, LockpickingScreen screen) {
         super(x, y, 160, 32, Component.translatable(rule.getId().toLanguageKey("rule")).withStyle(ChatFormatting.BOLD));
+        ResourceLocation minigameType = screen.getGame().getMinigameType();
+        this.screen = screen;
+
         BOTTOM = Clavis.path(minigameType.getNamespace(), "textures/lockpicking/"+minigameType.getPath()+"/bottom.png");
         FILL = Clavis.path(minigameType.getNamespace(), "textures/lockpicking/"+minigameType.getPath()+"/fill.png");
         SIDE = Clavis.path(minigameType.getNamespace(), "textures/lockpicking/"+minigameType.getPath()+"/side.png");
         TOP = Clavis.path(minigameType.getNamespace(), "textures/lockpicking/"+minigameType.getPath()+"/top.png");
 
-        this.styleData = MinigameStyleData.get(minigameType);
-        
         Component description = Component.translatable(rule.getId().toLanguageKey("rule", "description"));
         this.description = Minecraft.getInstance().font.split(description, Math.round(152/0.75f));
 
@@ -53,9 +55,9 @@ public class RuleWidget extends AbstractWidget {
         Font font = Minecraft.getInstance().font;
 
         if (this.isHovered()) {
-            guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.getWidth(), this.getY()+this.getHeight(), 0, styleData.getTitleColor());
-            guiGraphics.fill(this.getX()-1, this.getY(), this.getX()+this.getWidth()+1, this.getY()+this.getHeight(), 0, styleData.getTitleColor());
-            guiGraphics.fill(this.getX(), this.getY()-1, this.getX()+this.getWidth(), this.getY()+this.getHeight()+1, 0, styleData.getTitleColor());
+            guiGraphics.fill(this.getX(), this.getY(), this.getX()+this.getWidth(), this.getY()+this.getHeight(), 0, screen.getStyleData().getTitleColor());
+            guiGraphics.fill(this.getX()-1, this.getY(), this.getX()+this.getWidth()+1, this.getY()+this.getHeight(), 0, screen.getStyleData().getTitleColor());
+            guiGraphics.fill(this.getX(), this.getY()-1, this.getX()+this.getWidth(), this.getY()+this.getHeight()+1, 0, screen.getStyleData().getTitleColor());
         }
 
         guiGraphics.pose().pushPose();
@@ -64,7 +66,7 @@ public class RuleWidget extends AbstractWidget {
         guiGraphics.blit(TOP, 0, 0, 160, 16, 0, 0, 160, 16, 160, 16);
         guiGraphics.blit(icon, 3, 3, 10, 10, 0, 0, 10, 10, 10, 10);
 
-        Vector2i fill = styleData.getFillTextureSize();
+        Vector2i fill = screen.getStyleData().getFillTextureSize();
 
         RenderSystem.setShaderTexture(0, FILL);
         RenderUtils.renderTilingTexture(guiGraphics.pose(), 2, 16, 0, 0, fill.x, fill.y, 156, this.height-20, 0, false, true);
@@ -75,7 +77,7 @@ public class RuleWidget extends AbstractWidget {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(18, 5.5, 0);
         guiGraphics.pose().scale(0.75f, 0.75f, 1f);
-        guiGraphics.drawString(font, this.getMessage(), 0, 0, styleData.getTitleColor(), true);
+        guiGraphics.drawString(font, this.getMessage(), 0, 0, screen.getStyleData().getTitleColor(), true);
         guiGraphics.pose().popPose();
 
         guiGraphics.pose().pushPose();
@@ -85,7 +87,7 @@ public class RuleWidget extends AbstractWidget {
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate(0, y, 0);
             guiGraphics.pose().scale(0.75f, 0.75f, 1f);
-            guiGraphics.drawString(font, line, 0, 0, styleData.getDescriptionColor(), false);
+            guiGraphics.drawString(font, line, 0, 0, screen.getStyleData().getDescriptionColor(), false);
             guiGraphics.pose().popPose();
             y+=8;
         }

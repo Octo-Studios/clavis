@@ -31,6 +31,8 @@ import org.joml.Vector2i;
 public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>, Tickable {
     public ResourceLocation METEOR;
     public ResourceLocation METEOR_CRACKED;
+    public ResourceLocation METEOR_HOT;
+    public ResourceLocation METEOR_SHINE = Clavis.path("textures/minigame/mirror/meteor_shine.png");
 
     Tween scaleTween = Tween.create();
     Tween hotTween = Tween.create();
@@ -68,6 +70,7 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
 
         METEOR = Clavis.path("textures/minigame/mirror/meteor_"+size+".png");
         METEOR_CRACKED = Clavis.path("textures/minigame/mirror/meteor_cracked_"+size+".png");
+        METEOR_HOT = Clavis.path("textures/minigame/mirror/meteor_hot_"+size+".png");
     }
 
     @Override
@@ -77,7 +80,7 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
 
         //guiGraphics.renderOutline(this.getX(), this.getY(), this.width, this.height, 0xffff0000);
 
-        RenderSystem.setShaderColor(1f, 1f - heatProgress*0.66f, 1f - heatProgress*0.8f, 1f);
+        //RenderSystem.setShaderColor(1f, 1f - heatProgress*0.66f, 1f - heatProgress*0.8f, 1f);
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(parentPos.x, parentPos.y, 0);
@@ -90,11 +93,18 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
         guiGraphics.pose().mulPose(Axis.ZP.rotation(Mth.lerp(partial, oldRot, rot)));
         guiGraphics.pose().scale(visualSize.x, visualSize.y, 1);
         guiGraphics.blit(cracked ? METEOR_CRACKED : METEOR, -10, -10, 19, 19, 0, 0, 19, 19, 19, 19);
+        if (heatProgress > 0.01 && !cracked) {
+            RenderSystem.enableBlend();
+            RenderSystem.setShaderColor(parent.gameColor.r(), parent.gameColor.g(), parent.gameColor.b(), heatProgress/2f);
+            guiGraphics.blit(METEOR_SHINE, -19, -19, 38, 38, 0, 0, 38, 38, 38, 38);
+            RenderSystem.setShaderColor(parent.gameColor.r(), parent.gameColor.g(), parent.gameColor.b(), heatProgress);
+            guiGraphics.blit(METEOR_HOT, -10, -10, 19, 19, 0, 0, 19, 19, 19, 19);
+            RenderSystem.setShaderColor(parent.gameColor.r(), parent.gameColor.g(), parent.gameColor.b(), parent.gameColor.a());
+            RenderSystem.disableBlend();
+        }
         guiGraphics.pose().translate(-width/2f, -height/2f, 0);
         //guiGraphics.fill(0, 0, width, height, 0xffff0000);
         guiGraphics.pose().popPose();
-
-        RenderSystem.setShaderColor(parent.gameColor.r(), parent.gameColor.g(), parent.gameColor.b(), parent.gameColor.a());
     }
 
     @Override

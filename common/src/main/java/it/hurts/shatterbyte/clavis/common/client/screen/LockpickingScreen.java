@@ -10,6 +10,7 @@ import it.hurts.shatterbyte.clavis.common.client.screen.widget.AbstractMinigameW
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.MinigameInfoWidget;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.RuleWidget;
 import it.hurts.shatterbyte.clavis.common.data.Lock;
+import it.hurts.shatterbyte.clavis.common.data.MinigameStyleData;
 import it.hurts.shatterbyte.clavis.common.data.TooltipInfoData;
 import it.hurts.shatterbyte.clavis.common.minigame.Minigame;
 import it.hurts.shatterbyte.clavis.common.minigame.rule.Rule;
@@ -45,6 +46,8 @@ public class LockpickingScreen<T extends AbstractMinigameWidget<?>> extends Scre
     BlockPos blockPos;
     @Getter
     Lock lock;
+    @Getter
+    MinigameStyleData styleData;
 
     public LockpickingScreen(BlockPos blockPos, Lock lock, Supplier<T> widgetFactory) {
         super(Component.empty());
@@ -119,13 +122,16 @@ public class LockpickingScreen<T extends AbstractMinigameWidget<?>> extends Scre
 
         int x = Math.round(this.width/2f)+20;
         int y = Math.round(this.height/2f- minigameWidget.getHeight()/2f)-8;
+
+        styleData = MinigameStyleData.get(game.getMinigameType());
+
         for (Rule<?> rule : this.game.getRules()) {
-            RuleWidget widget = new RuleWidget(x, y, rule, game.getMinigameType());
+            RuleWidget widget = new RuleWidget(x, y, rule, this);
             this.addRenderableWidget(widget);
             y += widget.getHeight()+2;
         }
 
-        MinigameInfoWidget infoWidget = new MinigameInfoWidget(this.game);
+        MinigameInfoWidget infoWidget = new MinigameInfoWidget(this.game, this.styleData);
         infoWidget.setPosition(x, y);
         this.addRenderableWidget(infoWidget);
         this.addRenderableWidget(this.minigameWidget);

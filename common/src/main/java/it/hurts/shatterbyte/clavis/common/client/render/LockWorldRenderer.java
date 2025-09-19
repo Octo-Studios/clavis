@@ -35,11 +35,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 
 @Environment(EnvType.CLIENT)
 public class LockWorldRenderer {
-    public static final RenderType LOCK_TYPE = RenderType.entityCutoutNoCull(LockModel.TEXTURE);
-    public static final RenderType GLOW_TYPE = RenderType.create("clavis_outline",
+    public static final Function<ResourceLocation, RenderType> LOCK_TYPE = minigameType ->
+            RenderType.entityCutoutNoCull(LockModel.getTexture(minigameType));
+
+    public static final Function<ResourceLocation, RenderType> GLOW_TYPE = minigameType -> RenderType.create("clavis_outline",
             DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS,
             1536, true, false,
             RenderType.CompositeState.builder()
@@ -52,7 +55,7 @@ public class LockWorldRenderer {
                     .setCullState(RenderStateShard.CULL)
                     .setOverlayState(RenderStateShard.OVERLAY)
                     .setWriteMaskState(new RenderStateShard.WriteMaskStateShard(true, true))
-                    .setTextureState(new RenderStateShard.TextureStateShard(LockModel.TEXTURE, false, false))
+                    .setTextureState(new RenderStateShard.TextureStateShard(LockModel.getTexture(minigameType), false, false))
                     .createCompositeState(false));
 
     private static final ResourceLocation CHAIN_TEXTURE = ResourceLocation.withDefaultNamespace("textures/block/chain.png");
@@ -73,14 +76,16 @@ public class LockWorldRenderer {
         final Lock lock;
         final AABB renderBox;
         final boolean shouldRenderLock;
+        final ResourceLocation minigameType;
 
-        LockRenderData(Lock lock, AABB renderBox, Vec3 center, int light, float ticks, boolean shouldRenderLock) {
+        LockRenderData(Lock lock, AABB renderBox, Vec3 center, int light, float ticks, boolean shouldRenderLock, ResourceLocation minigameType) {
             this.lock = lock;
             this.center = center;
             this.light = light;
             this.ticks = ticks;
             this.renderBox = renderBox;
             this.shouldRenderLock = shouldRenderLock;
+            this.minigameType = minigameType;
         }
     }
 
@@ -118,38 +123,40 @@ public class LockWorldRenderer {
 
             VoxelShape atLockPos = level.getBlockState(pos).getShape(level, pos);
             AABB lockAABB = new AABB(center, center).inflate(0.25,0.5,0.25);
-            return new LockRenderData(lock, renderBox, center, light, ticks, atLockPos.isEmpty() || !atLockPos.bounds().move(pos).intersects(lockAABB));
+            return new LockRenderData(lock, renderBox, center, light, ticks, atLockPos.isEmpty() || !atLockPos.bounds().move(pos).intersects(lockAABB), lock.getType(level));
         }).toList();
 
         Vec3 camPos = camera.getPosition();
         poseStack.pushPose();
         poseStack.translate(-camPos.x, -camPos.y, -camPos.z);
 
-        VertexConsumer lockBuf = multiBufferSource.getBuffer(LOCK_TYPE);
-        for (LockRenderData data : dataList) {
-            if (!data.shouldRenderLock) {
-                continue;
+        for (ResourceLocation minigameType : dataList.stream().map(data -> data.minigameType).distinct().toList()) {
+            VertexConsumer lockBuf = multiBufferSource.getBuffer(LOCK_TYPE.apply(minigameType));
+            for (LockRenderData data : dataList) {
+                if (!data.shouldRenderLock || data.minigameType != minigameType) {
+                    continue;
+                }
+
+                poseStack.pushPose();
+                poseStack.translate(data.center.x, data.center.y + 0.25f + (float) Math.sin(data.ticks) * 0.075f, data.center.z);
+                poseStack.mulPose(Axis.YP.rotation((data.ticks / 2f) % ((float) Math.PI * 2)));
+                LOCK.renderToBuffer(poseStack, lockBuf, data.light, OverlayTexture.NO_OVERLAY);
+                poseStack.popPose();
             }
 
-            poseStack.pushPose();
-            poseStack.translate(data.center.x, data.center.y + 0.25f + (float) Math.sin(data.ticks) * 0.075f, data.center.z);
-            poseStack.mulPose(Axis.YP.rotation((data.ticks / 2f) % ((float) Math.PI * 2)));
-            LOCK.renderToBuffer(poseStack, lockBuf, data.light, OverlayTexture.NO_OVERLAY);
-            poseStack.popPose();
-        }
+            VertexConsumer glowBuf = multiBufferSource.getBuffer(GLOW_TYPE.apply(minigameType));
+            for (LockRenderData data : dataList) {
+                if (!data.shouldRenderLock || data.minigameType != minigameType) {
+                    continue;
+                }
 
-        VertexConsumer glowBuf = multiBufferSource.getBuffer(GLOW_TYPE);
-        for (LockRenderData data : dataList) {
-            if (!data.shouldRenderLock) {
-                continue;
+                int color = data.lock.getDifficulty() < 0.33f ? 0xff33ff22 : data.lock.getDifficulty() < 0.66f ? 0xffffcc00 : 0xffff0011;
+                poseStack.pushPose();
+                poseStack.translate(data.center.x, data.center.y + 0.25f + (float) Math.sin(data.ticks) * 0.075f, data.center.z);
+                poseStack.mulPose(Axis.YP.rotation((data.ticks / 2f) % ((float) Math.PI * 2)));
+                GLOW.renderToBuffer(poseStack, glowBuf, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, color);
+                poseStack.popPose();
             }
-
-            int color = data.lock.getDifficulty() < 0.33f ? 0xff33ff22 : data.lock.getDifficulty() < 0.66f ? 0xffffcc00 : 0xffff0011;
-            poseStack.pushPose();
-            poseStack.translate(data.center.x, data.center.y + 0.25f + (float) Math.sin(data.ticks) * 0.075f, data.center.z);
-            poseStack.mulPose(Axis.YP.rotation((data.ticks / 2f) % ((float) Math.PI * 2)));
-            GLOW.renderToBuffer(poseStack, glowBuf, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, color);
-            poseStack.popPose();
         }
 
         // 3) render chains
