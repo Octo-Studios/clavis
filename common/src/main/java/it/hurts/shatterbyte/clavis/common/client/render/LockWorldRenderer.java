@@ -127,65 +127,69 @@ public class LockWorldRenderer {
         }).toList();
 
         Vec3 camPos = camera.getPosition();
-        poseStack.pushPose();
-        poseStack.translate(-camPos.x, -camPos.y, -camPos.z);
 
-        for (ResourceLocation minigameType : dataList.stream().map(data -> data.minigameType).distinct().toList()) {
-            VertexConsumer lockBuf = multiBufferSource.getBuffer(LOCK_TYPE.apply(minigameType));
+        List<ResourceLocation> types = dataList.stream().map(data -> data.minigameType).distinct().toList();
+
+        for (ResourceLocation type : types) {
+            VertexConsumer lockBuf = multiBufferSource.getBuffer(LOCK_TYPE.apply(type));
             for (LockRenderData data : dataList) {
-                if (!data.shouldRenderLock || data.minigameType != minigameType) {
+                if (!data.shouldRenderLock || !data.minigameType.equals(type)) {
                     continue;
                 }
 
+                Vec3 subtractedPos = data.center.subtract(camPos);
+
                 poseStack.pushPose();
-                poseStack.translate(data.center.x, data.center.y + 0.25f + (float) Math.sin(data.ticks) * 0.075f, data.center.z);
+                poseStack.translate(subtractedPos.x, subtractedPos.y + 0.25f + (float) Math.sin(data.ticks) * 0.075f, subtractedPos.z);
                 poseStack.mulPose(Axis.YP.rotation((data.ticks / 2f) % ((float) Math.PI * 2)));
                 LOCK.renderToBuffer(poseStack, lockBuf, data.light, OverlayTexture.NO_OVERLAY);
                 poseStack.popPose();
             }
 
-            VertexConsumer glowBuf = multiBufferSource.getBuffer(GLOW_TYPE.apply(minigameType));
+            VertexConsumer glowBuf = multiBufferSource.getBuffer(GLOW_TYPE.apply(type));
             for (LockRenderData data : dataList) {
-                if (!data.shouldRenderLock || data.minigameType != minigameType) {
+                if (!data.shouldRenderLock || !data.minigameType.equals(type)) {
                     continue;
                 }
 
+                Vec3 subtractedPos = data.center.subtract(camPos);
+
                 int color = data.lock.getDifficulty() < 0.33f ? 0xff33ff22 : data.lock.getDifficulty() < 0.66f ? 0xffffcc00 : 0xffff0011;
                 poseStack.pushPose();
-                poseStack.translate(data.center.x, data.center.y + 0.25f + (float) Math.sin(data.ticks) * 0.075f, data.center.z);
+                poseStack.translate(subtractedPos.x, subtractedPos.y + 0.25f + (float) Math.sin(data.ticks) * 0.075f, subtractedPos.z);
                 poseStack.mulPose(Axis.YP.rotation((data.ticks / 2f) % ((float) Math.PI * 2)));
                 GLOW.renderToBuffer(poseStack, glowBuf, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, color);
                 poseStack.popPose();
             }
         }
 
+
         // 3) render chains
         Quaternionf xRot = Axis.XP.rotationDegrees(90f);
         Quaternionf zRot = Axis.ZN.rotationDegrees(90f);
         VertexConsumer chainBuf = multiBufferSource.getBuffer(CHAIN_TYPE);
         for (LockRenderData data : dataList) {
-            Vec3 min = data.renderBox.getMinPosition();
-            Vec3 max = data.renderBox.getMaxPosition();
+            Vec3 min = data.renderBox.getMinPosition().subtract(camPos);
+            Vec3 max = data.renderBox.getMaxPosition().subtract(camPos);
             float yLen = (float) (max.y - min.y) + f * 2f;
             float xLen = (float) (max.x - min.x) + f * 2f;
             float zLen = (float) (max.z - min.z) + f * 2f;
             int light = data.light;
 
+            Vec3 subtractedPos = data.center.subtract(camPos);
+
             // four vertical chains
-            renderChainAt(chainBuf, poseStack, data.center.x, min.y - f, min.z - d, null, light, yLen);
-            renderChainAt(chainBuf, poseStack, max.x + d, min.y - f, data.center.z, null, light, yLen);
-            renderChainAt(chainBuf, poseStack, min.x - d, min.y - f, data.center.z, null, light, yLen);
-            renderChainAt(chainBuf, poseStack, data.center.x, min.y - f, max.z + d, null, light, yLen);
+            renderChainAt(chainBuf, poseStack, subtractedPos.x, min.y - f, min.z - d, null, light, yLen);
+            renderChainAt(chainBuf, poseStack, max.x + d, min.y - f, subtractedPos.z, null, light, yLen);
+            renderChainAt(chainBuf, poseStack, min.x - d, min.y - f, subtractedPos.z, null, light, yLen);
+            renderChainAt(chainBuf, poseStack, subtractedPos.x, min.y - f, max.z + d, null, light, yLen);
 
             // top horizontal
-            renderChainAt(chainBuf, poseStack, data.center.x, max.y + d, min.z - f, xRot, light, zLen);
-            renderChainAt(chainBuf, poseStack, min.x - f, max.y + d, data.center.z, zRot, light, xLen);
-            renderChainAt(chainBuf, poseStack, data.center.x, min.y - d, min.z - f, xRot, light, zLen);
-            renderChainAt(chainBuf, poseStack, min.x - f, min.y - d, data.center.z, zRot, light, xLen);
+            renderChainAt(chainBuf, poseStack, subtractedPos.x, max.y + d, min.z - f, xRot, light, zLen);
+            renderChainAt(chainBuf, poseStack, min.x - f, max.y + d, subtractedPos.z, zRot, light, xLen);
+            renderChainAt(chainBuf, poseStack, subtractedPos.x, min.y - d, min.z - f, xRot, light, zLen);
+            renderChainAt(chainBuf, poseStack, min.x - f, min.y - d, subtractedPos.z, zRot, light, xLen);
         }
-
-        poseStack.popPose();
-        //Minecraft.getInstance().player.displayClientMessage(Component.literal("Rendered locks: " + dataList.size() + ", fps: " + Minecraft.getInstance().getFps()), true);
     }
 
     private static void renderChainAt(VertexConsumer buf, PoseStack ps, double x, double y, double z, Quaternionf rotation, int light, float length) {
