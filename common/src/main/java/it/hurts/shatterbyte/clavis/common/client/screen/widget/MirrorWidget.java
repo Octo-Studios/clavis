@@ -201,9 +201,9 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
 
         float difficulty = game.getDifficulty();
 
-        float scaled = (2 / 3f + difficulty * (1 / 3f));
+        float scaled = (0.25f + difficulty * 0.75f);
 
-        int meteorCount = Mth.ceil(random.nextFloat(5, 8) * scaled);
+        int meteorCount = Mth.ceil(random.nextFloat(4, 8) * scaled);
         for (int i = 0; i < meteorCount; i++) {
             MeteorWidget meteor = new MeteorWidget(0, 0, this.getRandomMeteorSize(), this);
             Vector2d randomPos = this.getRandomPos().sub(meteor.getWidth()/2f, meteor.getHeight()/2f);
@@ -290,7 +290,11 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         for (MeteorWidget meteor : this.children()) {
             Vector2d centerPos = meteor.getCenterPos(true);
             double dist = mousePos.distance(centerPos);
-            Vector2d direction = new Vector2d(mousePos).sub(centerPos).normalize((192-dist)/64f);
+            if (dist > 96) {
+                continue;
+            }
+
+            Vector2d direction = new Vector2d(mousePos).sub(centerPos).normalize((96-dist)/32f);
             if (dist <= Math.max(meteor.getWidth(), meteor.getHeight())/2f) {
                 direction.mul(0.25f);
             }
