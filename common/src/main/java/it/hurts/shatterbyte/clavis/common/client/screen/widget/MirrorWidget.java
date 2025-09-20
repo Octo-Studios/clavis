@@ -44,6 +44,11 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
     @Getter @Setter
     OctoColor gameColor = OctoColor.WHITE;
 
+    Tween crosshairTween = Tween.create();
+
+    @Setter
+    float crosshairScale = 1f;
+
     @Getter
     boolean playing = true;
 
@@ -88,6 +93,7 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         //guiGraphics.fill(mousePos.x, mousePos.y, mousePos.x+1, mousePos.y+1, 0xff00ff00);
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(mousePos.x, mousePos.y, 0);
+        guiGraphics.pose().scale(crosshairScale, crosshairScale, 1);
         guiGraphics.blit(CROSSHAIR, -8, -8, 17, 17, 0, 0, 17, 17, 17, 17);
         guiGraphics.pose().popPose();
 
@@ -270,6 +276,12 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         accessor.invokeOnMove(windowHandle, sX, sY);
 
         MouseTeleportUIParticle.drawLine(this.screen, swapped, original);
+        crosshairTween.kill();
+        crosshairTween = Tween.create();
+        crosshairTween.tweenMethod(this::setCrosshairScale, 1.5f, 1f, 1f)
+                .setTransitionType(TransitionType.QUART)
+                .setEaseType(EaseType.EASE_OUT);
+        crosshairTween.start();
     }
 
     public void doShockwave() {
