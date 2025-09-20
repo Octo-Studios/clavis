@@ -2,6 +2,9 @@ package it.hurts.shatterbyte.clavis.common.client.screen;
 
 import com.google.common.collect.Lists;
 import dev.architectury.networking.NetworkManager;
+import it.hurts.octostudios.octolib.client.animation.Tween;
+import it.hurts.octostudios.octolib.client.particle.UIParticle;
+import it.hurts.octostudios.octolib.util.RenderUtils;
 import it.hurts.shatterbyte.clavis.common.Clavis;
 import it.hurts.shatterbyte.clavis.common.ClavisClient;
 import it.hurts.shatterbyte.clavis.common.client.particle.HalfHeartUIParticle;
@@ -15,8 +18,6 @@ import it.hurts.shatterbyte.clavis.common.data.TooltipInfoData;
 import it.hurts.shatterbyte.clavis.common.minigame.Minigame;
 import it.hurts.shatterbyte.clavis.common.minigame.rule.Rule;
 import it.hurts.shatterbyte.clavis.common.network.packet.FinishLockpickingPacket;
-import it.hurts.octostudios.octolib.client.animation.Tween;
-import it.hurts.octostudios.octolib.client.particle.UIParticle;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -179,11 +180,11 @@ public class LockpickingScreen<T extends AbstractMinigameWidget<?>> extends Scre
         guiGraphics.pose().popPose();
     }
 
-    public static void renderTooltip(Font font, TooltipInfoData tooltipInfoData, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, boolean isDescription) {
+    public static void renderTooltip(ResourceLocation minigameType, Font font, TooltipInfoData tooltipInfoData, GuiGraphics guiGraphics, double mouseX, double mouseY, float partialTick, boolean isDescription) {
         List<FormattedCharSequence> toRender = isDescription ? tooltipInfoData.getDescription() : tooltipInfoData.getSummary();
         int length = isDescription ? tooltipInfoData.getDescriptionLength() : tooltipInfoData.getSummaryLength();
         length = Math.round(length*0.75f)+2;
-        int height = Math.round((toRender.size()-1)*9*0.75f);
+        int height = Math.round((toRender.size()-1)*9*0.75f)+3;
 
         mouseX += 1;
         mouseY -= (22 + height );
@@ -192,15 +193,24 @@ public class LockpickingScreen<T extends AbstractMinigameWidget<?>> extends Scre
             mouseX -= 18 + length;
         }
 
-        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX, mouseY, 8, 11, 0, 0, 8, 11, 17, 24);
-        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX, mouseY+11, 8, height, 0, 11, 8, 1, 17, 24);
-        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX, mouseY+11+height, 8, 11, 0, 13, 8, 11, 17, 24);
-        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX+8, mouseY, length, 11, 8, 0, 1, 11, 17, 24);
-        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX+8, mouseY+11, length, height, 8, 11, 1, 1, 17, 24);
-        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX+8, mouseY+11+height, length, 11, 8, 13, 1, 11, 17, 24);
-        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX+8+length, mouseY, 8, 11, 9, 0, 8, 11, 17, 24);
-        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX+8+length, mouseY+11, 8, height, 9, 11, 8, 1, 17, 24);
-        guiGraphics.blit(MinigameInfoWidget.TOOLTIP, mouseX+8+length, mouseY+11+height, 8, 11, 9, 13, 8, 11, 17, 24);
+        ResourceLocation tooltip = Clavis.path("textures/lockpicking/"+minigameType.getPath()+"/tooltip.png");
+
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(mouseX, mouseY, 0);
+
+        guiGraphics.blit(tooltip, 0, 0, 8, 8, 0, 0, 8, 8, 17, 24);
+        guiGraphics.blit(tooltip, 8, 0, length, 8, 8, 0, 1, 8, 17, 24);
+        guiGraphics.blit(tooltip, 8 + length, 0, 8, 8, 9, 0, 8, 8, 17, 24);
+        //guiGraphics.blit(tooltip, 0, 8, 8, height, 0, 8, 8, 8, 17, 24);
+        RenderUtils.renderTilingTexture(guiGraphics.pose(), 0, 8, 0, 8, 17, 24, 8, height, 0f, true, true);
+        guiGraphics.blit(tooltip, 8, 8, length, height, 8, 8, 1, 8, 17, 24);
+        //guiGraphics.blit(tooltip, 8 + length, 8, 8, height, 9, 8, 8, 8, 17, 24);
+        RenderUtils.renderTilingTexture(guiGraphics.pose(), 8+length, 8, 9, 8, 17, 24, 8, height, 0f, true, true);
+        guiGraphics.blit(tooltip, 0, 8 + height, 8, 8, 0, 16, 8, 8, 17, 24);
+        guiGraphics.blit(tooltip, 8, 8 + height, length, 8, 8, 16, 1, 8, 17, 24);
+        guiGraphics.blit(tooltip, 8 + length, 8 + height, 8, 8, 9, 16, 8, 8, 17, 24);
+
+        guiGraphics.pose().popPose();
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(mouseX+9, mouseY+8, 1);

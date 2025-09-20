@@ -26,7 +26,6 @@ public class MinigameInfoWidget extends AbstractWidget {
     public static final ResourceLocation HARD = Clavis.path("textures/icon/hard.png");
     public static final ResourceLocation TIME = Clavis.path("textures/icon/time.png");
     public static final ResourceLocation QUALITY = Clavis.path("textures/icon/quality.png");
-    public static final ResourceLocation TOOLTIP = Clavis.path("textures/lockpicking/tooltip.png");
     public final ResourceLocation STAT_BG;
 
     TooltipInfoData difficultyInfo;
@@ -82,11 +81,11 @@ public class MinigameInfoWidget extends AbstractWidget {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(0,0,20);
         if (qualityHovered) {
-            LockpickingScreen.renderTooltip(font, qualityInfo, guiGraphics, mouseX, mouseY, partialTick, isDescription);
+            LockpickingScreen.renderTooltip(game.getMinigameType(), font, qualityInfo, guiGraphics, mouseX, mouseY, partialTick, isDescription);
         } else if (timeHovered) {
-            LockpickingScreen.renderTooltip(font, timeInfo, guiGraphics, mouseX, mouseY, partialTick, isDescription);
+            LockpickingScreen.renderTooltip(game.getMinigameType(), font, timeInfo, guiGraphics, mouseX, mouseY, partialTick, isDescription);
         } else if (difficultyHovered) {
-            LockpickingScreen.renderTooltip(font, difficultyInfo, guiGraphics, mouseX, mouseY, partialTick, isDescription);
+            LockpickingScreen.renderTooltip(game.getMinigameType(), font, difficultyInfo, guiGraphics, mouseX, mouseY, partialTick, isDescription);
         }
         guiGraphics.pose().popPose();
     }
