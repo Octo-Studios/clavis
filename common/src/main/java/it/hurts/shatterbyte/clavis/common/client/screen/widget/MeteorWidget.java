@@ -141,11 +141,14 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
             return;
         }
 
+        this.hotTween.kill();
+        this.heatProgress = 0f;
+
         scaleTween.kill();
         scaleTween = Tween.create();
         scaleTween.setTransitionType(TransitionType.QUART);
         scaleTween.setEase(EaseType.EASE_IN);
-        scaleTween.tweenMethod(this::setVisualSize, new Vector2f(0.95f, 0.95f), new Vector2f(1.25f, 1.25f), 0.58f);
+        scaleTween.tweenMethod(this::setVisualSize, new Vector2f(0.95f, 0.95f), new Vector2f(1.25f, 1.25f), 0.275f);
         scaleTween.tweenRunnable(() -> {
             this.cracked = false;
             Vector2d center = this.getCenterPos(true);
