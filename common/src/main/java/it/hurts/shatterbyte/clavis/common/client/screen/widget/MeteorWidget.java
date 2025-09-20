@@ -95,7 +95,7 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
         guiGraphics.blit(cracked ? METEOR_CRACKED : METEOR, -10, -10, 19, 19, 0, 0, 19, 19, 19, 19);
         if (heatProgress > 0.01 && !cracked) {
             RenderSystem.enableBlend();
-            RenderSystem.setShaderColor(parent.gameColor.r(), parent.gameColor.g(), parent.gameColor.b(), heatProgress/2f);
+            RenderSystem.setShaderColor(parent.gameColor.r(), parent.gameColor.g(), parent.gameColor.b(), heatProgress/(4f-size));
             guiGraphics.blit(METEOR_SHINE, -19, -19, 38, 38, 0, 0, 38, 38, 38, 38);
             RenderSystem.setShaderColor(parent.gameColor.r(), parent.gameColor.g(), parent.gameColor.b(), heatProgress);
             guiGraphics.blit(METEOR_HOT, -10, -10, 19, 19, 0, 0, 19, 19, 19, 19);
