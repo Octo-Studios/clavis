@@ -198,17 +198,17 @@ public class LockpickingScreen<T extends AbstractMinigameWidget<?>> extends Scre
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(mouseX, mouseY, 0);
 
-        guiGraphics.blit(tooltip, 0, 0, 8, 8, 0, 0, 8, 8, 17, 24);
-        guiGraphics.blit(tooltip, 8, 0, length, 8, 8, 0, 1, 8, 17, 24);
-        guiGraphics.blit(tooltip, 8 + length, 0, 8, 8, 9, 0, 8, 8, 17, 24);
+        guiGraphics.blit(tooltip, 0, 0, 8, 8, 0, 0, 8, 8, 34, 16);
+        guiGraphics.blit(tooltip, 8, 0, length, 8, 8, 0, 1, 8, 34, 16);
+        guiGraphics.blit(tooltip, 8 + length, 0, 8, 8, 9, 0, 8, 8, 34, 16);
         //guiGraphics.blit(tooltip, 0, 8, 8, height, 0, 8, 8, 8, 17, 24);
-        RenderUtils.renderTilingTexture(guiGraphics.pose(), 0, 8, 0, 8, 17, 24, 8, height, 0f, true, true);
-        guiGraphics.blit(tooltip, 8, 8, length, height, 8, 8, 1, 8, 17, 24);
+        RenderUtils.renderTilingTexture(guiGraphics.pose(), 0, 8, 17, 8, 34, 16, 8, height, 0f, true, true);
+        guiGraphics.blit(tooltip, 8, 8, length, height, 8+17, 8, 1, 8, 34, 16);
         //guiGraphics.blit(tooltip, 8 + length, 8, 8, height, 9, 8, 8, 8, 17, 24);
-        RenderUtils.renderTilingTexture(guiGraphics.pose(), 8+length, 8, 9, 8, 17, 24, 8, height, 0f, true, true);
-        guiGraphics.blit(tooltip, 0, 8 + height, 8, 8, 0, 16, 8, 8, 17, 24);
-        guiGraphics.blit(tooltip, 8, 8 + height, length, 8, 8, 16, 1, 8, 17, 24);
-        guiGraphics.blit(tooltip, 8 + length, 8 + height, 8, 8, 9, 16, 8, 8, 17, 24);
+        RenderUtils.renderTilingTexture(guiGraphics.pose(), 8+length, 8, 9+17, 8, 34, 16, 8, height, 0f, true, true);
+        guiGraphics.blit(tooltip, 0, 8 + height, 8, 8, 0, 8, 8, 8, 34, 16);
+        guiGraphics.blit(tooltip, 8, 8 + height, length, 8, 8, 8, 1, 8, 34, 16);
+        guiGraphics.blit(tooltip, 8 + length, 8 + height, 8, 8, 9, 8, 8, 8, 34, 16);
 
         guiGraphics.pose().popPose();
 
