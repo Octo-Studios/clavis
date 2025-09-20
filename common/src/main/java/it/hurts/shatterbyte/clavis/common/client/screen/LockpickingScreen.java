@@ -170,7 +170,7 @@ public class LockpickingScreen<T extends AbstractMinigameWidget<?>> extends Scre
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.minigameWidget.getX()+this.minigameWidget.getWidth()/2f, this.minigameWidget.getY()+this.minigameWidget.getHeight(), 0);
-        guiGraphics.pose().translate(-80, 0, 0);
+        guiGraphics.pose().translate(-80, 8, 10);
         for (int i = 1; i <= 5; i++) {
             guiGraphics.blit(i <= this.getGame().getHealth() ? HEART : EMPTY_HEART, 0, 0, 32, 32, 0, 0, 32, 32, 32, 32);
             guiGraphics.pose().translate(32, 0, 0);

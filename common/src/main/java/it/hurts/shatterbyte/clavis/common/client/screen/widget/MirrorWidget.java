@@ -3,17 +3,17 @@ package it.hurts.shatterbyte.clavis.common.client.screen.widget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;
+import it.hurts.octostudios.octolib.client.animation.Tween;
+import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
+import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
+import it.hurts.octostudios.octolib.util.OctoColor;
 import it.hurts.shatterbyte.clavis.common.Clavis;
-import it.hurts.shatterbyte.clavis.common.client.particle.MeteorPartUIParticle;
+import it.hurts.shatterbyte.clavis.common.client.particle.MouseTeleportUIParticle;
+import it.hurts.shatterbyte.clavis.common.client.particle.ShockwaveUIParticle;
 import it.hurts.shatterbyte.clavis.common.client.screen.LockpickingScreen;
 import it.hurts.shatterbyte.clavis.common.minigame.Minigame;
 import it.hurts.shatterbyte.clavis.common.mixin.MouseHandlerAccessor;
 import it.hurts.shatterbyte.clavis.common.registry.SoundEventRegistry;
-import it.hurts.octostudios.octolib.client.animation.Tween;
-import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
-import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
-import it.hurts.octostudios.octolib.client.particle.UIParticle;
-import it.hurts.octostudios.octolib.util.OctoColor;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
@@ -100,10 +100,12 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
         guiGraphics.pose().translate(this.getX() + this.width / 2f, this.getY() + this.height / 2f, 0);
         guiGraphics.pose().mulPose(Axis.ZP.rotation((float) rot));
         guiGraphics.pose().translate(-this.width / 2f - this.getX(), -this.height / 2f - this.getY(), 1);
+
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
         guiGraphics.blit(MIRROR, this.getX(), this.getY(), 192, 192, 0, 0, 192, 192, 192, 192);
         RenderSystem.disableBlend();
+
         guiGraphics.pose().translate(0,0,1);
         guiGraphics.blit(ROTATING_PART, this.getX()-9, (int) (this.getY()+this.height/2f-21), 210, 41, 0, 0, 210, 41, 210, 41);
         guiGraphics.pose().popPose();
@@ -267,15 +269,7 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
 
         accessor.invokeOnMove(windowHandle, sX, sY);
 
-
-        for (float f = 0; f < 1f; f += 0.033f) {
-            Vector2d lerped = new Vector2d();
-            original.lerp(swapped, f, lerped);
-            MeteorPartUIParticle particle = new MeteorPartUIParticle(MeteorPartUIParticle.PART_4, 5, (float) lerped.x, (float) lerped.y, 0.1f, UIParticle.Layer.SCREEN, 1);
-            particle.setSpeed(0.1f);
-            particle.setScreen(this.getScreen());
-            particle.instantiate();
-        }
+        MouseTeleportUIParticle.drawLine(this.screen, swapped, original);
     }
 
     public void doShockwave() {
@@ -300,6 +294,8 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
             }
             meteor.velocity.sub(direction);
         }
+
+        ShockwaveUIParticle.summonShockwaveEffect(this.screen, mousePos.x, mousePos.y);
     }
 
     @Override
