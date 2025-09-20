@@ -169,7 +169,7 @@ public class MeteorWidget extends AbstractWidget implements Child<MirrorWidget>,
                 particle.instantiate();
             }
         });
-        scaleTween.tweenMethod(this::setVisualSize, new Vector2f(1.25f, 1.25f), new Vector2f(1f, 1f), 0.25f).setEaseType(EaseType.EASE_OUT);
+        scaleTween.tweenMethod(this::setVisualSize, new Vector2f(1.2f, 1.2f), new Vector2f(1f, 1f), 0.25f).setEaseType(EaseType.EASE_OUT);
         scaleTween.start();
     }
 
