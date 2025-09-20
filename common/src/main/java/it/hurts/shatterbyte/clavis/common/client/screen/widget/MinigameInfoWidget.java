@@ -1,5 +1,6 @@
 package it.hurts.shatterbyte.clavis.common.client.screen.widget;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import it.hurts.shatterbyte.clavis.common.Clavis;
 import it.hurts.shatterbyte.clavis.common.client.screen.LockpickingScreen;
 import it.hurts.shatterbyte.clavis.common.data.MinigameStyleData;
@@ -97,7 +98,9 @@ public class MinigameInfoWidget extends AbstractWidget {
             guiGraphics.fill(0, -1, 52, 16+1, 0, styleData.getTitleColor());
         }
         guiGraphics.blit(STAT_BG, 0, 0, 52, 16, 0, 0, 52, 16, 52, 16);
+        RenderSystem.enableBlend();
         guiGraphics.blit(icon, 2, 2, 12, 13, 0, 0, 12, 13, 12, 13);
+        RenderSystem.disableBlend();
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(18, 5.5, 0);
         guiGraphics.pose().scale(0.75f, 0.75f, 1f);
