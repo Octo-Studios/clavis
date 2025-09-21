@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class EndRules {
-    public static final Rule<MirrorWidget> ROTATE = new Rule<MirrorWidget>(Clavis.path("rotate_mirror"))
+    public static final Rule<MirrorWidget> ROTATE = new Rule<MirrorWidget>(Clavis.path("rotate"))
             .withEveryTick((mirror, tickCount) -> {
                 if (mirror.isPlaying() && (tickCount+80) % 200 == 0) {
                     mirror.rotate(135f);
@@ -23,7 +23,7 @@ public class EndRules {
                 mirror.swapMousePositions();
             });
 
-    public static final Rule<MirrorWidget> SHOCKWAVE = new Rule<MirrorWidget>(Clavis.path("mirror_shockwave"))
+    public static final Rule<MirrorWidget> SHOCKWAVE = new Rule<MirrorWidget>(Clavis.path("shockwave"))
             .withOnClick((mirror, activated) -> {
                 mirror.doShockwave();
             });

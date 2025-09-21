@@ -32,7 +32,7 @@ public class RuleWidget extends AbstractWidget {
     List<FormattedCharSequence> description;
 
     public RuleWidget(int x, int y, Rule<?> rule, LockpickingScreen screen) {
-        super(x, y, 160, 32, Component.translatable(rule.getId().toLanguageKey("rule")).withStyle(ChatFormatting.BOLD));
+        super(x, y, 160, 32, Component.translatable(rule.getLanguageKey(screen.getGame().getMinigameType())).withStyle(ChatFormatting.BOLD));
         ResourceLocation minigameType = screen.getGame().getMinigameType();
         this.screen = screen;
 
@@ -41,13 +41,13 @@ public class RuleWidget extends AbstractWidget {
         SIDE = Clavis.path(minigameType.getNamespace(), "textures/lockpicking/"+minigameType.getPath()+"/side.png");
         TOP = Clavis.path(minigameType.getNamespace(), "textures/lockpicking/"+minigameType.getPath()+"/top.png");
 
-        Component description = Component.translatable(rule.getId().toLanguageKey("rule", "description"));
+        Component description = Component.translatable(rule.getLanguageKey(minigameType, "description"));
         this.description = Minecraft.getInstance().font.split(description, Math.round(152/0.75f));
 
         int lines = this.description.size();
         this.setHeight(Math.max(32, 22+lines*8));
 
-        this.icon = ResourceLocation.fromNamespaceAndPath(rule.getId().getNamespace(), "textures/icon/rule/"+rule.getId().getPath()+".png");
+        this.icon = ResourceLocation.fromNamespaceAndPath(rule.getId().getNamespace(), "textures/icon/rule/"+minigameType.getPath()+"/"+rule.getId().getPath()+".png");
     }
 
     @Override

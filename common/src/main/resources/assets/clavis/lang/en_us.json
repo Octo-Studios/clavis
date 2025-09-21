@@ -1,33 +1,25 @@
 {
-  "rule.clavis.mood_swings": "Mood Swings",
-  "rule.clavis.mood_swings.description": "After each click the pointer changes the direction of its movement",
+  "rule.clavis.gear.mood_swings": "Mood Swings",
+  "rule.clavis.gear.mood_swings.description": "After each click the pointer changes the direction of its movement",
+  "rule.clavis.gear.nauseous_carousel": "Nauseous Carousel",
+  "rule.clavis.gear.nauseous_carousel.description": "From time to time the game field slowly rotates in a random direction",
+  "rule.clavis.gear.fake_pin": "Fake Pin",
+  "rule.clavis.gear.fake_pin.description": "A fake pin appears and moves to a random position after each click. Clicking it deactivates all previously activated pins",
+  "rule.clavis.gear.self_destruction": "Self Destruction Protocol",
+  "rule.clavis.gear.self_destruction.description": "The pointer periodically overheats causing any click to take away an extra health point",
+  "rule.clavis.gear.full_throttle": "Full Throttle",
+  "rule.clavis.gear.full_throttle.description": "The pointer speeds up after each click and gradually slows back down over time",
 
-  "rule.clavis.nauseous_carousel": "Nauseous Carousel",
-  "rule.clavis.nauseous_carousel.description": "From time to time the game field slowly rotates in a random direction",
-
-  "rule.clavis.fake_pin": "Fake Pin",
-  "rule.clavis.fake_pin.description": "A fake pin appears and moves to a random position after each click. Clicking it deactivates all previously activated pins",
-
-  "rule.clavis.self_destruction": "Self Destruction Protocol",
-  "rule.clavis.self_destruction.description": "The pointer periodically overheats causing any click to take away an extra health point",
-
-  "rule.clavis.full_throttle": "Full Throttle",
-  "rule.clavis.full_throttle.description": "The pointer speeds up after each click and gradually slows back down over time",
-
-  "rule.clavis.fake_meteor": "Fake Meteor",
-  "rule.clavis.fake_meteor.description": "A fake meteor appears, moving to a random position after each click. Clicking it will restore all previously destroyed meteors",
-
-  "rule.clavis.rotate_mirror": "Centrifuge",
-  "rule.clavis.rotate_mirror.description": "The reflecting mirror periodically spins in a random direction",
-
-  "rule.clavis.swap_mousepos": "Castling",
-  "rule.clavis.swap_mousepos.description": "After each click, the real cursor swaps places with the reflected one",
-
-  "rule.clavis.hot_meteor": "Hot Stuff",
-  "rule.clavis.hot_meteor.description": "A random meteor on the field periodically heats up, and any click on it will remove an extra health point",
-
-  "rule.clavis.mirror_shockwave": "Boom!",
-  "rule.clavis.mirror_shockwave.description": "Each click creates a shockwave that pushes away all meteors near the reflected cursor",
+  "rule.clavis.mirror.fake_meteor": "Fake Meteor",
+  "rule.clavis.mirror.fake_meteor.description": "A fake meteor appears, moving to a random position after each click. Clicking it will restore all previously destroyed meteors",
+  "rule.clavis.mirror.rotate": "Centrifuge",
+  "rule.clavis.mirror.rotate.description": "The reflecting mirror periodically spins in a random direction",
+  "rule.clavis.mirror.swap_mousepos": "Castling",
+  "rule.clavis.mirror.swap_mousepos.description": "After each click, the real cursor swaps places with the reflected one",
+  "rule.clavis.mirror.hot_meteor": "Hot Stuff",
+  "rule.clavis.mirror.hot_meteor.description": "A random meteor on the field periodically heats up, and any click on it will remove an extra health point",
+  "rule.clavis.mirror.shockwave": "Boom!",
+  "rule.clavis.mirror.shockwave.description": "Each click creates a shockwave that pushes away all meteors near the reflected cursor",
 
   "ui.clavis.hold_shift": "Hold [Shift] for detailed description",
 

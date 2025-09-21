@@ -43,6 +43,14 @@ public class Rule<T extends AbstractMinigameWidget<?>> {
         return this;
     }
 
+    public String getLanguageKey(ResourceLocation minigameType) {
+        return "rule."+id.getNamespace()+"."+minigameType.getPath()+"."+id.getPath();
+    }
+
+    public String getLanguageKey(ResourceLocation minigameType, String key) {
+        return this.getLanguageKey(minigameType)+"."+key;
+    }
+
     protected Rule<T> register(Class<T> clazz) {
         ResourceLocation minigameType = MinigameTypeRegistry.getId(clazz);
 

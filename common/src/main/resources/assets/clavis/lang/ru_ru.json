@@ -1,33 +1,25 @@
 {
-  "rule.clavis.mood_swings": "Эмоциональные качели",
-  "rule.clavis.mood_swings.description": "После каждого клика указатель меняет направление своего движения",
+  "rule.clavis.gear.mood_swings": "Эмоциональные качели",
+  "rule.clavis.gear.mood_swings.description": "После каждого клика указатель меняет направление своего движения",
+  "rule.clavis.gear.nauseous_carousel": "Тошнотворная карусель",
+  "rule.clavis.gear.nauseous_carousel.description": "Периодически игровое поле медленно прокручивается в случайную сторону",
+  "rule.clavis.gear.fake_pin": "Фальшивка",
+  "rule.clavis.gear.fake_pin.description": "Появляется фальшивый пин, перемещающийся в случайную позицию после каждого клика. Клик по нему деактивирует все активированные ранее пины",
+  "rule.clavis.gear.self_destruction": "Протокол самоуничтожения",
+  "rule.clavis.gear.self_destruction.description": "Указатель периодически накаляется, отчего любой клик отнимает дополнительную единицу здоровья",
+  "rule.clavis.gear.full_throttle": "Газ в пол!",
+  "rule.clavis.gear.full_throttle.description": "Указатель ускоряется после каждого клика и со временем замедляется обратно",
 
-  "rule.clavis.nauseous_carousel": "Тошнотворная карусель",
-  "rule.clavis.nauseous_carousel.description": "Периодически игровое поле медленно прокручивается в случайную сторону",
-
-  "rule.clavis.fake_pin": "Фальшивка",
-  "rule.clavis.fake_pin.description": "Появляется фальшивый пин, перемещающийся в случайную позицию после каждого клика. Клик по нему деактивирует все активированные ранее пины",
-
-  "rule.clavis.self_destruction": "Протокол самоуничтожения",
-  "rule.clavis.self_destruction.description": "Указатель периодически накаляется, отчего любой клик отнимает дополнительную единицу здоровья",
-
-  "rule.clavis.full_throttle": "Газ в пол!",
-  "rule.clavis.full_throttle.description": "Указатель ускоряется после каждого клика и со временем замедляется обратно",
-
-  "rule.clavis.fake_meteor": "Фальшивка",
-  "rule.clavis.fake_meteor.description": "Появляется фальшивый метеор, перемещающийся в случайную позицию после каждого клика. Клик по нему восстановит все разрушенные ранее метеориты",
-
-  "rule.clavis.rotate_mirror": "Центрифуга",
-  "rule.clavis.rotate_mirror.description": "Периодически отражающее зеркало прокручивается в случайную сторону",
-
-  "rule.clavis.swap_mousepos": "Рокировка",
-  "rule.clavis.swap_mousepos.description": "После каждого клика настоящий курсор меняется местами с отражённым",
-
-  "rule.clavis.hot_meteor": "Горячая штучка",
-  "rule.clavis.hot_meteor.description": "Случайный метеорит на поле периодически накаляется, отчего любой клик по нему отнимет дополнительную единицу здоровья",
-
-  "rule.clavis.mirror_shockwave": "Бабах!",
-  "rule.clavis.mirror_shockwave.description": "Каждый клик создаёт ударную волну, расталкивающую все метеориты вблизи отраженного курсора",
+  "rule.clavis.mirror.fake_meteor": "Фальшивка",
+  "rule.clavis.mirror.fake_meteor.description": "Появляется фальшивый метеор, перемещающийся в случайную позицию после каждого клика. Клик по нему восстановит все разрушенные ранее метеориты",
+  "rule.clavis.mirror.rotate": "Центрифуга",
+  "rule.clavis.mirror.rotate.description": "Периодически отражающее зеркало прокручивается в случайную сторону",
+  "rule.clavis.mirror.swap_mousepos": "Рокировка",
+  "rule.clavis.mirror.swap_mousepos.description": "После каждого клика настоящий курсор меняется местами с отражённым",
+  "rule.clavis.mirror.hot_meteor": "Горячая штучка",
+  "rule.clavis.mirror.hot_meteor.description": "Случайный метеорит на поле периодически накаляется, отчего любой клик по нему отнимет дополнительную единицу здоровья",
+  "rule.clavis.mirror.shockwave": "Бабах!",
+  "rule.clavis.mirror.shockwave.description": "Каждый клик создаёт ударную волну, расталкивающую все метеориты вблизи отраженного курсора",
 
   "ui.clavis.hold_shift": "Удерживай [Шифт] для подробного описания",
 
