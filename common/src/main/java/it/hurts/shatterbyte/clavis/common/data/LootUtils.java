@@ -39,10 +39,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Function;
 
 public class LootUtils {
@@ -103,7 +100,12 @@ public class LootUtils {
             LootContext actualLootContext = makeCtx.apply(currentSeed);
             RandomSource randomSource = actualLootContext.getRandom();
 
-            ObjectArrayList<ItemStack> actualItems = buildMainItemList(accessor, makeCtx, actualLootContext, currentSeed, 1f, randomSource);
+            ObjectArrayList<ItemStack> actualItems = new ObjectArrayList<>();
+            try {
+                actualItems = buildMainItemList(accessor, makeCtx, actualLootContext, currentSeed, 1f, randomSource);
+            } catch (NoSuchElementException e) {
+                OctoLib.LOGGER.error("Failed to calculate lock difficulty: {}", e.getMessage());
+            }
             actualItems.size(Math.min(actualItems.size(), container.getContainerSize()));
 
             double iterationValue = 0d;
