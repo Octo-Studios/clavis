@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class LockModel extends Model {
     public static ResourceLocation getTexture(ResourceLocation minigameType) {
-        return Clavis.path("textures/model/"+minigameType.getPath()+"/lock.png");
+        return Clavis.path(minigameType.getNamespace(), "textures/model/"+minigameType.getPath()+"/lock.png");
     }
 
     private final ModelPart main;

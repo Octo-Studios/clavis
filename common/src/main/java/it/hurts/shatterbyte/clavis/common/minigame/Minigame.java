@@ -104,7 +104,7 @@ public class Minigame<T extends AbstractMinigameWidget<?>> {
         if (!lock.getRules().isEmpty()) {
             this.rules.addAll(lock.getRules()
                     .stream()
-                    .map(id -> (Rule<T>) Rule.getRegisteredRule(id, widget.getClass()))
+                    .map(id -> (Rule<T>) Rule.getRegisteredRule(id))
                     .filter(Objects::nonNull)
                     .toList()
             );

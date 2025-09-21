@@ -193,7 +193,7 @@ public class LockpickingScreen<T extends AbstractMinigameWidget<?>> extends Scre
             mouseX -= 18 + length;
         }
 
-        ResourceLocation tooltip = Clavis.path("textures/lockpicking/"+minigameType.getPath()+"/tooltip.png");
+        ResourceLocation tooltip = Clavis.path(minigameType.getNamespace(), "textures/lockpicking/"+minigameType.getPath()+"/tooltip.png");
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(mouseX, mouseY, 0);

@@ -1,10 +1,9 @@
 package it.hurts.shatterbyte.clavis.common.minigame.rule;
 
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.AbstractMinigameWidget;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.GearMechanismWidget;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.MirrorWidget;
+import it.hurts.shatterbyte.clavis.common.registry.MinigameTypeRegistry;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.util.Cast;
@@ -17,8 +16,7 @@ import java.util.function.Consumer;
 
 @Getter
 public class Rule<T extends AbstractMinigameWidget<?>> {
-    private static final Map<ResourceLocation, Rule<?>> REGISTRY = new HashMap<>();
-    private static final Multimap<Class<? extends AbstractMinigameWidget<?>>, Rule<?>> BY_CLASS = LinkedHashMultimap.create();
+    private static final Map<ResourceLocation, Map<ResourceLocation, Rule<?>>> REGISTRY = new HashMap<>();
 
     ResourceLocation id;
 
@@ -46,16 +44,20 @@ public class Rule<T extends AbstractMinigameWidget<?>> {
     }
 
     protected Rule<T> register(Class<T> clazz) {
-        REGISTRY.put(this.id, this);
-        BY_CLASS.put(clazz, this);
+        ResourceLocation minigameType = MinigameTypeRegistry.getId(clazz);
+
+        REGISTRY.putIfAbsent(minigameType, new HashMap<>());
+        REGISTRY.get(minigameType).put(this.id, this);
         return this;
     }
 
     public static <W extends AbstractMinigameWidget<?>> Collection<Rule<W>> getRegisteredRules(Class<W> clazz) {
-        return Cast.cast(BY_CLASS.asMap().get(clazz));
+        ResourceLocation minigameType = MinigameTypeRegistry.getId(clazz);
+
+        return Cast.cast(REGISTRY.get(minigameType).values());
     }
 
-    public static <W extends AbstractMinigameWidget<?>> Rule<W> getRegisteredRule(ResourceLocation id, Class<W> clazz) {
+    public static <W extends AbstractMinigameWidget<?>> Rule<W> getRegisteredRule(ResourceLocation id) {
         return Cast.cast(REGISTRY.get(id));
     }
 

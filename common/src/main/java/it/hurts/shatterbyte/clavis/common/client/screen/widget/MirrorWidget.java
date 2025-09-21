@@ -28,6 +28,8 @@ import org.joml.Vector2d;
 import java.util.Random;
 
 public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
+    public static final ResourceLocation ID = Clavis.path("mirror");
+
     public static final ResourceLocation BACKGROUND = Clavis.path("textures/minigame/mirror/black_circle.png");
     public static final ResourceLocation FRAME = Clavis.path("textures/minigame/mirror/frame.png");
     public static final ResourceLocation ROTATING_PART = Clavis.path("textures/minigame/mirror/rotating_part.png");

@@ -40,7 +40,7 @@ public class MinigameInfoWidget extends AbstractWidget {
         this.game = game;
         this.styleData = styleData;
 
-        STAT_BG = Clavis.path("textures/lockpicking/" + game.getMinigameType().getPath() + "/stat_background.png");
+        STAT_BG = Clavis.path(game.getMinigameType().getNamespace(), "textures/lockpicking/" + game.getMinigameType().getPath() + "/stat_background.png");
         Font font = Minecraft.getInstance().font;
 
         difficultyInfo = new TooltipInfoData(font, "difficulty", Math.round(128/0.75f));

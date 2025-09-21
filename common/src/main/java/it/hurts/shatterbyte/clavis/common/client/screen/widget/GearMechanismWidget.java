@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<LockPinWidget, GearMechanismWidget>> {
+    public static final ResourceLocation ID = Clavis.path("gear");
+
     public static final ResourceLocation BACKGROUND = Clavis.path("textures/minigame/gear/background.png");
     public static final ResourceLocation COGWHEEL = Clavis.path("textures/minigame/gear/gear.png");
     public static final ResourceLocation ARROW = Clavis.path("textures/minigame/gear/arrow.png");

@@ -10,10 +10,12 @@ import it.hurts.shatterbyte.clavis.common.LockManager;
 import it.hurts.shatterbyte.clavis.common.data.Box;
 import it.hurts.shatterbyte.clavis.common.data.Lock;
 import it.hurts.shatterbyte.clavis.common.data.LootUtils;
+import it.hurts.shatterbyte.clavis.common.registry.MinigameTypeRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.coordinates.WorldCoordinates;
@@ -57,11 +59,20 @@ public class ClavisCommands {
                 .then(Commands.literal("lock")
                         .then(Commands.literal("add")
                                 .then(Commands.argument("type", ResourceLocationArgument.id())
+                                        .suggests((ctx, builder) ->
+                                                SharedSuggestionProvider.suggest(MinigameTypeRegistry.REGISTRY.keySet()
+                                                        .stream().map(ResourceLocation::toString), builder))
                                         .then(Commands.argument("difficulty", FloatArgumentType.floatArg(0f))
                                                 .then(Commands.argument("seed", LongArgumentType.longArg())
                                                         .then(Commands.argument("perplayer", BoolArgumentType.bool())
                                                                 .then(Commands.argument("blockpos", BlockPosArgument.blockPos())
                                                                         .executes(context -> {
+                                                                            ResourceLocation type = context.getArgument("type", ResourceLocation.class);
+                                                                            if (!MinigameTypeRegistry.REGISTRY.containsKey(type)) {
+                                                                                context.getSource().sendFailure(Component.literal("Non-existent minigame type: "+type.toString()));
+                                                                                return 1;
+                                                                            }
+
                                                                             Lock lock = new Lock(
                                                                                     UUID.randomUUID(),
                                                                                     new Box(context.getArgument("blockpos", WorldCoordinates.class).getBlockPos(context.getSource())),
@@ -69,7 +80,7 @@ public class ClavisCommands {
                                                                                     context.getArgument("seed", Long.class),
                                                                                     context.getArgument("perplayer", Boolean.class),
                                                                                     new ArrayList<>(),
-                                                                                    context.getArgument("type", ResourceLocation.class)
+                                                                                    type
                                                                             );
 
                                                                             LockManager.addLock(context.getSource().getLevel(), lock);
@@ -78,6 +89,12 @@ public class ClavisCommands {
                                                                 )
                                                                 .then(Commands.argument("blockpos2", BlockPosArgument.blockPos())
                                                                         .executes(context -> {
+                                                                            ResourceLocation type = context.getArgument("type", ResourceLocation.class);
+                                                                            if (!MinigameTypeRegistry.REGISTRY.containsKey(type)) {
+                                                                                context.getSource().sendFailure(Component.literal("Non-existent minigame type: "+type.toString()));
+                                                                                return 1;
+                                                                            }
+
                                                                             Lock lock = new Lock(
                                                                                     UUID.randomUUID(),
                                                                                     new Box(
@@ -88,7 +105,7 @@ public class ClavisCommands {
                                                                                     context.getArgument("seed", Long.class),
                                                                                     context.getArgument("perplayer", Boolean.class),
                                                                                     new ArrayList<>(),
-                                                                                    context.getArgument("type", ResourceLocation.class)
+                                                                                    type
                                                                             );
 
                                                                             LockManager.addLock(context.getSource().getLevel(), lock);

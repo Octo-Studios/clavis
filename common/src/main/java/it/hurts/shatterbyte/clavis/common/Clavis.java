@@ -9,6 +9,7 @@ import it.hurts.shatterbyte.clavis.common.network.LockInteractionBlockers;
 import it.hurts.shatterbyte.clavis.common.network.PacketRegistry;
 import it.hurts.shatterbyte.clavis.common.network.command.ClavisCommands;
 import it.hurts.shatterbyte.clavis.common.registry.ItemRegistry;
+import it.hurts.shatterbyte.clavis.common.registry.MinigameTypeRegistry;
 import it.hurts.shatterbyte.clavis.common.registry.SoundEventRegistry;
 import it.hurts.octostudios.octolib.module.config.ConfigManager;
 import net.minecraft.resources.ResourceLocation;
@@ -25,6 +26,8 @@ public class Clavis {
         } else {
             CURSOR_MOVER = new FallbackCursorMover();
         }
+
+        MinigameTypeRegistry.init();
 
         ConfigManager.registerConfig(Clavis.MOD_ID, Clavis.CONFIG);
 
