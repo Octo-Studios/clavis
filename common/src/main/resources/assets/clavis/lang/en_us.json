@@ -15,19 +15,19 @@
   "rule.clavis.full_throttle.description": "The pointer speeds up after each click and gradually slows back down over time",
 
   "rule.clavis.fake_meteor": "Fake Meteor",
-  "rule.clavis.fake_meteor.description": "A fake meteor appears, moving to a random position after each click. Clicking it will restore all previously destroyed meteors.",
+  "rule.clavis.fake_meteor.description": "A fake meteor appears, moving to a random position after each click. Clicking it will restore all previously destroyed meteors",
 
   "rule.clavis.rotate_mirror": "Centrifuge",
-  "rule.clavis.rotate_mirror.description": "The reflecting mirror periodically spins in a random direction.",
+  "rule.clavis.rotate_mirror.description": "The reflecting mirror periodically spins in a random direction",
 
   "rule.clavis.swap_mousepos": "Castling",
-  "rule.clavis.swap_mousepos.description": "After each click, the real cursor swaps places with the reflected one.",
+  "rule.clavis.swap_mousepos.description": "After each click, the real cursor swaps places with the reflected one",
 
   "rule.clavis.hot_meteor": "Hot Stuff",
-  "rule.clavis.hot_meteor.description": "A random meteor on the field periodically heats up, and any click on it will remove an extra health point.",
+  "rule.clavis.hot_meteor.description": "A random meteor on the field periodically heats up, and any click on it will remove an extra health point",
 
   "rule.clavis.mirror_shockwave": "Boom!",
-  "rule.clavis.mirror_shockwave.description": "Each click creates a shockwave that pushes away all meteors near the reflected cursor.",
+  "rule.clavis.mirror_shockwave.description": "Each click creates a shockwave that pushes away all meteors near the reflected cursor",
 
   "ui.clavis.hold_shift": "Hold [Shift] for detailed description",
 

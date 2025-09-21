@@ -21,7 +21,7 @@
   "rule.clavis.rotate_mirror.description": "Периодически отражающее зеркало прокручивается в случайную сторону",
 
   "rule.clavis.swap_mousepos": "Рокировка",
-  "rule.clavis.swap_mousepos.description": "После  каждого клика настоящий курсор меняется местами с отражённым",
+  "rule.clavis.swap_mousepos.description": "После каждого клика настоящий курсор меняется местами с отражённым",
 
   "rule.clavis.hot_meteor": "Горячая штучка",
   "rule.clavis.hot_meteor.description": "Случайный метеорит на поле периодически накаляется, отчего любой клик по нему отнимет дополнительную единицу здоровья",
