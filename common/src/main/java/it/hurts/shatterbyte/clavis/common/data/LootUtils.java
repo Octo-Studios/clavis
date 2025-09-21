@@ -186,7 +186,12 @@ public class LootUtils {
         RandomSource randomSource = defaultContext.getRandom();
 
         // build item list according to quality
-        ObjectArrayList<ItemStack> mainList = buildMainItemList(accessor, makeCtx, defaultContext, lootTableSeed, quality, randomSource);
+        ObjectArrayList<ItemStack> mainList = new ObjectArrayList<>();
+        try {
+            mainList = buildMainItemList(accessor, makeCtx, defaultContext, lootTableSeed, quality, randomSource);
+        } catch (NoSuchElementException e) {
+            OctoLib.LOGGER.error("Failed to generate loot: {}", e.getMessage());
+        }
 
         // get available slots and split/shuffle items for those slots
         List<Integer> availableSlots = accessor.invokeGetAvailableSlots(randomizable, randomSource);
