@@ -54,7 +54,7 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
 
     Tween mainTween = Tween.create();
 
-    //float oldRot;
+    int rotationDir = 1;
     @Setter
     double rot;
 
@@ -207,6 +207,10 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
             this.rot = 1.5707f;
         }
 
+        if (this.random.nextBoolean()) {
+            this.rotationDir = -1;
+        }
+
         float difficulty = game.getDifficulty();
 
         float scaled = (0.25f + difficulty * 0.75f);
@@ -327,7 +331,7 @@ public class MirrorWidget extends AbstractMinigameWidget<MeteorWidget> {
     public void rotate(float alpha) {
         rotationTween.kill();
         rotationTween = Tween.create();
-        rotationTween.parallel().tweenMethod(this::setRot, this.rot, this.rot + Math.toRadians(alpha), 5f)
+        rotationTween.parallel().tweenMethod(this::setRot, this.rot, this.rot + Math.toRadians(alpha) * rotationDir, 5f)
                 .setEaseType(EaseType.EASE_IN_OUT)
                 .setTransitionType(TransitionType.QUART);
         rotationTween.start();
