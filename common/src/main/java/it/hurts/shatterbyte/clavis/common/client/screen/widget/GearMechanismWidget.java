@@ -117,7 +117,22 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
 
     @Override
     public void playWinAnimation() {
-        this.screen.finish(false);
+        this.playing = false;
+
+        gearTween.kill();
+        gearTween = Tween.create();
+        gearTween.tweenMethod(this::setRot, this.rot, this.rot + 180 * -sign(arrowSpeed), 1f)
+                .setEaseType(EaseType.EASE_OUT)
+                .setTransitionType(TransitionType.CUBIC);
+        gearTween.start();
+
+        this.arrowTween.kill();
+        this.arrowTween = Tween.create();
+        this.arrowTween.tweenInterval(0.25f);
+        this.arrowTween.tweenRunnable(() -> this.children.forEach(rotating -> rotating.children.getFirst().disappear()));
+        this.arrowTween.tweenMethod(this::setArrowSpeed, this.arrowSpeed, 0f, 0.75f);
+        this.arrowTween.tweenRunnable(() -> this.screen.finish(false));
+        this.arrowTween.start();
     }
 
     @Override
@@ -125,16 +140,9 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
         this.playing = false;
 
         this.arrowTween.kill();
-        this.arrowTween = Tween.create();
-        this.arrowTween.tweenMethod(this::setArrowSpeed, this.arrowSpeed, 0f, 0.75f);
-        this.arrowTween.start();
-
         this.mainTween.kill();
-        this.mainTween = Tween.create();
-        this.mainTween.tweenMethod(this::setGameColor, OctoColor.WHITE, new OctoColor(1f, 0.2f, 0.2f, 1f), 1.5f);
-        this.mainTween.tweenInterval(0.5f);
-        this.mainTween.tweenRunnable(() -> this.screen.finish(true));
-        this.mainTween.start();
+
+        this.screen.finish(true);
     }
 
     public void activateSelfDestruction() {

@@ -40,6 +40,13 @@ public class LockPinWidget extends AbstractWidget implements Child<RotatingParen
         return rotatingParent;
     }
 
+    public void disappear() {
+        tween.kill();
+        tween = Tween.create();
+        tween.tweenMethod(this::setYScale, 1f, 0f, 0.66f).setTransitionType(TransitionType.BACK).setEaseType(EaseType.EASE_IN);
+        tween.start();
+    }
+
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.pose().pushPose();

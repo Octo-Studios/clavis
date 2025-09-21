@@ -44,7 +44,17 @@ public class FakePinWidget extends LockPinWidget {
         super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
     }
 
+    @Override
+    public void disappear() {
+        fakeTween.kill();
+        super.disappear();
+    }
+
     public void letThemKnow() {
+        if (this.parent.getParent() instanceof GearMechanismWidget gear && !gear.playing) {
+            return;
+        }
+
         fakeTween.kill();
         fakeTween = Tween.create();
         fakeTween.tweenMethod(this::setYScale, 0.93f, 1f, 0.75d).setTransitionType(TransitionType.ELASTIC).setEaseType(EaseType.EASE_OUT);
