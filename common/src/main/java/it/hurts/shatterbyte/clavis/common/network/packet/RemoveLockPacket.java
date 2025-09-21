@@ -1,11 +1,12 @@
 package it.hurts.shatterbyte.clavis.common.network.packet;
 
 import dev.architectury.networking.NetworkManager;
+import it.hurts.octostudios.octolib.module.network.Packet;
 import it.hurts.shatterbyte.clavis.common.Clavis;
+import it.hurts.shatterbyte.clavis.common.client.ClientMinigameTypeRegistry;
 import it.hurts.shatterbyte.clavis.common.client.render.LockWorldRenderer;
 import it.hurts.shatterbyte.clavis.common.client.screen.LockpickingScreen;
 import it.hurts.shatterbyte.clavis.common.data.Lock;
-import it.hurts.octostudios.octolib.module.network.Packet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -67,7 +68,7 @@ public class RemoveLockPacket extends Packet {
                     aabb.maxY+0.35f,
                     pos.z
             );
-            level.addParticle(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.defaultBlockState()), p.x, p.y, p.z, random.nextFloat(-0.15f, 0.15f), random.nextFloat(-0.15f, random.nextFloat(-0.15f, 0.15f)), 0);
+            level.addParticle(ClientMinigameTypeRegistry.getLockParticles(lock.getType(level)), p.x, p.y, p.z, random.nextFloat(-0.15f, 0.15f), random.nextFloat(-0.15f, random.nextFloat(-0.15f, 0.15f)), 0);
         }
 
         for (int i = 0; i < 50; i++) {

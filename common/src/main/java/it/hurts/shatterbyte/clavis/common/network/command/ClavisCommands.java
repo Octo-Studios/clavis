@@ -60,7 +60,7 @@ public class ClavisCommands {
                         .then(Commands.literal("add")
                                 .then(Commands.argument("type", ResourceLocationArgument.id())
                                         .suggests((ctx, builder) ->
-                                                SharedSuggestionProvider.suggest(MinigameTypeRegistry.REGISTRY.keySet()
+                                                SharedSuggestionProvider.suggest(MinigameTypeRegistry.REGISTRY
                                                         .stream().map(ResourceLocation::toString), builder))
                                         .then(Commands.argument("difficulty", FloatArgumentType.floatArg(0f))
                                                 .then(Commands.argument("seed", LongArgumentType.longArg())
@@ -68,7 +68,7 @@ public class ClavisCommands {
                                                                 .then(Commands.argument("blockpos", BlockPosArgument.blockPos())
                                                                         .executes(context -> {
                                                                             ResourceLocation type = context.getArgument("type", ResourceLocation.class);
-                                                                            if (!MinigameTypeRegistry.REGISTRY.containsKey(type)) {
+                                                                            if (!MinigameTypeRegistry.REGISTRY.contains(type)) {
                                                                                 context.getSource().sendFailure(Component.literal("Non-existent minigame type: "+type.toString()));
                                                                                 return 1;
                                                                             }
@@ -90,7 +90,7 @@ public class ClavisCommands {
                                                                 .then(Commands.argument("blockpos2", BlockPosArgument.blockPos())
                                                                         .executes(context -> {
                                                                             ResourceLocation type = context.getArgument("type", ResourceLocation.class);
-                                                                            if (!MinigameTypeRegistry.REGISTRY.containsKey(type)) {
+                                                                            if (!MinigameTypeRegistry.REGISTRY.contains(type)) {
                                                                                 context.getSource().sendFailure(Component.literal("Non-existent minigame type: "+type.toString()));
                                                                                 return 1;
                                                                             }

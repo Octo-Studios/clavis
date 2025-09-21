@@ -1,6 +1,7 @@
 package it.hurts.shatterbyte.clavis.common;
 
 import dev.architectury.event.events.common.*;
+import it.hurts.octostudios.octolib.module.config.ConfigManager;
 import it.hurts.shatterbyte.clavis.common.client.FallbackCursorMover;
 import it.hurts.shatterbyte.clavis.common.client.NativeCursorMover;
 import it.hurts.shatterbyte.clavis.common.client.WaylandCursorMover;
@@ -11,7 +12,6 @@ import it.hurts.shatterbyte.clavis.common.network.command.ClavisCommands;
 import it.hurts.shatterbyte.clavis.common.registry.ItemRegistry;
 import it.hurts.shatterbyte.clavis.common.registry.MinigameTypeRegistry;
 import it.hurts.shatterbyte.clavis.common.registry.SoundEventRegistry;
-import it.hurts.octostudios.octolib.module.config.ConfigManager;
 import net.minecraft.resources.ResourceLocation;
 
 public class Clavis {
@@ -27,7 +27,8 @@ public class Clavis {
             CURSOR_MOVER = new FallbackCursorMover();
         }
 
-        MinigameTypeRegistry.init();
+        MinigameTypeRegistry.REGISTRY.add(MinigameTypeRegistry.GEAR);
+        MinigameTypeRegistry.REGISTRY.add(MinigameTypeRegistry.MIRROR);
 
         ConfigManager.registerConfig(Clavis.MOD_ID, Clavis.CONFIG);
 

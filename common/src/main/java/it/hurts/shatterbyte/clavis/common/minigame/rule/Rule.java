@@ -1,9 +1,9 @@
 package it.hurts.shatterbyte.clavis.common.minigame.rule;
 
+import it.hurts.shatterbyte.clavis.common.client.ClientMinigameTypeRegistry;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.AbstractMinigameWidget;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.GearMechanismWidget;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.MirrorWidget;
-import it.hurts.shatterbyte.clavis.common.registry.MinigameTypeRegistry;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.util.Cast;
@@ -52,7 +52,7 @@ public class Rule<T extends AbstractMinigameWidget<?>> {
     }
 
     protected Rule<T> register(Class<T> clazz) {
-        ResourceLocation minigameType = MinigameTypeRegistry.getId(clazz);
+        ResourceLocation minigameType = ClientMinigameTypeRegistry.getId(clazz);
 
         REGISTRY.putIfAbsent(minigameType, new HashMap<>());
         REGISTRY.get(minigameType).put(this.id, this);
@@ -60,7 +60,7 @@ public class Rule<T extends AbstractMinigameWidget<?>> {
     }
 
     public static <W extends AbstractMinigameWidget<?>> Collection<Rule<W>> getRegisteredRules(Class<W> clazz) {
-        ResourceLocation minigameType = MinigameTypeRegistry.getId(clazz);
+        ResourceLocation minigameType = ClientMinigameTypeRegistry.getId(clazz);
 
         return Cast.cast(REGISTRY.get(minigameType).values());
     }

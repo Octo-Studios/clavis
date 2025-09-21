@@ -2,9 +2,9 @@ package it.hurts.shatterbyte.clavis.common;
 
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.networking.NetworkManager;
+import it.hurts.shatterbyte.clavis.common.client.ClientMinigameTypeRegistry;
 import it.hurts.shatterbyte.clavis.common.client.render.LockWorldRenderer;
 import it.hurts.shatterbyte.clavis.common.client.screen.LockpickingScreen;
-import it.hurts.shatterbyte.clavis.common.client.screen.widget.AbstractMinigameWidget;
 import it.hurts.shatterbyte.clavis.common.data.Lock;
 import it.hurts.shatterbyte.clavis.common.minigame.rule.Rule;
 import it.hurts.shatterbyte.clavis.common.network.packet.LockRequestPacket;
@@ -22,6 +22,7 @@ public class ClavisClient {
     public static final Map<Lock, LockpickingScreen> SCREEN_CACHE = new HashMap<>();
 
     public static void init() {
+        ClientMinigameTypeRegistry.init();
         Rule.registerAll();
 
         ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(player -> {
@@ -30,7 +31,7 @@ public class ClavisClient {
     }
 
     public static void openScreen(Lock lock, BlockPos pos) {
-        Minecraft.getInstance().setScreen(SCREEN_CACHE.computeIfAbsent(lock, l -> new LockpickingScreen<>(pos, l, AbstractMinigameWidget.getFactory(l.getType(Minecraft.getInstance().level)))));
+        Minecraft.getInstance().setScreen(SCREEN_CACHE.computeIfAbsent(lock, l -> new LockpickingScreen<>(pos, l, ClientMinigameTypeRegistry.getFactory(l.getType(Minecraft.getInstance().level)))));
     }
 
     public static void onUnloadChunk(ClientLevel level, LevelChunk levelChunk) {
