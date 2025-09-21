@@ -2,6 +2,7 @@ package it.hurts.shatterbyte.clavis.common.client.screen;
 
 import com.google.common.collect.Lists;
 import dev.architectury.networking.NetworkManager;
+import dev.architectury.platform.Platform;
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.particle.UIParticle;
 import it.hurts.octostudios.octolib.util.RenderUtils;
@@ -226,7 +227,7 @@ public class LockpickingScreen<T extends AbstractMinigameWidget<?>> extends Scre
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 1) {
+        if (Platform.isDevelopmentEnvironment() && button == 1) {
             this.minigameWidget.killTweens();
             this.minigameWidget = null;
             rebuildWidgets();
