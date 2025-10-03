@@ -1,6 +1,8 @@
 package it.hurts.shatterbyte.clavis.common;
 
 import dev.architectury.event.events.common.*;
+import dev.architectury.platform.Platform;
+import dev.architectury.utils.Env;
 import it.hurts.octostudios.octolib.module.config.ConfigManager;
 import it.hurts.shatterbyte.clavis.common.client.FallbackCursorMover;
 import it.hurts.shatterbyte.clavis.common.client.NativeCursorMover;
@@ -25,6 +27,10 @@ public class Clavis {
             CURSOR_MOVER = new WaylandCursorMover();
         } else {
             CURSOR_MOVER = new FallbackCursorMover();
+        }
+
+        if (Platform.getEnvironment().equals(Env.SERVER)) {
+            LockManager.checker = new ServerLockChecker();
         }
 
         MinigameTypeRegistry.REGISTRY.add(MinigameTypeRegistry.GEAR);

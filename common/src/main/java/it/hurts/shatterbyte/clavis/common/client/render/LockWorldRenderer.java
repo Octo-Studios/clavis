@@ -37,7 +37,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 
-@Environment(EnvType.CLIENT)
+//@Environment(EnvType.CLIENT)
 public class LockWorldRenderer {
     public static final Function<ResourceLocation, RenderType> LOCK_TYPE = minigameType ->
             RenderType.entityCutoutNoCull(LockModel.getTexture(minigameType));
