@@ -7,7 +7,6 @@ import it.hurts.shatterbyte.clavis.common.data.ClavisSavedData;
 import it.hurts.shatterbyte.clavis.common.data.Lock;
 import it.hurts.shatterbyte.clavis.common.data.UnlockDataStorage;
 import it.hurts.shatterbyte.clavis.common.network.packet.RemoveLockPacket;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,8 +23,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class LockManager {
-    protected static LockChecker checker;
-
     public static UnlockDataStorage UNLOCK_STORAGE;
 
     public static void addLock(ServerLevel level, Lock lock) {
@@ -79,7 +76,13 @@ public class LockManager {
     }
 
     public static boolean isLocked(Level level, Player player, BlockPos pos) {
-        return checker.isLocked(level, player, pos);
+        if (level.isClientSide) {
+            return LockWorldRenderer.FOR_RENDERING.stream().anyMatch(lock -> lock.getBox().isInside(pos));
+        } else if (level instanceof ServerLevel serverLevel) {
+            return !LockManager.getLocksAt(serverLevel, (ServerPlayer) player, pos).isEmpty();
+        }
+
+        return false;
     }
 
     public static void load(ServerLevel serverLevel) {

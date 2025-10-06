@@ -29,10 +29,6 @@ public class Clavis {
             CURSOR_MOVER = new FallbackCursorMover();
         }
 
-        if (Platform.getEnvironment().equals(Env.SERVER)) {
-            LockManager.checker = new ServerLockChecker();
-        }
-
         MinigameTypeRegistry.REGISTRY.add(MinigameTypeRegistry.GEAR);
         MinigameTypeRegistry.REGISTRY.add(MinigameTypeRegistry.MIRROR);
 

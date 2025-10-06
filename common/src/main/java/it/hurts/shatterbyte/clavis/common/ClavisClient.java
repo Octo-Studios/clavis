@@ -22,8 +22,6 @@ public class ClavisClient {
     public static final Map<Lock, LockpickingScreen> SCREEN_CACHE = new HashMap<>();
 
     public static void init() {
-        LockManager.checker = new ClientLockChecker();
-
         ClientMinigameTypeRegistry.init();
         Rule.registerAll();
 
