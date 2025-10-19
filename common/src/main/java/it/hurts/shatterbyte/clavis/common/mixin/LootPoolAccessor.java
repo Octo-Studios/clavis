@@ -17,18 +17,18 @@ public interface LootPoolAccessor {
 //        return null;
 //    }
 
-    @Accessor
-    List<LootItemFunction> getFunctions();
+    @Accessor("functions")
+    List<LootItemFunction> clavis$getFunctions();
 
-    @Accessor
-    List<LootPoolEntryContainer> getEntries();
+    @Accessor("entries")
+    List<LootPoolEntryContainer> clavis$getEntries();
 
-    @Accessor
-    List<LootItemCondition> getConditions();
+    @Accessor("conditions")
+    List<LootItemCondition> clavis$getConditions();
 
-    @Accessor
-    NumberProvider getRolls();
+    @Accessor("rolls")
+    NumberProvider clavis$getRolls();
 
-    @Accessor
-    NumberProvider getBonusRolls();
+    @Accessor("bonusRolls")
+    NumberProvider clavis$getBonusRolls();
 }

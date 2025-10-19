@@ -308,7 +308,7 @@ public class LootUtils {
         for (LootPool pool : ((LootTableAccessor) lootTable).getPools()) {
             List<LootPoolEntryContainer> filteredEntries = new ArrayList<>();
             LootPoolAccessor accessor = ((LootPoolAccessor) pool);
-            for (LootPoolEntryContainer entry : accessor.getEntries()) {
+            for (LootPoolEntryContainer entry : accessor.clavis$getEntries()) {
                 if (!isTreasureMapEntry(entry)) {
                     filteredEntries.add(entry);
                 }
@@ -320,10 +320,10 @@ public class LootUtils {
                 constructor.setAccessible(true);
                 lootPool = constructor.newInstance(
                         filteredEntries,
-                        accessor.getConditions(),
-                        accessor.getFunctions(),
-                        accessor.getRolls(),
-                        accessor.getBonusRolls(),
+                        accessor.clavis$getConditions(),
+                        accessor.clavis$getFunctions(),
+                        accessor.clavis$getRolls(),
+                        accessor.clavis$getBonusRolls(),
                         Optional.empty()
                 );
             } else {
@@ -331,10 +331,10 @@ public class LootUtils {
                 constructor.setAccessible(true);
                 lootPool = constructor.newInstance(
                         filteredEntries,
-                        accessor.getConditions(),
-                        accessor.getFunctions(),
-                        accessor.getRolls(),
-                        accessor.getBonusRolls()
+                        accessor.clavis$getConditions(),
+                        accessor.clavis$getFunctions(),
+                        accessor.clavis$getRolls(),
+                        accessor.clavis$getBonusRolls()
                 );
             }
 
