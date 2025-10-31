@@ -31,11 +31,17 @@ public class UnlockDataStorage {
                 data = UnlockData.fromNbt(tag);
             }
         } else {
+            //Data doesn't exist, creating default...
             data = new UnlockData();
         }
     }
 
     public void save() throws IOException {
+        if (data == null) {
+            //Data isn't loaded, loading the data...
+            this.load();
+        }
+
         Path file = worldFolder.resolve(FILE_NAME);
         try (OutputStream os = Files.newOutputStream(file)) {
             NbtIo.writeCompressed(data.toNbt(), os);
