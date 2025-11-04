@@ -65,7 +65,7 @@ public class Config implements OctoConfig {
         put("minecraft:chests/example", 1.5d);
     }};
     
-    @Prop(comment = "Determines whether or not losing the minigame unlocks the lock.")
+    @Prop(comment = "Determines whether losing the minigame unlocks the lock.")
     private boolean unlocksAfterLosing = true;
 
     @Prop(comment = "Disables rendering of locks for players.")
