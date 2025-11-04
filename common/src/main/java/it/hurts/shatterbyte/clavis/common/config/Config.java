@@ -6,12 +6,16 @@ import lombok.Data;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Data
 public class Config implements OctoConfig {
     @Prop(comment = "Minigame type by dimension.")
-    private Map<String, String> minigameType = new HashMap<>();
+    private Map<String, String> minigameType = new HashMap<>() {{
+        put(Level.OVERWORLD.location().toString(), "clavis:gear");
+        put(Level.END.location().toString(), "clavis:mirror");
+    }};
 
     @Prop(comment = "Starting quality of a minigame.", inlineComment = "0.0 - 10.0")
     private float startingQuality = 2f;
@@ -22,8 +26,24 @@ public class Config implements OctoConfig {
     @Prop(comment = "Default base value for any item, that doesn't have any valuable tags.")
     private double defaultBaseItemValue = 0.33d;
 
-    @Prop(comment = "A collection of valuable tags and its values. If an item doesn't have any of these tags, it will use the base item value above.")
-    private Map<String, Double> valuableTags = new HashMap<>();
+    @Prop(comment = "A collection of valuable items and tags and its values. If an item isn't in the list and doesn't have any of these tags, it will use the base item value above. Item IDs are prioritized over tags.")
+    private Map<String, Double> valuableItems = new LinkedHashMap<>() {{
+        put("minecraft:saddle", 1.25d);
+        put("minecraft:name_tag", 1d);
+        put("#c:ingots", 5d);
+        put("#c:gems", 8d);
+        put("#c:storage_blocks", 16d);
+        put("#c:ores", 4d);
+        put("#c:raw_materials", 4d);
+        put("#c:rods", 6d);
+        put("#c:alloys", 6d);
+        put("#c:circuits", 8d);
+        put("#c:dusts", 1d);
+        put("#c:foods/golden", 16d);
+        put("#c:tools", 2d);
+        put("#c:armors", 2d);
+        put("#c:music_discs", 8d);
+    }};
 
     @Prop(comment = "Additional value multipliers. Added on top of item value")
     private ModifiersConfig modifiers = new ModifiersConfig();
@@ -41,32 +61,13 @@ public class Config implements OctoConfig {
     private double globalDifficultyMultiplier = 1.0d;
 
     @Prop(comment = "Multiplies the difficulty for the loot table by the value provided below (before clamping).")
-    private Map<String, Double> lootTableMultiplier = new HashMap<>();
+    private Map<String, Double> lootTableMultiplier = new HashMap<>() {{
+        put("minecraft:chests/example", 1.5d);
+    }};
     
     @Prop(comment = "Determines whether or not losing the minigame unlocks the lock.")
     private boolean unlocksAfterLosing = true;
 
     @Prop(comment = "Disables rendering of locks for players.")
     private boolean disableLockRendering = false;
-
-    public Config() {
-        minigameType.put(Level.OVERWORLD.location().toString(), "clavis:gear");
-        minigameType.put(Level.END.location().toString(), "clavis:mirror");
-
-        lootTableMultiplier.put("minecraft:chests/example", 1.5d);
-
-        valuableTags.put("c:ingots", 5d);
-        valuableTags.put("c:gems", 8d);
-        valuableTags.put("c:storage_blocks", 16d);
-        valuableTags.put("c:ores", 4d);
-        valuableTags.put("c:raw_materials", 4d);
-        valuableTags.put("c:rods", 6d);
-        valuableTags.put("c:alloys", 6d);
-        valuableTags.put("c:circuits", 8d);
-        valuableTags.put("c:dusts", 1d);
-        valuableTags.put("c:foods/golden", 16d);
-        valuableTags.put("c:tools", 2d);
-        valuableTags.put("c:armors", 2d);
-        valuableTags.put("c:music_discs", 8d);
-    }
 }
