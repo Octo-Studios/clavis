@@ -1,5 +1,7 @@
 package it.hurts.shatterbyte.clavis.common.data;
 
+import it.hurts.octostudios.octolib.OctoLib;
+import it.hurts.shatterbyte.clavis.common.Clavis;
 import lombok.Getter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
@@ -29,11 +31,16 @@ public class UnlockDataStorage {
             try (InputStream is = Files.newInputStream(file)) {
                 CompoundTag tag = NbtIo.readCompressed(is, NbtAccounter.unlimitedHeap());
                 data = UnlockData.fromNbt(tag);
+            } catch (IOException e) {
+                OctoLib.LOGGER.warn("Unlock data is corrupted, creating new...");
+                data = new UnlockData();
             }
         } else {
             //Data doesn't exist, creating default...
             data = new UnlockData();
         }
+
+        this.save();
     }
 
     public void save() throws IOException {
