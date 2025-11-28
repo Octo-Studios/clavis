@@ -45,3 +45,10 @@ type="required"
 versionRange = "[0.6.0.4,)"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "lootr"
+type="optional"
+versionRange = "[1.21-1.10.35.92,)"
+ordering = "NONE"
+side = "BOTH"

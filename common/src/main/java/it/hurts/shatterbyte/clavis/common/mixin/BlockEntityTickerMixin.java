@@ -6,8 +6,13 @@ import it.hurts.shatterbyte.clavis.common.LockManager;
 import it.hurts.shatterbyte.clavis.common.data.Box;
 import it.hurts.shatterbyte.clavis.common.data.Lock;
 import it.hurts.shatterbyte.clavis.common.data.LootUtils;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootTable;
 import noobanidus.mods.lootr.common.block.entity.BlockEntityTicker;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,18 +23,21 @@ import java.util.UUID;
 
 @Mixin(BlockEntityTicker.class)
 public class BlockEntityTickerMixin {
-    @Inject(require = 0, method = "onServerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/entity/RandomizableContainerBlockEntity;setLootTable(Lnet/minecraft/resources/ResourceKey;J)V", shift = At.Shift.AFTER))
-    private static void injected(CallbackInfo ci, @Local BlockEntityTicker.Entry entry, @Local(name = "rbe") RandomizableContainerBlockEntity rbe, @Local ServerLevel level) {
-        LockManager.getLocksAt(level, null, entry.getPosition()).forEach(lock -> LockManager.removeLock(level, lock));
+    @Inject(require = 0, method = "replaceEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/entity/RandomizableContainerBlockEntity;setLootTable(Lnet/minecraft/resources/ResourceKey;J)V", shift = At.Shift.AFTER))
+    private static void injected(Level level, BlockPos entityPos, RandomizableContainerBlockEntity be, BlockState replacement, ResourceKey<LootTable> table, CallbackInfo ci, @Local(name = "rbe") RandomizableContainerBlockEntity rbe) {
+        if (level.isClientSide()) {
+            return;
+        }
 
-        long startTimestamp = System.nanoTime();
-        float difficulty = (float) LootUtils.calculateDifficulty(level, entry.getPosition(), rbe, 20, false, null);
-        //OctoLib.LOGGER.info("Elapsed time: {}", String.format("%.3f", (System.nanoTime() - startTimestamp) / 1000000d));
+        ServerLevel serverLevel = (ServerLevel) level;
+        LockManager.getLocksAt(serverLevel, null, entityPos).forEach(lock -> LockManager.removeLock(serverLevel, lock));
+
+        float difficulty = (float) LootUtils.calculateDifficulty(serverLevel, entityPos, rbe, 20, false, null);
 
         if (difficulty < Clavis.CONFIG.getDifficultyThreshold()) {
             return;
         }
 
-        LockManager.addLock(level, new Lock(UUID.randomUUID(), new Box(entry.getPosition()), difficulty, rbe.getLootTableSeed(), true));
+        LockManager.addLock(serverLevel, new Lock(UUID.randomUUID(), new Box(entityPos), difficulty, rbe.getLootTableSeed(), true));
     }
 }
