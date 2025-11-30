@@ -23,7 +23,7 @@ import java.util.UUID;
 
 @Mixin(BlockEntityTicker.class)
 public class BlockEntityTickerMixin {
-    @Inject(require = 0, method = "replaceEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/entity/RandomizableContainerBlockEntity;setLootTable(Lnet/minecraft/resources/ResourceKey;J)V", shift = At.Shift.AFTER))
+    @Inject(require = 0, method = "replaceEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/entity/RandomizableContainerBlockEntity;setLootTable(Lnet/minecraft/resources/ResourceKey;J)V", shift = At.Shift.AFTER), remap = false)
     private static void injected(Level level, BlockPos entityPos, RandomizableContainerBlockEntity be, BlockState replacement, ResourceKey<LootTable> table, CallbackInfo ci, @Local(name = "rbe") RandomizableContainerBlockEntity rbe) {
         if (level.isClientSide()) {
             return;
