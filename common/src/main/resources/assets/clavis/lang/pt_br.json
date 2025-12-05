@@ -1,0 +1,39 @@
+{
+  "rule.clavis.gear.mood_swings": "Mudanças de Humor",
+  "rule.clavis.gear.mood_swings.description": "Após cada clique, o ponteiro muda a direção do seu movimento",
+  "rule.clavis.gear.nauseous_carousel": "Carrossel Nauseante",
+  "rule.clavis.gear.nauseous_carousel.description": "De tempos em tempos, o campo de jogo gira lentamente em uma direção aleatória",
+  "rule.clavis.gear.fake_pin": "Pino Falso",
+  "rule.clavis.gear.fake_pin.description": "Um pino falso aparece e se move para uma posição aleatória após cada clique. Clicar nele desativa todos os pinos ativados anteriormente",
+  "rule.clavis.gear.self_destruction": "Protocolo de Autodestruição",
+  "rule.clavis.gear.self_destruction.description": "O ponteiro superaquece periodicamente, fazendo com que qualquer clique remova um ponto de vida extra",
+  "rule.clavis.gear.full_throttle": "Aceleração Máxima",
+  "rule.clavis.gear.full_throttle.description": "O ponteiro acelera após cada clique e desacelera gradualmente ao longo do tempo",
+
+  "rule.clavis.mirror.fake_meteor": "Meteoro Falso",
+  "rule.clavis.mirror.fake_meteor.description": "Um meteoro falso aparece, movendo-se para uma posição aleatória após cada clique. Clicar nele restaurará todos os meteoros destruídos anteriormente",
+  "rule.clavis.mirror.rotate": "Centrífuga",
+  "rule.clavis.mirror.rotate.description": "O espelho refletor gira periodicamente em uma direção aleatória",
+  "rule.clavis.mirror.swap_mousepos": "Roque",
+  "rule.clavis.mirror.swap_mousepos.description": "Após cada clique, o cursor real troca de lugar com o refletido",
+  "rule.clavis.mirror.hot_meteor": "Meteoro em Brasa",
+  "rule.clavis.mirror.hot_meteor.description": "Um meteoro aleatório no campo aquece periodicamente, e qualquer clique nele removerá um ponto de vida extra",
+  "rule.clavis.mirror.shockwave": "Boom!",
+  "rule.clavis.mirror.shockwave.description": "Cada clique cria uma onda de choque que empurra todos os meteoros próximos ao cursor refletido",
+
+  "ui.clavis.hold_shift": "Segure [Shift] para descrição detalhada",
+
+  "ui.clavis.difficulty.summary": "Dificuldade do Jogo",
+  "ui.clavis.time.summary": "Tempo de Jogo",
+  "ui.clavis.quality.summary": "Qualidade do Saque",
+
+  "ui.clavis.difficulty.description": "Determinado pelo valor médio do saque que pode aparecer neste contêiner e afeta a dificuldade geral do jogo. O nível de dificuldade também é classificado em 3 níveis e determina o número de regras no minijogo.",
+  "ui.clavis.time.description": "Determinado pela quantidade de tempo desde o início do jogo até o momento presente. Não significa nada, mas quando chegar a 1 minuto o mundo inteiro explodirá!",
+  "ui.clavis.quality.description": "Determina a qualidade e a quantidade de saque que será gerado após completar o minijogo. Cometer erros durante a jogada reduz esse valor.",
+
+  "item.clavis.lock_pick": "Gazua",
+  "item.clavis.lock_pick.tooltip": "Quando usada em um baú trancado, ela o destranca preservando a qualidade máxima do saque interno, como se o minijogo tivesse sido completado sem erros. Consumida ao usar.",
+
+  "sound.clavis.meteor_smash": "Explosão de meteoro",
+  "sound.clavis.meteor_regenerate": "Regeneração de meteoro"
+}
