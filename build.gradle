@@ -98,7 +98,7 @@ subprojects {
             }
         } else file("libs").mkdir()
 
-        modCompileOnly "noobanidus.mods.lootr:lootr-common:1.21-1.10.35.95"
+        modCompileOnly "noobanidus.mods.lootr:lootr-common:1.21-1.10.35.96"
     }
 
     java {
