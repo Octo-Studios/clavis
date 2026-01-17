@@ -67,36 +67,36 @@ subprojects {
 
         implementation 'org.jetbrains:annotations:20.1.0'
 
-        if (file("libs").isDirectory()) {
-            file("libs").eachFile { file ->
-                def splitPos = file.name.lastIndexOf("-")
-
-                if (file.name != "desktop.ini") {
-                    println file.name
-
-                    def modartifact = file.name.substring(0, splitPos)
-                    def modversion = file.name.substring(splitPos + 1, file.name.length() - 4)
-                    def modreference = "lib:$modartifact:$modversion"
-
-                    if ("$project.name".equalsIgnoreCase("neoforge")) {
-                        dependencies {
-                            implementation (project.dependencies.create(modreference) {
-                                transitive = false
-                            })
-                        }
-                    } else if ("$project.name".equalsIgnoreCase("fabric")) {
-                        dependencies {
-                            modImplementation project.dependencies.create(modreference);
-                        }
-                    } else {
-                        dependencies {
-                            modImplementation project.dependencies.create(modreference);
-                        }
-                    }
-
-                }
-            }
-        } else file("libs").mkdir()
+//        if (file("libs").isDirectory()) {
+//            file("libs").eachFile { file ->
+//                def splitPos = file.name.lastIndexOf("-")
+//
+//                if (file.name != "desktop.ini") {
+//                    println file.name
+//
+//                    def modartifact = file.name.substring(0, splitPos)
+//                    def modversion = file.name.substring(splitPos + 1, file.name.length() - 4)
+//                    def modreference = "lib:$modartifact:$modversion"
+//
+//                    if ("$project.name".equalsIgnoreCase("neoforge")) {
+//                        dependencies {
+//                            implementation (project.dependencies.create(modreference) {
+//                                transitive = false
+//                            })
+//                        }
+//                    } else if ("$project.name".equalsIgnoreCase("fabric")) {
+//                        dependencies {
+//                            modImplementation project.dependencies.create(modreference);
+//                        }
+//                    } else {
+//                        dependencies {
+//                            modImplementation project.dependencies.create(modreference);
+//                        }
+//                    }
+//
+//                }
+//            }
+//        } else file("libs").mkdir()
 
         modCompileOnly "noobanidus.mods.lootr:lootr-common:1.21-1.10.35.96"
     }

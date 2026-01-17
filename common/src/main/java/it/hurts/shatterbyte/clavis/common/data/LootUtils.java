@@ -88,12 +88,12 @@ public class LootUtils {
 
         Optional<ResourceLocation> randomSequence = accessor.getRandomSequence();
 
-        Player fakePlayer = PlatformLoot.getFakePlayer(level);
+        //Player fakePlayer = PlatformLoot.getFakePlayer(level);
 
         LootParams.Builder baseBuilder = new LootParams.Builder(level)
                 .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
-                .withLuck(fakePlayer.getLuck())
-                .withParameter(LootContextParams.THIS_ENTITY, fakePlayer);
+                .withLuck(0);
+                //.withParameter(LootContextParams.THIS_ENTITY, fakePlayer);
 
         Function<Long, LootContext> makeCtx = createLootContextFactory(baseBuilder, accessor);
 

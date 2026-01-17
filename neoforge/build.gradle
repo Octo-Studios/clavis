@@ -46,9 +46,10 @@ dependencies {
 
     implementation "it.hurts.octostudios.octolib:octolib-neoforge:$rootProject.octolib_version"
 
-    modImplementation "noobanidus.mods.lootr:lootr-neoforge:1.21-1.10.35.96"
-    implementation "curse.maven:curios-309927:6529130"
-    implementation "curse.maven:relics-mod-445274:6879532"
+//    modImplementation "noobanidus.mods.lootr:lootr-neoforge:1.21-1.10.35.96"
+//    implementation "curse.maven:curios-309927:6529130"
+//    implementation "curse.maven:relics-mod-445274:6879532"
+    implementation "curse.maven:the-twilight-forest-227639:7398100"
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')
 }
