@@ -1,0 +1,41 @@
+{
+  "rule.clavis.gear.mood_swings": "Перепади настрою",
+  "rule.clavis.gear.mood_swings.description": "Після кожного натискання вказівник змінює напрямок свого руху.",
+  "rule.clavis.gear.nauseous_carousel": "Нудотна карусель",
+  "rule.clavis.gear.nauseous_carousel.description": "Час від часу ігрове поле повільно обертається у випадковому напрямку",
+  "rule.clavis.gear.fake_pin": "Фальшивий пін",
+  "rule.clavis.gear.fake_pin.description": "Після кожного натискання з'являється фальшивий пін, який переміщується у випадкову позицію. Натискання на нього дезактивує всі раніше активовані пін.",
+  "rule.clavis.gear.self_destruction": "Протокол самознищення",
+  "rule.clavis.gear.self_destruction.description": "Указівник періодично перегрівається, через що будь-яке натискання забирає додаткове очко здоров'я.",
+  "rule.clavis.gear.full_throttle": "Повний газ",
+  "rule.clavis.gear.full_throttle.description": "Указівник прискорюється після кожного натискання та поступово сповільнюється з часом.",
+
+  "rule.clavis.mirror.fake_meteor": "Фальшивий метеор",
+  "rule.clavis.mirror.fake_meteor.description": "З'являється фальшивий метеор, який переміщується у випадкову позицію після кожного натискання. Натискання на нього відновить усі раніше знищені метеори.",
+  "rule.clavis.mirror.rotate": "Центрифуга",
+  "rule.clavis.mirror.rotate.description": "Відбивне дзеркало періодично обертається у випадковому напрямку.",
+  "rule.clavis.mirror.swap_mousepos": "Рокування",
+  "rule.clavis.mirror.swap_mousepos.description": "Після кожного натискання справжній курсор міняється місцями з відбитим.",
+  "rule.clavis.mirror.hot_meteor": "Гарячі речі",
+  "rule.clavis.mirror.hot_meteor.description": "Випадковий метеор на полі періодично нагрівається, і будь-яке натискання на нього зніме додаткове очко здоров'я.",
+  "rule.clavis.mirror.shockwave": "Бум!",
+  "rule.clavis.mirror.shockwave.description": "Кожне натискання створює ударну хвилю, яка відштовхує всі метеори поблизу відбитого курсору.",
+
+  "ui.clavis.hold_shift": "Утримуйте [Shift] для подробиць",
+
+  "ui.clavis.difficulty.summary": "Ігрова складність",
+  "ui.clavis.time.summary": "Ігровий час",
+  "ui.clavis.quality.summary": "Якість здобичі",
+
+  "ui.clavis.difficulty.description": "Керує середньою вартістю здобичі, яка може з’явитися в цьому вмістищі, і впливає на загальну складність гри. Рівень складности також поділяється на 3 рівні та визначає кількість правил у міні-грі.",
+  "ui.clavis.time.description": "Керує кількістю часу від початку гри до поточного моменту. Нічого не означає, але коли досягне 1 хвилини, весь світ вибухне!",
+  "ui.clavis.quality.description": "Керує якістю і кількість здобичі, яка буде згенерована після завершення міні-гри. Допущення помилок під час проходження зменшує це значення.",
+
+  "item.clavis.lock_pick": "Відмикання",
+  "item.clavis.lock_pick.tooltip": "Коли використовується на замкненій скрині, вона відкриває її, зберігаючи максимальну якість здобичі всередині, ніби міні-гру було завершено без жодних помилок. Використовується під час використання.",
+
+  "sound.clavis.meteor_smash": "Метеор вибухає",
+  "sound.clavis.meteor_regenerate": "Метеор відновлюється",
+
+  "modmenu.descriptionTranslation.clavis": "Прогресивна система міні-ігор для скринь із здобиччю."
+}
