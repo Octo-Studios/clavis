@@ -1,4 +1,4 @@
-package it.hurts.shatterbyte.clavis.common.client.screen.widget;
+package it.hurts.shatterbyte.clavis.common.client.screen.widget.mirror;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -11,6 +11,7 @@ import it.hurts.shatterbyte.clavis.common.Clavis;
 import it.hurts.shatterbyte.clavis.common.client.particle.MouseTeleportUIParticle;
 import it.hurts.shatterbyte.clavis.common.client.particle.ShockwaveUIParticle;
 import it.hurts.shatterbyte.clavis.common.client.screen.LockpickingScreen;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.AbstractMinigameWidget;
 import it.hurts.shatterbyte.clavis.common.minigame.Minigame;
 import it.hurts.shatterbyte.clavis.common.mixin.MouseHandlerAccessor;
 import it.hurts.shatterbyte.clavis.common.registry.SoundEventRegistry;

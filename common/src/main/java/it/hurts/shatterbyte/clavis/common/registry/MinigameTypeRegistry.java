@@ -9,6 +9,7 @@ import java.util.Set;
 public class MinigameTypeRegistry {
     public static final ResourceLocation GEAR = Clavis.path("gear");
     public static final ResourceLocation MIRROR = Clavis.path("mirror");
+    public static final ResourceLocation MAGMA_WHEEL = Clavis.path("magma_wheel");
 
     public static final Set<ResourceLocation> REGISTRY = new HashSet<>();
 }

@@ -2,8 +2,8 @@ package it.hurts.shatterbyte.clavis.common.minigame.rule;
 
 import it.hurts.shatterbyte.clavis.common.client.ClientMinigameTypeRegistry;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.AbstractMinigameWidget;
-import it.hurts.shatterbyte.clavis.common.client.screen.widget.GearMechanismWidget;
-import it.hurts.shatterbyte.clavis.common.client.screen.widget.MirrorWidget;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.gear.GearMechanismWidget;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.mirror.MirrorWidget;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.util.Cast;

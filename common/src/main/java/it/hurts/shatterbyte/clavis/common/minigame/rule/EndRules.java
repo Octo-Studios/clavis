@@ -1,9 +1,9 @@
 package it.hurts.shatterbyte.clavis.common.minigame.rule;
 
 import it.hurts.shatterbyte.clavis.common.Clavis;
-import it.hurts.shatterbyte.clavis.common.client.screen.widget.FakeMeteorWidget;
-import it.hurts.shatterbyte.clavis.common.client.screen.widget.MeteorWidget;
-import it.hurts.shatterbyte.clavis.common.client.screen.widget.MirrorWidget;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.mirror.FakeMeteorWidget;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.mirror.MeteorWidget;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.mirror.MirrorWidget;
 import org.joml.Vector2d;
 
 import java.util.ArrayList;

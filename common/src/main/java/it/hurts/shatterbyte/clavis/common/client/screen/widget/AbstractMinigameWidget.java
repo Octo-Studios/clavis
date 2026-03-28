@@ -22,13 +22,13 @@ import java.util.List;
 import java.util.Random;
 
 public abstract class AbstractMinigameWidget<T extends GuiEventListener> extends AbstractWidget implements ContainerEventHandler, HasRenderMatrix, Tickable {
-    @Getter Random random = new Random();
-    @Getter LockpickingScreen screen;
+    @Getter public Random random = new Random();
+    @Getter public LockpickingScreen screen;
     @Getter @Setter
-    Minigame minigame;
+    public Minigame minigame;
 
     Matrix4f matrix;
-    List<T> children = new ArrayList<>();
+    public List<T> children = new ArrayList<>();
     GuiEventListener focused;
     boolean dragging;
 

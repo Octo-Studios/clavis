@@ -3,8 +3,9 @@ package it.hurts.shatterbyte.clavis.common.client;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.AbstractMinigameWidget;
-import it.hurts.shatterbyte.clavis.common.client.screen.widget.GearMechanismWidget;
-import it.hurts.shatterbyte.clavis.common.client.screen.widget.MirrorWidget;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.gear.GearMechanismWidget;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.magma.MagmaWheelWidget;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.mirror.MirrorWidget;
 import it.hurts.shatterbyte.clavis.common.registry.MinigameTypeRegistry;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
@@ -32,6 +33,12 @@ public class ClientMinigameTypeRegistry {
                 MirrorWidget::new,
                 new BlockParticleOption(ParticleTypes.BLOCK, Blocks.PURPUR_BLOCK.defaultBlockState())
         );
+        register(MinigameTypeRegistry.MAGMA_WHEEL,
+                MagmaWheelWidget.class,
+                MagmaWheelWidget::new,
+                new BlockParticleOption(ParticleTypes.BLOCK, Blocks.MAGMA_BLOCK.defaultBlockState())
+        );
+
     }
 
     public static <T extends AbstractMinigameWidget<?>> void register(ResourceLocation resourceLocation, Class<T> clazz, Supplier<T> factory, ParticleOptions particleOptions) {

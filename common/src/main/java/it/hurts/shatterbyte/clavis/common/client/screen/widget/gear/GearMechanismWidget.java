@@ -1,9 +1,11 @@
-package it.hurts.shatterbyte.clavis.common.client.screen.widget;
+package it.hurts.shatterbyte.clavis.common.client.screen.widget.gear;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;
 import it.hurts.shatterbyte.clavis.common.Clavis;
 import it.hurts.shatterbyte.clavis.common.client.screen.LockpickingScreen;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.AbstractMinigameWidget;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.RotatingParent;
 import it.hurts.shatterbyte.clavis.common.minigame.Minigame;
 import it.hurts.octostudios.octolib.OctoLibClient;
 import it.hurts.octostudios.octolib.client.animation.Tween;

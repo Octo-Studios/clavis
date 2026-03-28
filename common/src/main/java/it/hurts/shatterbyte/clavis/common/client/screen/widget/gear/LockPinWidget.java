@@ -1,10 +1,11 @@
-package it.hurts.shatterbyte.clavis.common.client.screen.widget;
+package it.hurts.shatterbyte.clavis.common.client.screen.widget.gear;
 
 import it.hurts.shatterbyte.clavis.common.Clavis;
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
 import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
 import it.hurts.octostudios.octolib.client.screen.widget.Child;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.RotatingParent;
 import lombok.Setter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;

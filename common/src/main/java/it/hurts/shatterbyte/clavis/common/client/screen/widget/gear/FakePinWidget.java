@@ -1,4 +1,4 @@
-package it.hurts.shatterbyte.clavis.common.client.screen.widget;
+package it.hurts.shatterbyte.clavis.common.client.screen.widget.gear;
 
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;

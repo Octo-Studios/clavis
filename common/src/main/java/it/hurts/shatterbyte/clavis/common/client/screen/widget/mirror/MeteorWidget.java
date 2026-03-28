@@ -1,4 +1,4 @@
-package it.hurts.shatterbyte.clavis.common.client.screen.widget;
+package it.hurts.shatterbyte.clavis.common.client.screen.widget.mirror;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;

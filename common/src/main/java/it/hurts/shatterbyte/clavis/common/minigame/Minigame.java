@@ -2,7 +2,7 @@ package it.hurts.shatterbyte.clavis.common.minigame;
 
 import it.hurts.shatterbyte.clavis.common.Clavis;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.AbstractMinigameWidget;
-import it.hurts.shatterbyte.clavis.common.client.screen.widget.MirrorWidget;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.mirror.MirrorWidget;
 import it.hurts.shatterbyte.clavis.common.data.Lock;
 import it.hurts.shatterbyte.clavis.common.minigame.rule.EndRules;
 import it.hurts.shatterbyte.clavis.common.minigame.rule.Rule;

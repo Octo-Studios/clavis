@@ -1,9 +1,9 @@
 package it.hurts.shatterbyte.clavis.common.minigame.rule;
 
 import it.hurts.shatterbyte.clavis.common.Clavis;
-import it.hurts.shatterbyte.clavis.common.client.screen.widget.FakePinWidget;
-import it.hurts.shatterbyte.clavis.common.client.screen.widget.GearMechanismWidget;
-import it.hurts.shatterbyte.clavis.common.client.screen.widget.LockPinWidget;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.gear.FakePinWidget;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.gear.GearMechanismWidget;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.gear.LockPinWidget;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.RotatingParent;
 
 import java.util.concurrent.atomic.AtomicInteger;
