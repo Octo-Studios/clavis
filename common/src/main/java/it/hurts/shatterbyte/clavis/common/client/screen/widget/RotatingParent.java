@@ -24,7 +24,7 @@ import java.util.List;
 public class RotatingParent<T extends Child<RotatingParent>, C extends LayoutElement> extends AbstractWidget implements HasRenderMatrix, ContainerEventHandler, Child<C> {
     C parent;
     Matrix4f matrix;
-    List<T> children = new ArrayList<>();
+    public List<T> children = new ArrayList<>();
     GuiEventListener focused;
     boolean dragging;
     @Getter

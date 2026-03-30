@@ -76,6 +76,10 @@ public class LockManager {
     }
 
     public static boolean isLocked(Level level, Player player, BlockPos pos) {
+        if (level == null) {
+            return false;
+        }
+
         if (level.isClientSide) {
             return LockWorldRenderer.FOR_RENDERING.stream().anyMatch(lock -> lock.getBox().isInside(pos));
         } else if (level instanceof ServerLevel serverLevel) {

@@ -254,7 +254,7 @@ public class GearMechanismWidget extends AbstractMinigameWidget<RotatingParent<L
     public boolean unlockPin(float arrowAngle) {
         double angle = normalizeAngle(arrowAngle - this.rot);
         Optional<RotatingParent<LockPinWidget, GearMechanismWidget>> optional = this.children.stream()
-                .filter(rotatingParent -> roughlyEquals(normalizeAngle(rotatingParent.rot), angle, 10))
+                .filter(rotatingParent -> roughlyEquals(normalizeAngle(rotatingParent.getRot()), angle, 10))
                 .findFirst();
 
         if (optional.isEmpty()) {

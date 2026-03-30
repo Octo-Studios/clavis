@@ -33,6 +33,8 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.minecraft.world.level.storage.loot.functions.ExplorationMapFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -310,7 +312,10 @@ public class LootUtils {
     public static boolean isTreasureMapEntry(LootPoolEntryContainer entry) {
         if (entry instanceof LootItem lootItem) {
             LootPoolSingletonContainerAccessor containerAccessor = (LootPoolSingletonContainerAccessor) lootItem;
-            return containerAccessor.getFunctions().stream().anyMatch(f -> f instanceof ExplorationMapFunction);
+            return containerAccessor.getFunctions().stream().anyMatch(f -> {
+                OctoLib.LOGGER.error(f.getClass().getSimpleName());
+                return f.getType().equals(LootItemFunctions.EXPLORATION_MAP) || f.getClass().getSimpleName().equals("ForgottenRuinsMapLootModifier");
+            });
         }
         return false;
     }
