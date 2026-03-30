@@ -26,16 +26,23 @@ public class LockManager {
     public static UnlockDataStorage UNLOCK_STORAGE;
 
     public static void addLock(ServerLevel level, Lock lock) {
+        if (level == null)
+            return;
         ClavisSavedData data = ClavisSavedData.get(level);
         data.addLock(lock, level);
     }
 
     public static void removeLock(ServerLevel level, Lock lock) {
+        if (level == null)
+            return;
         ClavisSavedData data = ClavisSavedData.get(level);
         data.removeLock(lock, level);
     }
 
     public static void unlock(ServerLevel level, @Nullable ServerPlayer player, Lock lock) {
+        if (level == null)
+            return;
+        
         if (!lock.isPerPlayer()) {
             removeLock(level, lock);
             return;
@@ -53,6 +60,9 @@ public class LockManager {
     }
 
     public static List<Lock> getLocksAt(ServerLevel level, @Nullable ServerPlayer player, ChunkPos pos) {
+        if (level == null)
+            return List.of();
+        
         ClavisSavedData data = ClavisSavedData.get(level);
         List<Lock> locks = data.getLocksAt(pos);
 
@@ -67,6 +77,9 @@ public class LockManager {
     }
 
     public static List<Lock> getLocksAt(ServerLevel level, @Nullable ServerPlayer player, BlockPos pos) {
+        if (level == null)
+            return List.of();
+        
         ChunkPos chunkPos = new ChunkPos(pos);
         List<Lock> chunkLocks = getLocksAt(level, player, chunkPos);
 
@@ -76,6 +89,9 @@ public class LockManager {
     }
 
     public static boolean isLocked(Level level, Player player, BlockPos pos) {
+        if (level == null)
+            return false;
+        
         if (level.isClientSide) {
             return LockWorldRenderer.FOR_RENDERING.stream().anyMatch(lock -> lock.getBox().isInside(pos));
         } else if (level instanceof ServerLevel serverLevel) {
