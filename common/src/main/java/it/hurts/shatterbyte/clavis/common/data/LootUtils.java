@@ -313,7 +313,7 @@ public class LootUtils {
         if (entry instanceof LootItem lootItem) {
             LootPoolSingletonContainerAccessor containerAccessor = (LootPoolSingletonContainerAccessor) lootItem;
             return containerAccessor.getFunctions().stream().anyMatch(f -> {
-                OctoLib.LOGGER.error(f.getClass().getSimpleName());
+                //OctoLib.LOGGER.error(f.getClass().getSimpleName());
                 return f.getType().equals(LootItemFunctions.EXPLORATION_MAP) || f.getClass().getSimpleName().equals("ForgottenRuinsMapLootModifier");
             });
         }
