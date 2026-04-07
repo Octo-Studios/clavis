@@ -14,6 +14,7 @@ public class Config implements OctoConfig {
     @Prop(comment = "Minigame type by dimension.")
     private Map<String, String> minigameType = new HashMap<>() {{
         put(Level.OVERWORLD.location().toString(), "clavis:gear");
+        put(Level.NETHER.location().toString(), "clavis:magma_wheel");
         put(Level.END.location().toString(), "clavis:mirror");
     }};
 

@@ -30,6 +30,7 @@ public class Clavis {
         }
 
         MinigameTypeRegistry.REGISTRY.add(MinigameTypeRegistry.GEAR);
+        MinigameTypeRegistry.REGISTRY.add(MinigameTypeRegistry.MAGMA_WHEEL);
         MinigameTypeRegistry.REGISTRY.add(MinigameTypeRegistry.MIRROR);
 
         ConfigManager.registerConfig(Clavis.MOD_ID, Clavis.CONFIG);
