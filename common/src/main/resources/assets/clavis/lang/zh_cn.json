@@ -1,0 +1,39 @@
+{
+  "rule.clavis.gear.mood_swings": "逆反指针",
+  "rule.clavis.gear.mood_swings.description": "每次点击后，指针旋转方向改变",
+  "rule.clavis.gear.nauseous_carousel": "天旋地转",
+  "rule.clavis.gear.nauseous_carousel.description": "每隔一段时间，转盘会向随机方向缓慢转动",
+  "rule.clavis.gear.fake_pin": "假插销",
+  "rule.clavis.gear.fake_pin.description": "转盘中有一个假插销，每次点击后会移动到随机位置。点中假插销会使之前所有已命中的插销失效",
+  "rule.clavis.gear.self_destruction": "自毁程序",
+  "rule.clavis.gear.self_destruction.description": "指针会周期性地过热，过热期间点击会额外扣除一点生命",
+  "rule.clavis.gear.full_throttle": "指针狂飙",
+  "rule.clavis.gear.full_throttle.description": "每次点击后指针转速加快，随时间逐渐降回原速",
+
+  "rule.clavis.mirror.fake_meteor": "假陨石",
+  "rule.clavis.mirror.fake_meteor.description": "面板中有一个假陨石，每次点击后会移动到随机位置。点中假陨石会恢复所有已破坏的陨石。",
+  "rule.clavis.mirror.rotate": "离心机",
+  "rule.clavis.mirror.rotate.description": "镜面会周期性地旋转到随机方向。",
+  "rule.clavis.mirror.swap_mousepos": "光标易位",
+  "rule.clavis.mirror.swap_mousepos.description": "每次点击后，真光标会和镜像光标交换位置",
+  "rule.clavis.mirror.hot_meteor": "烫手的陨石",
+  "rule.clavis.mirror.hot_meteor.description": "面板中随机的一块陨石会周期性过热，过热期间点中会额外扣除一点生命",
+  "rule.clavis.mirror.shockwave": "轰！",
+  "rule.clavis.mirror.shockwave.description": "每次点击都会造成冲击，将镜像光标附近的所有陨石向远处推离",
+
+  "ui.clavis.hold_shift": "按住 [Shift] 了解详细信息",
+
+  "ui.clavis.difficulty.summary": "游戏难度",
+  "ui.clavis.time.summary": "游戏时间",
+  "ui.clavis.quality.summary": "战利品质量",
+
+  "ui.clavis.difficulty.description": "由当前箱子中战利品的平均价值决定，且影响小游戏的整体难度。难度也会被分为3级，决定小游戏中生效的规则数量。",
+  "ui.clavis.time.description": "自开始破解到现在所持续的时间。没有什么意义，但是如果超过1分钟就完蛋了！",
+  "ui.clavis.quality.description": "决定完成小游戏后，箱子中生成战利品的质量和数量。游戏过程中出错会扣除该数值。",
+
+  "item.clavis.lock_pick": "开锁其",
+  "item.clavis.lock_pick.tooltip": "对上锁的箱子使用时，会立刻将其解锁，并将战利品质量维持在最高水平，就像零失误完成小游戏一样。使用后被消耗。",
+
+  "sound.clavis.meteor_smash": "陨石：爆炸",
+  "sound.clavis.meteor_regenerate": "陨石：重现"
+}
