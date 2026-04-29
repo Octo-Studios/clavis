@@ -13,6 +13,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.layouts.LayoutElement;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -30,12 +31,22 @@ public class RotatingParent<T extends Child<RotatingParent>, C extends LayoutEle
     @Getter
     @Setter
     float rot;
+    float previousRot;
 
     @SafeVarargs
     public RotatingParent(int x, int y, float degrees, T... children) {
         super(x, y, 0, 0, Component.empty());
+        this.previousRot = degrees;
         this.setRot(degrees);
         this.children.addAll(Arrays.stream(children).peek(child -> child.setParent(this)).toList());
+    }
+
+    public void capturePreviousRot() {
+        this.previousRot = this.rot;
+    }
+
+    public float getVisualRot(float partialTick) {
+        return Mth.lerp(partialTick, this.previousRot, this.rot);
     }
 
     @Override
@@ -87,7 +98,7 @@ public class RotatingParent<T extends Child<RotatingParent>, C extends LayoutEle
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(this.getX(), this.getY(), 0);
-        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(rot));
+        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(this.getVisualRot(partialTick)));
         guiGraphics.pose().translate(-this.getX(), -this.getY(), 0);
         this.setMatrix(new Matrix4f(guiGraphics.pose().last().pose()));
         children.forEach(child -> {

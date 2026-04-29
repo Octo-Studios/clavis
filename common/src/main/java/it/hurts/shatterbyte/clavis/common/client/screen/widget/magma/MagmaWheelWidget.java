@@ -1,20 +1,25 @@
 package it.hurts.shatterbyte.clavis.common.client.screen.widget.magma;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.math.Axis;
 import it.hurts.octostudios.octolib.client.animation.Tween;
 import it.hurts.octostudios.octolib.client.animation.easing.EaseType;
 import it.hurts.octostudios.octolib.client.animation.easing.TransitionType;
+import it.hurts.octostudios.octolib.util.OctoColor;
 import it.hurts.shatterbyte.clavis.common.Clavis;
 import it.hurts.shatterbyte.clavis.common.client.screen.LockpickingScreen;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.AbstractMinigameWidget;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.RotatingParent;
 import it.hurts.shatterbyte.clavis.common.minigame.Minigame;
+import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import org.joml.Matrix4f;
 import org.joml.Vector2d;
 
 import java.util.Random;
@@ -30,9 +35,10 @@ public class MagmaWheelWidget extends AbstractMinigameWidget<RotatingParent<Fire
     @Setter
     double rot;
     int rotationDir = 1;
-
-    double[] oldRingsRot = new double[]{0,0,0};
-    double[] ringsRot = new double[]{0,0,0};
+    final float[] ringSpeeds = new float[3];
+    @Getter
+    @Setter
+    OctoColor gameColor = OctoColor.WHITE;
 
     Tween mainTween = Tween.create();
 
@@ -42,6 +48,8 @@ public class MagmaWheelWidget extends AbstractMinigameWidget<RotatingParent<Fire
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        RenderSystem.setShaderColor(gameColor.r(), gameColor.g(), gameColor.b(), gameColor.a());
+        RenderSystem.enableBlend();
         guiGraphics.blit(BACKGROUND, this.getX(), this.getY(), 192, 192, 0, 0, 192, 192, 192, 192);
 
         double guiScale = Minecraft.getInstance().getWindow().getGuiScale();
@@ -57,7 +65,12 @@ public class MagmaWheelWidget extends AbstractMinigameWidget<RotatingParent<Fire
         guiGraphics.blit(RAIL, -16, -106, 32, 212, 0, 0, 32, 212, 32, 212);
         guiGraphics.pose().popPose();
 
-        super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+        for (RotatingParent<FireballWidget, MagmaWheelWidget> ring : this.children) {
+            ring.setMatrix(new Matrix4f(guiGraphics.pose().last().pose()));
+            for (FireballWidget fireball : ring.children) {
+                fireball.render(guiGraphics, mouseX, mouseY, partialTick);
+            }
+        }
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(mousePos.x, mousePos.y, 0);
@@ -66,6 +79,9 @@ public class MagmaWheelWidget extends AbstractMinigameWidget<RotatingParent<Fire
 
         guiGraphics.blit(CURSOR, -9, -9, 18, 18, 0, 0, 18, 18, 18, 18);
         guiGraphics.pose().popPose();
+
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.disableBlend();
     }
 
     public static RotatingParent<FireballWidget, MagmaWheelWidget> createRing(
@@ -78,6 +94,16 @@ public class MagmaWheelWidget extends AbstractMinigameWidget<RotatingParent<Fire
 
         ring.setParent(parent);
         return ring;
+    }
+
+    private int getRandomFireballCount(float scaled) {
+        int count = Mth.ceil(random.nextFloat(2, 4) * scaled);
+
+        if ((count & 1) == 0) {
+            count += random.nextBoolean() ? 1 : -1;
+        }
+
+        return Mth.clamp(count, 1, 5);
     }
 
     private Vector2d getClampedMousePos(double mouseX, double mouseY, Vector2d center) {
@@ -113,17 +139,40 @@ public class MagmaWheelWidget extends AbstractMinigameWidget<RotatingParent<Fire
 
     @Override
     public void playHurtAnimation() {
-
+        this.mainTween.kill();
+        this.mainTween = Tween.create();
+        this.mainTween.tweenMethod(this::setGameColor, new OctoColor(1.25f, 0.45f, 0.2f, 1f), OctoColor.WHITE, 0.5f);
+        this.mainTween.start();
     }
 
     @Override
     public void playWinAnimation() {
+        if (!this.isPlaying) {
+            return;
+        }
 
+        this.isPlaying = false;
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BLAZE_DEATH, 0.7f, 1.25f));
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.AMETHYST_CLUSTER_BREAK, 0.8f, 0.85f));
+        this.mainTween.kill();
+        this.mainTween = Tween.create();
+        this.mainTween.tweenMethod(this::setRot, this.rot, this.rot + Math.toRadians(180), 1f)
+                .setEaseType(EaseType.EASE_OUT)
+                .setTransitionType(TransitionType.CUBIC);
+        this.mainTween.tweenRunnable(() -> this.screen.finish(false));
+        this.mainTween.start();
     }
 
     @Override
     public void playLoseAnimation() {
+        if (!this.isPlaying) {
+            return;
+        }
 
+        this.isPlaying = false;
+        this.mainTween.kill();
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BLAZE_HURT, 0.75f, 0.8f));
+        this.screen.finish(true);
     }
 
     @Override
@@ -144,23 +193,31 @@ public class MagmaWheelWidget extends AbstractMinigameWidget<RotatingParent<Fire
 
         Vector2d center = new Vector2d(this.width / 2f, this.height / 2f);
 
-// radii for 3 rings
         float[] radii = new float[]{24f, 52f, 80f};
+        float speedScale = 0.9f + difficulty * 0.2f;
 
         for (int r = 0; r < 3; r++) {
             float radius = radii[r];
+            float baseSpeed = switch (r) {
+                case 0 -> 0.82f;
+                case 1 -> -0.96f;
+                case 2 -> 1.08f;
+                default -> 0f;
+            };
+            this.ringSpeeds[r] = baseSpeed * speedScale * random.nextFloat(0.94f, 1.06f);
 
             RotatingParent<FireballWidget, MagmaWheelWidget> ring = MagmaWheelWidget.createRing((int) center.x, (int) center.y, 0, this);
 
-            int fireballCount = Mth.ceil(random.nextFloat(2, 4) * scaled);
+            int fireballCount = this.getRandomFireballCount(scaled);
+            float angleStep = 360f / fireballCount;
+            float ringOffset = random.nextFloat(0f, angleStep);
 
             for (int i = 0; i < fireballCount; i++) {
-                float angle = (360f / fireballCount) * i + random.nextFloat(-10, 10);
+                float angle = angleStep * i + ringOffset + random.nextFloat(-12f, 12f);
 
                 FireballWidget fireball = new FireballWidget(0, 0);
                 fireball.setParent(ring);
 
-                // store polar coords
                 fireball.angle = angle;
                 fireball.radius = radius;
 
@@ -173,7 +230,7 @@ public class MagmaWheelWidget extends AbstractMinigameWidget<RotatingParent<Fire
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!isPlaying) {
+        if (!isPlaying || button != 0) {
             return false;
         }
 
@@ -183,15 +240,36 @@ public class MagmaWheelWidget extends AbstractMinigameWidget<RotatingParent<Fire
             return false;
         }
 
-        Vector2d pos = this.getClampedMousePos(realMousePos.x, realMousePos.y, new Vector2d(this.getX()+this.width/2f, this.getY()+this.height/2f));
-        return super.mouseClicked(pos.x, pos.y, button);
-    }
+        Vector2d pos = this.getClampedMousePos(realMousePos.x, realMousePos.y, center);
+        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
 
-    @Override
-    public void onClick(double mouseX, double mouseY) {
-        super.onClick(mouseX, mouseY);
-    }
+        for (RotatingParent<FireballWidget, MagmaWheelWidget> ring : this.children) {
+            for (FireballWidget fireball : ring.children) {
+                if (fireball.isBlownUp()) {
+                    continue;
+                }
 
+                if (fireball.getCenterPos(partialTick).distanceSquared(pos) > 36) {
+                    continue;
+                }
+
+                fireball.blowUp();
+                this.getMinigame().processOnClickRules(true);
+
+                if (this.children.stream()
+                        .flatMap(rotatingParent -> rotatingParent.children.stream())
+                        .allMatch(FireballWidget::isBlownUp)) {
+                    this.getMinigame().finish();
+                }
+
+                return true;
+            }
+        }
+
+        this.getMinigame().hurt();
+        this.getMinigame().processOnClickRules(false);
+        return false;
+    }
     public void rotate(float alpha) {
         mainTween.kill();
         mainTween = Tween.create();
@@ -205,15 +283,13 @@ public class MagmaWheelWidget extends AbstractMinigameWidget<RotatingParent<Fire
     public void tick() {
         for (int i = 0; i < children.size(); i++) {
             RotatingParent<?, ?> ring = children.get(i);
-
-            float speed = switch (i) {
-                case 0 -> 0.5f;
-                case 1 -> -0.8f;
-                case 2 -> 1.2f;
-                default -> 0f;
-            };
-
-            ring.setRot(ring.getRot() + speed);
+            ring.capturePreviousRot();
+            ring.setRot(ring.getRot() + this.ringSpeeds[i]);
         }
+    }
+
+    @Override
+    public void killTweens() {
+        this.mainTween.kill();
     }
 }

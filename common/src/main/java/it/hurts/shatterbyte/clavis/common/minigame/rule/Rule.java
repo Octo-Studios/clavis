@@ -3,6 +3,7 @@ package it.hurts.shatterbyte.clavis.common.minigame.rule;
 import it.hurts.shatterbyte.clavis.common.client.ClientMinigameTypeRegistry;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.AbstractMinigameWidget;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.gear.GearMechanismWidget;
+import it.hurts.shatterbyte.clavis.common.client.screen.widget.magma.MagmaWheelWidget;
 import it.hurts.shatterbyte.clavis.common.client.screen.widget.mirror.MirrorWidget;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
@@ -80,5 +81,6 @@ public class Rule<T extends AbstractMinigameWidget<?>> {
         EndRules.SHOCKWAVE.register(MirrorWidget.class);
         EndRules.FAKE.register(MirrorWidget.class);
         EndRules.HOT_METEOR.register(MirrorWidget.class);
+        NetherRules.TEST.register(MagmaWheelWidget.class);
     }
 }
